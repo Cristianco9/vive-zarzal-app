@@ -1,46 +1,60 @@
-// Import dotenv package to load environment variables from a .env file
+// config.js
+
+// Import dotenv package to load environment variables
 import dotenv from "dotenv";
 
-// Load environment variables from .env file into process.env
+// Load .env variables
 dotenv.config();
 
-// Export the configuration object containing various application settings
+/**
+ * Global application configuration
+ */
 export const config = {
 
-    // Set the environment (default to 'dev' if not specified)
-    env: process.env.NODE_ENV || 'dev',
+  // ==========================================
+  // APPLICATION
+  // ==========================================
 
-    // Database dialect
-    dialect: process.env.DIALECT,
+  env: process.env.NODE_ENV || "development",
 
-    // Application port (default to 3030 if not specified)
-    appPort: process.env.APP_PORT || 3030,
+  appPort: Number(process.env.APP_PORT) || 3377,
 
-    // Database user name from environment variables
-    dbUser: process.env.DB_USER,
+  // ==========================================
+  // DATABASE
+  // ==========================================
 
-    // Database root user name from environment variables
-    dbRootUser: process.env.DB_ROOT_USER,
+  dbDialect: process.env.DB_DIALECT || "postgres",
 
-    // Database root password from environment variables
-    dbRootPassword: process.env.DB_ROOT_PASSWORD,
+  dbHost: process.env.DB_HOST || "127.0.0.1",
 
-    // Database user password from environment variables
-    dbUserPassword: process.env.DB_USER_PASSWORD,
+  dbPort: Number(process.env.DB_PORT) || 5432,
 
-    // Database host from environment variables
-    dbHost: process.env.DB_HOST,
+  dbName: process.env.DB_NAME,
 
-    // Database name from environment variables
-    dbName: process.env.DB_NAME,
+  dbUser: process.env.DB_USER,
 
-    // Database port from environment variables
-    dbPort: process.env.DB_PORT,
+  dbPassword: process.env.DB_PASSWORD,
 
-    // API key from environment variables
-    APIKey: process.env.API_KEY,
+  // ==========================================
+  // SEQUELIZE CONNECTION POOL
+  // ==========================================
 
-    // JWT secret key for the authentication application
-    authAppJwtKey: process.env.AUTH_APP_JWT_SECRET_KEY,
+  dbPoolMax: Number(process.env.DB_POOL_MAX) || 20,
+
+  dbPoolMin: Number(process.env.DB_POOL_MIN) || 5,
+
+  dbPoolAcquire: Number(process.env.DB_POOL_ACQUIRE) || 30000,
+
+  dbPoolIdle: Number(process.env.DB_POOL_IDLE) || 10000,
+
+  // ==========================================
+  // SECURITY
+  // ==========================================
+
+  apiKey: process.env.API_KEY,
+
+  jwtSecretKey: process.env.AUTH_APP_JWT_SECRET_KEY,
+
+  jwtExpiresIn: process.env.AUTH_APP_JWT_EXPIRES_IN || "24h",
 
 };
