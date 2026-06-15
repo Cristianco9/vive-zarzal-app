@@ -1,0 +1,6727 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.dockerignore
+.editorconfig
+.eslintrc.json
+.gitignore
+.sequelizerc
+database/tables.sql
+docker-compose.yml
+env/.envExample
+LICENSE
+nodemon.json
+package.json
+README.md
+src/app.js
+src/config/config.js
+src/db/config.js
+src/db/migrations/20260615092518-country.cjs
+src/db/migrations/20260615092634-departament.cjs
+src/db/migrations/20260615092727-city.cjs
+src/db/migrations/20260615092824-location.cjs
+src/db/migrations/20260615092904-role.cjs
+src/db/migrations/20260615092935-gender.cjs
+src/db/migrations/20260615093038-documentType.cjs
+src/db/migrations/20260615093112-user.cjs
+src/db/migrations/20260615093142-userImage.cjs
+src/db/migrations/20260615093237-phone.cjs
+src/db/migrations/20260615093324-userPhone.cjs
+src/db/migrations/20260615093417-business.cjs
+src/db/migrations/20260615093534-businessPhone.cjs
+src/db/migrations/20260615093602-category.cjs
+src/db/migrations/20260615093645-serviceStatus.cjs
+src/db/migrations/20260615093739-ageRestriction.cjs
+src/db/migrations/20260615093849-service.cjs
+src/db/migrations/20260615093941-serviceImage.cjs
+src/db/migrations/20260615094035-reservation.cjs
+src/db/migrations/20260615094124-reservationStatus.cjs
+src/db/migrations/20260615094153-reservationDetails.cjs
+src/db/migrations/20260615094242-messageStatus.cjs
+src/db/migrations/20260615094335-message.cjs
+src/db/migrations/20260615094411-businessReview.cjs
+src/db/migrations/20260615094447-serviceReview.cjs
+src/db/migrations/20260615094522-serviceFavoriteUser.cjs
+src/db/models/ageRestrictionModel.js
+src/db/models/businessModel.js
+src/db/models/businessPhoneModel.js
+src/db/models/businessReviewModel.js
+src/db/models/categoryModel.js
+src/db/models/cityModel.js
+src/db/models/countryModel.js
+src/db/models/departamentModel.js
+src/db/models/documentTypeModel.js
+src/db/models/favoriteUserServiceModel.js
+src/db/models/genderModel.js
+src/db/models/index.js
+src/db/models/locationModel.js
+src/db/models/messageModel.js
+src/db/models/messageStatusModel.js
+src/db/models/phoneModel.js
+src/db/models/reservationDetailsModel.js
+src/db/models/reservationModel.js
+src/db/models/reserveStatusModel.js
+src/db/models/roleModel.js
+src/db/models/serviceImageModel.js
+src/db/models/serviceModel.js
+src/db/models/serviceReviewModel.js
+src/db/models/serviceStatusModel.js
+src/db/models/userImageModel.js
+src/db/models/userModel.js
+src/db/models/userPhoneModel.js
+src/libraries/DBConnection.js
+src/libraries/netConfig.js
+src/middlewares/apiAuthHandler.js
+src/middlewares/checkRoleHandler.js
+src/middlewares/errorHandler.js
+src/middlewares/tokenHandlers/authAppTokenHandler.js
+src/middlewares/validatorHandler.js
+src/router/index.js
+src/router/UIRouter.js
+src/router/userRouter.js
+src/schemas/userSchema.js
+src/utils/auth/authApp/strategies/jwt.strategy.js
+src/utils/auth/authApp/tokenData.js
+src/utils/auth/index.js
+src/utils/auth/passwordHash.js
+src/utils/auth/tokenSign.js
+src/utils/auth/tokenVerify.js
+src/utils/RegEx/authRegEx.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".dockerignore">
+*.log
+.dockerignore
+.git
+.gitignore
+Dockerfile
+node_modules
+README.md
+</file>
+
+<file path=".editorconfig">
+# Editor configuration, see https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.js]
+[*.cjs]
+[*.mjs]
+quote_type = single
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+</file>
+
+<file path=".eslintrc.json">
+{
+    "env": {
+      "browser": true,
+      "node": true,
+      "es2021": true,
+      "jest":true
+    },
+    "extends": [
+      "eslint:recommended",
+      "prettier",
+      "plugin:node/recommended,"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "indent": ["error", 2],
+      "no-console": "warn",
+      "linebreak-style": ["error", "unix"],
+      "quotes": ["error", "single"],
+      "semi": ["error", "always"],
+      "node/no-unsupported-features/es-syntax": ["error", {
+        "version": ">=12.0.0",
+        "ignores": []
+      }]
+    }
+  }
+</file>
+
+<file path=".gitignore">
+# Created by https://www.toptal.com/developers/gitignore/api/windows,macos,linux,node
+# Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,linux,node
+
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
+### Node ###
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs generated by jscoverage/JSCover
+lib-cov
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+# Comment in the public line in if your project uses Gatsby and not Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# public
+
+# vuepress build output
+.vuepress/dist
+
+# vuepress v2.x temp and cache directory
+.temp
+
+# Docusaurus cache and generated files
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+### Node Patch ###
+# Serverless Webpack directories
+.webpack/
+
+# Optional stylelint cache
+
+# SvelteKit build / generate output
+.svelte-kit
+
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,node
+</file>
+
+<file path=".sequelizerc">
+const path = require('path');
+
+module.exports= {
+  'config': path.resolve('src', 'db', 'config.js'),
+  'models-path': path.resolve('src', 'db', 'models'),
+  'migrations-path': path.resolve('src', 'db', 'migrations'),
+  'seeders-path': path.resolve('src', 'db', 'seeders')
+}
+</file>
+
+<file path="database/tables.sql">
+-- ============================================================
+-- VIVE ZARZAL - SCRIPT PostgreSQL REFACTORIZADO
+-- ============================================================
+
+-- ============================================================
+-- TABLAS DE CATÁLOGO
+-- ============================================================
+
+CREATE TABLE Pais (
+    id_pais SERIAL PRIMARY KEY,
+    nombre_pais VARCHAR(100) NOT NULL UNIQUE,
+    descripcion_pais VARCHAR(255)
+);
+
+CREATE TABLE Departamento (
+    id_departamento SERIAL PRIMARY KEY,
+    nombre_departamento VARCHAR(100) NOT NULL,
+    descripcion_departamento VARCHAR(255),
+    id_pais INT NOT NULL,
+
+    CONSTRAINT fk_departamento_pais
+        FOREIGN KEY (id_pais)
+        REFERENCES Pais(id_pais),
+
+    CONSTRAINT uq_departamento_nombre_pais
+        UNIQUE(nombre_departamento, id_pais)
+);
+
+CREATE TABLE Ciudad (
+    id_ciudad SERIAL PRIMARY KEY,
+    nombre_ciudad VARCHAR(100) NOT NULL,
+    descripcion_ciudad VARCHAR(255),
+    id_departamento INT NOT NULL,
+
+    CONSTRAINT fk_ciudad_departamento
+        FOREIGN KEY (id_departamento)
+        REFERENCES Departamento(id_departamento),
+
+    CONSTRAINT uq_ciudad_nombre_departamento
+        UNIQUE(nombre_ciudad, id_departamento)
+);
+
+CREATE TABLE Ubicacion (
+    id_ubicacion SERIAL PRIMARY KEY,
+    nombre_ubicacion VARCHAR(150) NOT NULL,
+    descripcion_ubicacion TEXT,
+    codigo_ubicacion VARCHAR(50),
+    id_ciudad INT NOT NULL,
+
+    fecha_creacion_ubicacion TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_ubicacion TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_ubicacion_ciudad
+        FOREIGN KEY (id_ciudad)
+        REFERENCES Ciudad(id_ciudad)
+);
+
+CREATE TABLE Genero (
+    id_genero SERIAL PRIMARY KEY,
+    tipo_genero VARCHAR(50) NOT NULL UNIQUE,
+
+    fecha_creacion_genero TIMESTAMP DEFAULT NOW(),
+    fecha_actualizacion_genero TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Tipo_documento (
+    id_tipo_documento SERIAL PRIMARY KEY,
+    nombre_tipo_documento VARCHAR(100) NOT NULL UNIQUE,
+
+    fecha_creacion_tipo_documento TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_tipo_documento TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Rol (
+    id_rol SERIAL PRIMARY KEY,
+    tipo_rol VARCHAR(50) NOT NULL UNIQUE,
+    descripcion_rol VARCHAR(255),
+
+    fecha_creacion_rol TIMESTAMP DEFAULT NOW(),
+    fecha_actualizacion_rol TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Categoria (
+    id_categoria SERIAL PRIMARY KEY,
+    nombre_categoria VARCHAR(100) NOT NULL UNIQUE,
+    descripcion_categoria TEXT,
+
+    fecha_creacion_categoria TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_categoria TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Estado_servicio (
+    id_estado_servicio SERIAL PRIMARY KEY,
+    nombre_estado_servicio VARCHAR(50) NOT NULL UNIQUE,
+    descripcion_estado_servicio VARCHAR(255),
+
+    fecha_creacion_estado_servicio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_estado_servicio TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Restriccion_edad (
+    id_restriccion_edad SERIAL PRIMARY KEY,
+    nombre_restriccion_edad VARCHAR(100) NOT NULL UNIQUE,
+    descripcion_restriccion_edad VARCHAR(255),
+
+    fecha_creacion_restriccion_edad TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_restriccion_edad TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Estado_reserva (
+    id_estado_reserva SERIAL PRIMARY KEY,
+    nombre_estado_reserva VARCHAR(50) NOT NULL UNIQUE,
+    descripcion_estado_reserva VARCHAR(255),
+
+    fecha_creacion_estado_reserva TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_estado_reserva TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE Mensaje_estado (
+    id_mensaje_estado SERIAL PRIMARY KEY,
+    nombre_mensaje_estado VARCHAR(50) NOT NULL UNIQUE,
+    descripcion_mensaje_estado VARCHAR(255),
+
+    fecha_creacion_mensaje_estado TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_mensaje_estado TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================================
+-- USUARIO
+-- ============================================================
+
+CREATE TABLE Usuario (
+    id_usuario SERIAL PRIMARY KEY,
+
+    id_rol_usuario INT NOT NULL,
+    id_genero_usuario INT,
+    id_tipo_documento_usuario INT,
+
+    nombre_usuario VARCHAR(100) NOT NULL,
+    apellido_usuario VARCHAR(100) NOT NULL,
+
+    fecha_nacimiento_usuario DATE,
+
+    numero_documento_usuario VARCHAR(30) UNIQUE,
+    correo_usuario VARCHAR(150) NOT NULL UNIQUE,
+    username_usuario VARCHAR(80) NOT NULL UNIQUE,
+
+    contrasena_usuario VARCHAR(255) NOT NULL,
+
+    fecha_creacion_usuario TIMESTAMP DEFAULT NOW(),
+    fecha_actualizacion_usuario TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_usuario_rol
+        FOREIGN KEY (id_rol_usuario)
+        REFERENCES Rol(id_rol),
+
+    CONSTRAINT fk_usuario_genero
+        FOREIGN KEY (id_genero_usuario)
+        REFERENCES Genero(id_genero),
+
+    CONSTRAINT fk_usuario_tipodoc
+        FOREIGN KEY (id_tipo_documento_usuario)
+        REFERENCES Tipo_documento(id_tipo_documento)
+);
+
+-- ============================================================
+-- IMAGEN USUARIO
+-- ============================================================
+
+CREATE TABLE Imagen_usuario (
+    id_imagen_usuario SERIAL PRIMARY KEY,
+
+    url_imagen_usuario TEXT NOT NULL,
+    descripcion_imagen_usuario VARCHAR(255),
+
+    id_usuario INT NOT NULL,
+
+    fecha_creacion_imagen_usuario TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_imagen_usuario TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_imagen_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario)
+        ON DELETE CASCADE
+);
+
+-- ============================================================
+-- TELÉFONOS
+-- ============================================================
+
+CREATE TABLE Telefono (
+    id_telefono SERIAL PRIMARY KEY,
+
+    numero_telefono VARCHAR(20) NOT NULL,
+
+    fecha_creacion_telefono TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_telefono TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE UsuarioTelefono (
+    id_usuario_telefono SERIAL PRIMARY KEY,
+
+    id_usuario INT NOT NULL,
+    id_telefono INT NOT NULL,
+
+    CONSTRAINT fk_usuariotelefono_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_usuariotelefono_telefono
+        FOREIGN KEY (id_telefono)
+        REFERENCES Telefono(id_telefono)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_usuario_telefono
+        UNIQUE(id_usuario, id_telefono)
+);
+
+-- ============================================================
+-- NEGOCIO
+-- ============================================================
+
+CREATE TABLE Negocio (
+    id_negocio SERIAL PRIMARY KEY,
+
+    id_usuario_propietario INT NOT NULL,
+
+    nombre_negocio VARCHAR(150) NOT NULL,
+    descripcion_negocio TEXT,
+
+    id_ubicacion INT,
+
+    facebook_negocio VARCHAR(255),
+    instagram_negocio VARCHAR(255),
+    tiktok_negocio VARCHAR(255),
+    pagina_web_negocio VARCHAR(255),
+
+    fecha_creacion_negocio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_negocio TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_negocio_ubicacion
+        FOREIGN KEY (id_ubicacion)
+        REFERENCES Ubicacion(id_ubicacion),
+
+    CONSTRAINT fk_negocio_propietario
+        FOREIGN KEY (id_usuario_propietario)
+        REFERENCES Usuario(id_usuario)
+);
+
+CREATE TABLE NegocioTelefono (
+    id_negocio_telefono SERIAL PRIMARY KEY,
+
+    id_negocio INT NOT NULL,
+    id_telefono INT NOT NULL,
+
+    CONSTRAINT fk_negociotelefono_negocio
+        FOREIGN KEY (id_negocio)
+        REFERENCES Negocio(id_negocio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_negociotelefono_telefono
+        FOREIGN KEY (id_telefono)
+        REFERENCES Telefono(id_telefono)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_negocio_telefono
+        UNIQUE(id_negocio, id_telefono)
+);
+
+-- ============================================================
+-- SERVICIO
+-- ============================================================
+
+CREATE TABLE Servicio (
+    id_servicio SERIAL PRIMARY KEY,
+
+    nombre_servicio VARCHAR(200) NOT NULL,
+    descripcion_servicio TEXT,
+
+    precio_servicio NUMERIC(12,2) NOT NULL DEFAULT 0,
+
+    id_categoria_servicio INT NOT NULL,
+    id_estado_servicio INT NOT NULL,
+    id_restriccion_edad_servicio INT,
+    id_negocio INT NOT NULL,
+
+    fecha_creacion_servicio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_servicio TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT chk_precio_servicio
+        CHECK (precio_servicio >= 0),
+
+    CONSTRAINT fk_servicio_categoria
+        FOREIGN KEY (id_categoria_servicio)
+        REFERENCES Categoria(id_categoria),
+
+    CONSTRAINT fk_servicio_estado
+        FOREIGN KEY (id_estado_servicio)
+        REFERENCES Estado_servicio(id_estado_servicio),
+
+    CONSTRAINT fk_servicio_restriccion
+        FOREIGN KEY (id_restriccion_edad_servicio)
+        REFERENCES Restriccion_edad(id_restriccion_edad),
+
+    CONSTRAINT fk_servicio_negocio
+        FOREIGN KEY (id_negocio)
+        REFERENCES Negocio(id_negocio)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE Imagen_servicio (
+    id_imagen_servicio SERIAL PRIMARY KEY,
+
+    url_imagen_servicio TEXT NOT NULL,
+    descripcion_imagen_servicio VARCHAR(255),
+
+    id_servicio INT NOT NULL,
+
+    fecha_creacion_imagen_servicio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_imagen_servicio TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_imagen_servicio
+        FOREIGN KEY (id_servicio)
+        REFERENCES Servicio(id_servicio)
+        ON DELETE CASCADE
+);
+
+-- ============================================================
+-- RESERVA
+-- ============================================================
+
+CREATE TABLE Reserva (
+    id_reserva SERIAL PRIMARY KEY,
+
+    id_servicio INT NOT NULL,
+
+    fecha_creacion_reserva TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_reserva TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_reserva_servicio
+        FOREIGN KEY (id_servicio)
+        REFERENCES Servicio(id_servicio)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE Reserva_detalle (
+    id_reserva_detalle SERIAL PRIMARY KEY,
+
+    id_reserva INT NOT NULL,
+    id_usuario INT NOT NULL,
+    cantidad_reserva INT NOT NULL DEFAULT 1,
+    id_estado_reserva INT NOT NULL,
+
+    CONSTRAINT chk_cantidad_reserva
+        CHECK (cantidad_reserva > 0),
+
+    CONSTRAINT fk_reservadetalle_reserva
+        FOREIGN KEY (id_reserva)
+        REFERENCES Reserva(id_reserva)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_reservadetalle_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario),
+
+    CONSTRAINT fk_reservadetalle_estadoreserva
+        FOREIGN KEY (id_estado_reserva)
+        REFERENCES Estado_reserva(id_estado_reserva)
+);
+
+-- ============================================================
+-- MENSAJES
+-- ============================================================
+
+CREATE TABLE Mensaje (
+    id_mensaje SERIAL PRIMARY KEY,
+
+    contenido_mensaje TEXT NOT NULL,
+
+    fecha_envio_mensaje TIMESTAMP DEFAULT NOW(),
+
+    id_estado_mensaje INT NOT NULL,
+    id_usuario_emisor INT NOT NULL,
+    id_usuario_receptor INT NOT NULL,
+
+    CONSTRAINT fk_mensaje_estado
+        FOREIGN KEY (id_estado_mensaje)
+        REFERENCES Mensaje_estado(id_mensaje_estado),
+
+    CONSTRAINT fk_mensaje_emisor
+        FOREIGN KEY (id_usuario_emisor)
+        REFERENCES Usuario(id_usuario),
+
+    CONSTRAINT fk_mensaje_receptor
+        FOREIGN KEY (id_usuario_receptor)
+        REFERENCES Usuario(id_usuario)
+);
+
+-- ============================================================
+-- RESEÑAS
+-- ============================================================
+
+CREATE TABLE Resena_negocio (
+    id_resena_negocio SERIAL PRIMARY KEY,
+
+    id_negocio_resena INT NOT NULL,
+    id_usuario_resena INT NOT NULL,
+
+    contenido_resena_negocio TEXT,
+
+    puntuacion_resena_negocio SMALLINT
+        CHECK (puntuacion_resena_negocio BETWEEN 1 AND 5),
+
+    fecha_creacion_resena_negocio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_resena_negocio TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_resenanegocio_negocio
+        FOREIGN KEY (id_negocio_resena)
+        REFERENCES Negocio(id_negocio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_resenanegocio_usuario
+        FOREIGN KEY (id_usuario_resena)
+        REFERENCES Usuario(id_usuario)
+);
+
+CREATE TABLE Resena_servicio (
+    id_resena_servicio SERIAL PRIMARY KEY,
+
+    id_servicio_resena INT NOT NULL,
+    id_usuario_resena INT NOT NULL,
+
+    contenido_resena_servicio TEXT,
+
+    puntuacion_resena_servicio SMALLINT
+        CHECK (puntuacion_resena_servicio BETWEEN 1 AND 5),
+
+    fecha_creacion_resena_servicio TIMESTAMP DEFAULT NOW(),
+    fecha_modificacion_resena_servicio TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_resenaservicio_servicio
+        FOREIGN KEY (id_servicio_resena)
+        REFERENCES Servicio(id_servicio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_resenaservicio_usuario
+        FOREIGN KEY (id_usuario_resena)
+        REFERENCES Usuario(id_usuario)
+);
+
+-- ============================================================
+-- FAVORITOS
+-- ============================================================
+
+CREATE TABLE Servicio_favoritos_usuarios (
+    id_servicio_favorito SERIAL PRIMARY KEY,
+
+    id_usuario_favorito INT NOT NULL,
+    id_servicio INT NOT NULL,
+
+    fecha_creacion_servicio_favorito TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_serviciofavorito_usuario
+        FOREIGN KEY (id_usuario_favorito)
+        REFERENCES Usuario(id_usuario)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_serviciofavorito_servicio
+        FOREIGN KEY (id_servicio)
+        REFERENCES Servicio(id_servicio)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_servicio_favorito
+        UNIQUE(id_usuario_favorito, id_servicio)
+);
+
+-- ============================================================
+-- ÍNDICES
+-- ============================================================
+
+CREATE INDEX idx_usuario_correo
+    ON Usuario(correo_usuario);
+
+CREATE INDEX idx_usuario_username
+    ON Usuario(username_usuario);
+
+CREATE INDEX idx_usuario_rol
+    ON Usuario(id_rol_usuario);
+
+CREATE INDEX idx_servicio_categoria
+    ON Servicio(id_categoria_servicio);
+
+CREATE INDEX idx_servicio_estado
+    ON Servicio(id_estado_servicio);
+
+CREATE INDEX idx_servicio_negocio
+    ON Servicio(id_negocio);
+
+CREATE INDEX idx_reservadetalle_usuario
+    ON Reserva_detalle(id_usuario);
+
+CREATE INDEX idx_reservadetalle_estado
+    ON Reserva_detalle(id_estado_reserva);
+
+CREATE INDEX idx_mensaje_emisor
+    ON Mensaje(id_usuario_emisor);
+
+CREATE INDEX idx_mensaje_receptor
+    ON Mensaje(id_usuario_receptor);
+
+CREATE INDEX idx_resena_negocio
+    ON Resena_negocio(id_negocio_resena);
+
+CREATE INDEX idx_resena_servicio
+    ON Resena_servicio(id_servicio_resena);
+</file>
+
+<file path="docker-compose.yml">
+services:
+
+  vive-zarzal-db:
+    image: postgres:17
+    container_name: vive-zarzal-db
+    restart: always
+
+    environment:
+      POSTGRES_DB: vive_zarzal_app
+      POSTGRES_USER: vive_zarzal_user
+      POSTGRES_PASSWORD: aa24d32b8b1cfe04a74f668fd58acddbccbe86a9a17a0eff52bb5830e3d1d652
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - vive_zarzal_db_data:/var/lib/postgresql/data
+
+    networks:
+      - vive-zarzal-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: vive-zarzal-rdbms
+    restart: always
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vivezarzal.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+
+    ports:
+      - "8080:80"
+
+    depends_on:
+      - vive-zarzal-db
+
+    networks:
+      - vive-zarzal-network
+
+volumes:
+  vive_zarzal_db_data:
+
+networks:
+  vive-zarzal-network:
+    driver: bridge
+</file>
+
+<file path="env/.envExample">
+# ==========================================
+# APPLICATION
+# ==========================================
+
+APP_PORT=3377
+NODE_ENV=development
+
+# ==========================================
+# DATABASE - POSTGRESQL
+# ==========================================
+
+DB_DIALECT=postgres
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=vive_zarzal_app
+
+# Usuario de la aplicación
+DB_USER=vive_zarzal_user
+DB_PASSWORD=aa24d32b8b1cfe04a74f668fd58acddbccbe86a9a17a0eff52bb5830e3d1d652
+
+# ==========================================
+# SEQUELIZE CONNECTION POOL
+# ==========================================
+
+DB_POOL_MAX=20
+DB_POOL_MIN=5
+DB_POOL_ACQUIRE=30000
+DB_POOL_IDLE=10000
+
+# ==========================================
+# SECURITY
+# ==========================================
+
+API_KEY=48fdd9794d35198c4867fb0180252908cc742b18835545d4342ae9544748aa0d
+
+AUTH_APP_JWT_SECRET_KEY=b863794517c66b712790c8e8f84038c5ea575c767d8c9444965ea4845ed1e1e5
+
+AUTH_APP_JWT_EXPIRES_IN=24h
+</file>
+
+<file path="LICENSE">
+MIT License
+
+Copyright (c) 2026 Cristian Camilo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</file>
+
+<file path="nodemon.json">
+{
+    "ignore": [
+      ".git",
+      ".node_modules/**/node_modules"
+    ],
+    "watch": [
+      "src/**/*.js",
+      "src/**/*.cjs",
+      "src/**/*.mjs"
+    ],
+    "ext": "js,cjs,mjs,json,"
+  }
+</file>
+
+<file path="package.json">
+{
+  "name": "vive-zarzal-app",
+  "version": "0.0.1",
+  "description": "vive zarzal application",
+  "keywords": [
+    "nodejs",
+    "sequelize",
+    "express",
+    "docker",
+    "postgres"
+  ],
+  "homepage": "https://github.com/cristianco9/vive-zarzal-app.git)#readme",
+  "bugs": {
+    "url": "https://github.com/cristianco9/vive-zarzal-app.git)/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cristianco9/vive-zarzal-app.git).git"
+  },
+  "license": "MIT",
+  "author": "Cristian Camilo <cristianco9>",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "dev-dep": "npm install && npm install nodemon morgan eslint eslint-config-prettier eslint-plugin-prettier prettier --save-dev -D",
+    "env-var": "cp ./env/.envExample ./.env && echo \"environment variables injected\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrations:generate": "sequelize-cli migration:generate --name",
+    "migrations:run": "sequelize-cli db:migrate",
+    "migrations:revert": "sequelize-cli db:migrate:undo",
+    "migrations:delete": "sequelize-cli db:migrate:undo:all"
+  },
+  "devDependencies": {
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "morgan": "^1.11.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.4"
+  },
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "joi": "^18.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.21.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2"
+  }
+}
+</file>
+
+<file path="README.md">
+
+</file>
+
+<file path="src/app.js">
+// Import necessary modules and dependencies
+// Express framework for creating the app
+import express from 'express';
+// function to manage files and directories since the node.js app
+import path from 'path';
+// function to have access to the directory or file path
+import { fileURLToPath } from 'url';
+// Middleware to handle body request
+import bodyParser from 'body-parser';
+// Middleware to handle cookies
+import cookieParser from 'cookie-parser';
+// Middleware for logging HTTP requests
+import morgan from 'morgan';
+// Function to test database connection
+import { testConnection } from './libraries/DBConnection.js';
+// Import the IP address and port from the network configuration file
+import { theIPAddress, port } from './libraries/netConfig.js';
+// Main router for the API
+import routerApi from './router/index.js';
+// Custom error handling middlewares
+import {
+  logError,
+  errorHandler,
+  boomErrorHandler,
+  ORMErrorHandler
+} from './middlewares/errorHandler.js';
+// Import the setup of the database entities associations
+import { setupAssociations } from './db/models/index.js';
+
+// Create the app with Express
+const app = express();
+
+// Use middlewares
+// HTTP request logger middleware
+app.use(morgan('dev'));
+// Middleware to parse URL-encoded data
+app.use(express.urlencoded({ extended: false }));
+// Middleware to parse JSON data
+app.use(express.json());
+// Middleware for parsing JSON bodies
+app.use(bodyParser.json());
+// Middleware for handle cookies
+app.use(cookieParser());
+
+// Static files path
+// Store in the constant the project dirname
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Define the path to static files a throw the src/public/ path
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Views engine
+// Define the access path to the HTML view templates
+app.set('views', path.join(__dirname, 'views'));
+// Define the HTML templates engine, and the templates file extension
+app.set('view engine', 'ejs');
+
+// Immediately Invoked Function Expression (IIFE) to run the server
+// Everything runs inside the IIFE to guarantee the correct execution order:
+// associations → DB connection → auth strategies → routes → error handlers → server
+(async () => {
+
+  // Set up all Sequelize model associations before any database query is made
+  // This is a memory-only operation and does not require an active DB connection
+  setupAssociations();
+
+  // Test database connection
+  // Await the connection test to ensure the database is reachable before accepting requests
+  await testConnection();
+
+  // Import passport authentication setup
+  // Await the dynamic import to ensure all auth strategies are loaded before routes are registered
+  await import('./utils/auth/index.js');
+
+  // Initialize the main router
+  // Set up API routes after associations and auth strategies are fully loaded
+  routerApi(app);
+
+  // Use custom error handling middlewares
+  // Error handlers must always be registered after all routes
+  // Middleware for logging errors
+  app.use(logError);
+  // Middleware for handling ORM errors
+  app.use(ORMErrorHandler);
+  // Middleware for handling Boom errors
+  app.use(boomErrorHandler);
+  // General error handling middleware
+  app.use(errorHandler);
+
+  // Await the app to start listening on the specified IP address and port
+  // The server starts last to ensure everything is initialized before accepting connections
+  app.listen(port, theIPAddress, () => {
+    // Log the server start information to the console
+    console.log(`server on port http://${theIPAddress}:${port}`);
+  });
+
+})();
+
+// Export the app for use in other files
+export default app;
+</file>
+
+<file path="src/config/config.js">
+// config.js
+
+// Import dotenv package to load environment variables
+import dotenv from "dotenv";
+
+// Load .env variables
+dotenv.config();
+
+/**
+ * Global application configuration
+ */
+export const config = {
+
+  // ==========================================
+  // APPLICATION
+  // ==========================================
+
+  env: process.env.NODE_ENV || "development",
+
+  appPort: Number(process.env.APP_PORT) || 3377,
+
+  // ==========================================
+  // DATABASE
+  // ==========================================
+
+  dbDialect: process.env.DB_DIALECT || "postgres",
+
+  dbHost: process.env.DB_HOST || "127.0.0.1",
+
+  dbPort: Number(process.env.DB_PORT) || 5432,
+
+  dbName: process.env.DB_NAME,
+
+  dbUser: process.env.DB_USER,
+
+  dbPassword: process.env.DB_PASSWORD,
+
+  // ==========================================
+  // SEQUELIZE CONNECTION POOL
+  // ==========================================
+
+  dbPoolMax: Number(process.env.DB_POOL_MAX) || 20,
+
+  dbPoolMin: Number(process.env.DB_POOL_MIN) || 5,
+
+  dbPoolAcquire: Number(process.env.DB_POOL_ACQUIRE) || 30000,
+
+  dbPoolIdle: Number(process.env.DB_POOL_IDLE) || 10000,
+
+  // ==========================================
+  // SECURITY
+  // ==========================================
+
+  apiKey: process.env.API_KEY,
+
+  jwtSecretKey: process.env.AUTH_APP_JWT_SECRET_KEY,
+
+  jwtExpiresIn: process.env.AUTH_APP_JWT_EXPIRES_IN || "24h",
+
+};
+</file>
+
+<file path="src/db/config.js">
+// database.config.js
+
+// Import application configuration
+import { config } from "../config/config.js";
+
+// Sequelize database configuration
+const databaseConfig = {
+
+  // ==========================================
+  // DEVELOPMENT
+  // ==========================================
+  development: {
+    username: config.dbUser,
+    password: config.dbPassword,
+    database: config.dbName,
+    host: config.dbHost,
+    port: config.dbPort,
+    dialect: config.dbDialect,
+
+    pool: {
+      max: config.dbPoolMax,
+      min: config.dbPoolMin,
+      acquire: config.dbPoolAcquire,
+      idle: config.dbPoolIdle,
+    },
+
+    logging: console.log,
+  },
+
+  // ==========================================
+  // PRODUCTION
+  // ==========================================
+  production: {
+    username: config.dbUser,
+    password: config.dbPassword,
+    database: config.dbName,
+    host: config.dbHost,
+    port: config.dbPort,
+    dialect: config.dbDialect,
+
+    pool: {
+      max: config.dbPoolMax,
+      min: config.dbPoolMin,
+      acquire: config.dbPoolAcquire,
+      idle: config.dbPoolIdle,
+    },
+
+    logging: false,
+  },
+
+};
+
+export default databaseConfig;
+</file>
+
+<file path="src/db/migrations/20260615092518-country.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'pais' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('pais', {
+
+      // Primary key
+      id_pais: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Country name (unique)
+      nombre_pais: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Country description
+      descripcion_pais: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'pais' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('pais');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615092634-departament.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'departamento' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('departamento', {
+
+      // Primary key
+      id_departamento: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to pais
+      id_pais: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'pais',
+          key: 'id_pais',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Department name
+      nombre_departamento: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+
+      // Department description
+      descripcion_departamento: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'departamento' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('departamento');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615092727-city.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'ciudad' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('ciudad', {
+
+      // Primary key
+      id_ciudad: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to departamento
+      id_departamento: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'departamento',
+          key: 'id_departamento',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // City name
+      nombre_ciudad: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+
+      // City description
+      descripcion_ciudad: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'ciudad' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('ciudad');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615092824-location.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'ubicacion' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('ubicacion', {
+
+      // Primary key
+      id_ubicacion: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to ciudad
+      id_ciudad: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'ciudad',
+          key: 'id_ciudad',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Location name
+      nombre_ubicacion: {
+        type: Sequelize.STRING(150),
+        allowNull: false,
+      },
+
+      // Location description
+      descripcion_ubicacion: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Location code
+      codigo_ubicacion: {
+        type: Sequelize.STRING(50),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_ubicacion: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_ubicacion: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'ubicacion' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('ubicacion');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615092904-role.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'rol' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('rol', {
+
+      // Primary key
+      id_rol: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Role name (unique)
+      tipo_rol: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Role description
+      descripcion_rol: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_rol: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_actualizacion_rol: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'rol' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('rol');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615092935-gender.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'genero' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('genero', {
+
+      // Primary key
+      id_genero: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Gender type (unique)
+      tipo_genero: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_genero: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_actualizacion_genero: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'genero' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('genero');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093038-documentType.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'tipo_documento' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('tipo_documento', {
+
+      // Primary key
+      id_tipo_documento: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Document type name (unique)
+      nombre_tipo_documento: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_tipo_documento: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_tipo_documento: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'tipo_documento' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('tipo_documento');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093112-user.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'usuario' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('usuario', {
+
+      // Primary key
+      id_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to rol (required)
+      id_rol: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'rol',
+          key: 'id_rol',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to genero (optional)
+      id_genero: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'genero',
+          key: 'id_genero',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to tipo_documento (optional)
+      id_tipo_documento: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'tipo_documento',
+          key: 'id_tipo_documento',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      },
+
+      // User first name
+      nombre_usuario: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+
+      // User last name
+      apellido_usuario: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+
+      // Birth date
+      fecha_nacimiento_usuario: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+      },
+
+      // Document number (unique)
+      numero_documento_usuario: {
+        type: Sequelize.STRING(30),
+        allowNull: true,
+        unique: true,
+      },
+
+      // Email (unique)
+      correo_usuario: {
+        type: Sequelize.STRING(150),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Username (unique)
+      username_usuario: {
+        type: Sequelize.STRING(80),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Password hash
+      contrasena_usuario: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+
+      // Creation timestamp
+      fecha_creacion_usuario: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_actualizacion_usuario: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'usuario' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('usuario');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093142-userImage.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'imagen_usuario' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('imagen_usuario', {
+
+      // Primary key
+      id_imagen_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to usuario (CASCADE on delete)
+      id_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Image URL
+      url_imagen_usuario: {
+        type: Sequelize.STRING(500),
+        allowNull: false,
+      },
+
+      // Image name
+      nombre_imagen_usuario: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Alternative text
+      texto_alternativo_imagen_usuario: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_imagen_usuario: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_actualizacion_imagen_usuario: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'imagen_usuario' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('imagen_usuario');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093237-phone.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'telefono' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('telefono', {
+
+      // Primary key
+      id_telefono: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Phone number
+      numero_telefono: {
+        type: Sequelize.STRING(20),
+        allowNull: false,
+      },
+
+      // Creation timestamp
+      fecha_creacion_telefono: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_telefono: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'telefono' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('telefono');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093324-userPhone.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'usuario_telefono' junction table
+  // Many-to-many between usuario and telefono
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('usuario_telefono', {
+
+      // Primary key
+      id_usuario_telefono: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to usuario (CASCADE on delete)
+      id_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to telefono (CASCADE on delete)
+      id_telefono: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'telefono',
+          key: 'id_telefono',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+    });
+
+    // Composite unique constraint: one phone cannot be assigned twice to the same user
+    await queryInterface.addIndex('usuario_telefono', ['id_usuario', 'id_telefono'], {
+      unique: true,
+      name: 'uq_usuario_telefono',
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'usuario_telefono' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('usuario_telefono');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093417-business.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'negocio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('negocio', {
+
+      // Primary key
+      id_negocio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to usuario (owner) — RESTRICT on delete
+      id_usuario_propietario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to ubicacion (optional) — SET NULL on delete
+      id_ubicacion: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'ubicacion',
+          key: 'id_ubicacion',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      },
+
+      // Business name
+      nombre_negocio: {
+        type: Sequelize.STRING(150),
+        allowNull: false,
+      },
+
+      // Business description
+      descripcion_negocio: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Facebook page URL
+      facebook_negocio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Instagram profile URL
+      instagram_negocio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // TikTok profile URL
+      tiktok_negocio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Website URL
+      pagina_web_negocio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_negocio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_negocio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'negocio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('negocio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093534-businessPhone.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'negocio_telefono' junction table
+  // Many-to-many between negocio and telefono
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('negocio_telefono', {
+
+      // Primary key
+      id_negocio_telefono: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to negocio (CASCADE on delete)
+      id_negocio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'negocio',
+          key: 'id_negocio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to telefono (CASCADE on delete)
+      id_telefono: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'telefono',
+          key: 'id_telefono',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+    });
+
+    // Composite unique constraint: one phone cannot be assigned twice to the same business
+    await queryInterface.addIndex('negocio_telefono', ['id_negocio', 'id_telefono'], {
+      unique: true,
+      name: 'uq_negocio_telefono',
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'negocio_telefono' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('negocio_telefono');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093602-category.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'categoria' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('categoria', {
+
+      // Primary key
+      id_categoria: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Category name (unique)
+      nombre_categoria: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Category description
+      descripcion_categoria: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_categoria: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_categoria: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'categoria' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('categoria');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093645-serviceStatus.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'estado_servicio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('estado_servicio', {
+
+      // Primary key
+      id_estado_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Status name (unique)
+      nombre_estado_servicio: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Status description
+      descripcion_estado_servicio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_estado_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_estado_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'estado_servicio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('estado_servicio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093739-ageRestriction.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'restriccion_edad' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('restriccion_edad', {
+
+      // Primary key
+      id_restriccion_edad: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Age restriction name (unique)
+      nombre_restriccion_edad: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Age restriction description
+      descripcion_restriccion_edad: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_restriccion_edad: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_restriccion_edad: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'restriccion_edad' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('restriccion_edad');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093849-service.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'servicio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('servicio', {
+
+      // Primary key
+      id_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Service name
+      nombre_servicio: {
+        type: Sequelize.STRING(200),
+        allowNull: false,
+      },
+
+      // Service description
+      descripcion_servicio: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Service price (min 0)
+      precio_servicio: {
+        type: Sequelize.DECIMAL(12, 2),
+        allowNull: false,
+        defaultValue: 0,
+      },
+
+      // Foreign key to categoria (required)
+      id_categoria_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'categoria',
+          key: 'id_categoria',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to estado_servicio (required)
+      id_estado_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'estado_servicio',
+          key: 'id_estado_servicio',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to restriccion_edad (optional)
+      id_restriccion_edad_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'restriccion_edad',
+          key: 'id_restriccion_edad',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to negocio (CASCADE on delete)
+      id_negocio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'negocio',
+          key: 'id_negocio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Creation timestamp
+      fecha_creacion_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'servicio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('servicio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615093941-serviceImage.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'imagen_servicio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('imagen_servicio', {
+
+      // Primary key
+      id_imagen_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Image URL
+      url_imagen_servicio: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+
+      // Image description
+      descripcion_imagen_servicio: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Foreign key to servicio (CASCADE on delete)
+      id_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'servicio',
+          key: 'id_servicio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Creation timestamp
+      fecha_creacion_imagen_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_imagen_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'imagen_servicio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('imagen_servicio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094035-reservation.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'reserva' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('reserva', {
+
+      // Primary key
+      id_reserva: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to servicio (CASCADE on delete)
+      id_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'servicio',
+          key: 'id_servicio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Creation timestamp
+      fecha_creacion_reserva: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_reserva: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'reserva' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('reserva');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094124-reservationStatus.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'estado_reserva' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('estado_reserva', {
+
+      // Primary key
+      id_estado_reserva: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Reservation status name (unique)
+      nombre_estado_reserva: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Reservation status description
+      descripcion_estado_reserva: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_estado_reserva: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_estado_reserva: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'estado_reserva' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('estado_reserva');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094153-reservationDetails.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'reserva_detalle' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('reserva_detalle', {
+
+      // Primary key
+      id_reserva_detalle: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to reserva (CASCADE on delete)
+      id_reserva: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'reserva',
+          key: 'id_reserva',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to usuario
+      id_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Quantity (min 1)
+      cantidad_reserva: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+      },
+
+      // Foreign key to estado_reserva
+      id_estado_reserva: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'estado_reserva',
+          key: 'id_estado_reserva',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'reserva_detalle' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('reserva_detalle');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094242-messageStatus.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'estado_mensaje' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('estado_mensaje', {
+
+      // Primary key
+      id_estado_mensaje: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Message status name (unique)
+      nombre_estado_mensaje: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        unique: true,
+      },
+
+      // Message status description
+      descripcion_estado_mensaje: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_estado_mensaje: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_estado_mensaje: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'estado_mensaje' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('estado_mensaje');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094335-message.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'mensaje' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('mensaje', {
+
+      // Primary key
+      id_mensaje: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Message content
+      contenido_mensaje: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+
+      // Send timestamp
+      fecha_envio_mensaje: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Foreign key to estado_mensaje
+      id_estado_mensaje: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'estado_mensaje',
+          key: 'id_estado_mensaje',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to usuario (sender)
+      id_usuario_emisor: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to usuario (receiver)
+      id_usuario_receptor: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'mensaje' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('mensaje');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094411-businessReview.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'resena_negocio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('resena_negocio', {
+
+      // Primary key
+      id_resena_negocio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to negocio (CASCADE on delete)
+      id_negocio_resena: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'negocio',
+          key: 'id_negocio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to usuario
+      id_usuario_resena: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Review content
+      contenido_resena_negocio: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Rating (1 to 5)
+      puntuacion_resena_negocio: {
+        type: Sequelize.SMALLINT,
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_resena_negocio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_resena_negocio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'resena_negocio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('resena_negocio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094447-serviceReview.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'resena_servicio' table
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('resena_servicio', {
+
+      // Primary key
+      id_resena_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to servicio (CASCADE on delete)
+      id_servicio_resena: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'servicio',
+          key: 'id_servicio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to usuario
+      id_usuario_resena: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+      },
+
+      // Review content
+      contenido_resena_servicio: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+
+      // Rating (1 to 5)
+      puntuacion_resena_servicio: {
+        type: Sequelize.SMALLINT,
+        allowNull: true,
+      },
+
+      // Creation timestamp
+      fecha_creacion_resena_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+      // Update timestamp
+      fecha_modificacion_resena_servicio: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'resena_servicio' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('resena_servicio');
+  },
+
+};
+</file>
+
+<file path="src/db/migrations/20260615094522-serviceFavoriteUser.cjs">
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+
+  // ============================================================
+  // UP — Create the 'servicio_favoritos_usuarios' table
+  // Many-to-many between usuario and servicio (favorites)
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('servicio_favoritos_usuarios', {
+
+      // Primary key
+      id_servicio_favorito: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        unique: true,
+        autoIncrement: true,
+      },
+
+      // Foreign key to usuario (CASCADE on delete)
+      id_usuario_favorito: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'usuario',
+          key: 'id_usuario',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Foreign key to servicio (CASCADE on delete)
+      id_servicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'servicio',
+          key: 'id_servicio',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+
+      // Creation timestamp
+      fecha_creacion_servicio_favorito: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+
+    });
+
+    // Composite unique constraint: a user cannot favorite the same service twice
+    await queryInterface.addIndex('servicio_favoritos_usuarios', ['id_usuario_favorito', 'id_servicio'], {
+      unique: true,
+      name: 'uq_servicio_favorito_usuario',
+    });
+  },
+
+  // ============================================================
+  // DOWN — Drop the 'servicio_favoritos_usuarios' table
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('servicio_favoritos_usuarios');
+  },
+
+};
+</file>
+
+<file path="src/db/models/ageRestrictionModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the age restriction table
+export const AGE_RESTRICTION_TABLE = 'restriccion_edad';
+
+// Define the AgeRestriction model
+export const AgeRestriction = sequelize.define(AGE_RESTRICTION_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_restriccion_edad',
+  },
+
+  // Define the age restriction name
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_restriccion_edad',
+  },
+
+  // Define the age restriction description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_restriccion_edad',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_restriccion_edad',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_restriccion_edad',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: AGE_RESTRICTION_TABLE,
+
+  // Specify the model name
+  modelName: 'ageRestriction',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_restriccion_edad',
+  updatedAt: 'fecha_modificacion_restriccion_edad',
+});
+</file>
+
+<file path="src/db/models/businessModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the businesses table
+export const BUSINESS_TABLE = 'negocio';
+
+// Define the Business model
+export const Business = sequelize.define(BUSINESS_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_negocio',
+  },
+
+  // Foreign key to User (Owner)
+  ownerUserId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_propietario',
+
+    references: {
+      model: 'usuario',
+      key: 'id_usuario',
+    },
+
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  },
+
+  // Foreign key to Location
+  locationId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'id_ubicacion',
+
+    references: {
+      model: 'ubicacion',
+      key: 'id_ubicacion',
+    },
+
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  },
+
+  // Business name
+  name: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+    field: 'nombre_negocio',
+  },
+
+  // Business description
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'descripcion_negocio',
+  },
+
+  // Facebook page
+  facebook: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'facebook_negocio',
+  },
+
+  // Instagram profile
+  instagram: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'instagram_negocio',
+  },
+
+  // TikTok profile
+  tiktok: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'tiktok_negocio',
+  },
+
+  // Website
+  website: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'pagina_web_negocio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_creacion_negocio',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_modificacion_negocio',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: BUSINESS_TABLE,
+
+  // Specify the model name
+  modelName: 'business',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_negocio',
+  updatedAt: 'fecha_modificacion_negocio',
+});
+</file>
+
+<file path="src/db/models/businessPhoneModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the table
+export const BUSINESS_PHONE_TABLE = 'negocio_telefono';
+
+// Define the BussinesPhone model
+export const BusinessPhone = sequelize.define(BUSINESS_PHONE_TABLE, {
+
+  // Primary key: id_negocio_telefono
+  idBussinesPhone: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_negocio_telefono',
+  },
+
+  // Foreign key: id_negocio
+  idBussines: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_negocio',
+  },
+
+  // Foreign key: id_telefono
+  idPhone: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_telefono',
+  },
+
+}, {
+  // Additional model options
+  sequelize,
+  tableName: BUSINESS_PHONE_TABLE,
+  modelName: 'BusinessPhone',
+  timestamps: false, // No createdAt / updatedAt in this table
+  indexes: [
+    {
+      unique: true,
+      fields: ['id_negocio', 'id_telefono'], // uq_negocio_telefono
+    }
+  ]
+});
+</file>
+
+<file path="src/db/models/businessReviewModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const BUSINESS_REVIEW_TABLE = 'resena_negocio';
+
+// Define the BusinessReview model
+export const BusinessReview = sequelize.define(BUSINESS_REVIEW_TABLE, {
+
+  // Primary key: id_resena_negocio
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_resena_negocio',
+  },
+
+  // Foreign key: business
+  businessId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_negocio_resena',
+  },
+
+  // Foreign key: user
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_resena',
+  },
+
+  // Review content
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'contenido_resena_negocio',
+  },
+
+  // Rating (1 to 5)
+  rating: {
+    type: DataTypes.SMALLINT,
+    allowNull: true,
+    field: 'puntuacion_resena_negocio',
+    validate: {
+      min: 1,
+      max: 5,
+    },
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_resena_negocio',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_resena_negocio',
+  },
+
+}, {
+  sequelize,
+  tableName: BUSINESS_REVIEW_TABLE,
+  modelName: 'businessReview',
+  timestamps: true,
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_resena_negocio',
+  updatedAt: 'fecha_modificacion_resena_negocio',
+});
+</file>
+
+<file path="src/db/models/categoryModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the categories table
+export const CATEGORY_TABLE = 'categoria';
+
+// Define the Category model
+export const Category = sequelize.define(CATEGORY_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_categoria',
+  },
+
+  // Define the category name
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_categoria',
+  },
+
+  // Define the category description
+  description: {
+    // Long text type
+    type: DataTypes.TEXT,
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_categoria',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_categoria',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_categoria',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: CATEGORY_TABLE,
+
+  // Specify the model name
+  modelName: 'category',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_categoria',
+  updatedAt: 'fecha_modificacion_categoria',
+});
+</file>
+
+<file path="src/db/models/cityModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the cities table
+export const CITY_TABLE = 'ciudad';
+
+// Define the City model
+export const City = sequelize.define(CITY_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // This field is the primary key
+    primaryKey: true,
+    // This field must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_ciudad',
+  },
+
+  // Define the foreign key to department
+  departmentId: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'id_departamento',
+    // Foreign key reference
+    references: {
+      model: 'departamento',
+      key: 'id_departamento',
+    },
+  },
+
+  // Define the city name
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'nombre_ciudad',
+  },
+
+  // Define the city description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_ciudad',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: CITY_TABLE,
+
+  // Specify the model name
+  modelName: 'city',
+
+  // The table does not have createdAt and updatedAt fields
+  timestamps: false
+});
+</file>
+
+<file path="src/db/models/countryModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the countries table
+export const COUNTRY_TABLE = 'pais';
+
+// Define the Country model
+export const Country = sequelize.define(COUNTRY_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // This field is the primary key
+    primaryKey: true,
+    // This field must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_pais',
+  },
+
+  // Define the 'name' column
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Country names must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_pais',
+  },
+
+  // Define the 'description' column
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_pais',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: COUNTRY_TABLE,
+
+  // Specify the model name
+  modelName: 'country',
+
+  // Disable automatic timestamps because
+  // the Pais table does not contain
+  // createdAt or updatedAt columns
+  timestamps: false
+});
+</file>
+
+<file path="src/db/models/departamentModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the departments table
+export const DEPARTMENT_TABLE = 'departamento';
+
+// Define the Department model
+export const Department = sequelize.define(DEPARTMENT_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // This field is the primary key
+    primaryKey: true,
+    // This field must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_departamento',
+  },
+
+  // Define the foreign key to country
+  countryId: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'id_pais',
+    // Foreign key reference
+    references: {
+      model: 'pais',
+      key: 'id_pais',
+    },
+  },
+
+  // Define the department name
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'nombre_departamento',
+  },
+
+  // Define the department description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_departamento',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: DEPARTMENT_TABLE,
+
+  // Specify the model name
+  modelName: 'department',
+
+  // The table does not have createdAt and updatedAt fields
+  timestamps: false
+});
+</file>
+
+<file path="src/db/models/documentTypeModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the document types table
+export const DOCUMENT_TYPE_TABLE = 'tipo_documento';
+
+// Define the DocumentType model
+export const DocumentType = sequelize.define(DOCUMENT_TYPE_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_tipo_documento',
+  },
+
+  // Define the document type name
+  name: {
+    // Text type with a maximum length of 100 characters
+    type: DataTypes.STRING(100),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_tipo_documento',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_tipo_documento',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_tipo_documento',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: DOCUMENT_TYPE_TABLE,
+
+  // Specify the model name
+  modelName: 'documentType',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_tipo_documento',
+  updatedAt: 'fecha_modificacion_tipo_documento',
+});
+</file>
+
+<file path="src/db/models/favoriteUserServiceModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const SERVICE_FAVORITE_TABLE = 'servicio_favoritos_usuarios';
+
+// Define the ServiceFavorite model
+export const ServiceFavorite = sequelize.define(SERVICE_FAVORITE_TABLE, {
+
+  // Primary key: id_servicio_favorito
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_servicio_favorito',
+  },
+
+  // Foreign key: user
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_favorito',
+  },
+
+  // Foreign key: service
+  serviceId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_servicio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_creacion_servicio_favorito',
+  },
+
+}, {
+  sequelize,
+  tableName: SERVICE_FAVORITE_TABLE,
+  modelName: 'serviceFavorite',
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['id_usuario_favorito', 'id_servicio'],
+    }
+  ]
+});
+</file>
+
+<file path="src/db/models/genderModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the genders table
+export const GENDER_TABLE = 'genero';
+
+// Define the Gender model
+export const Gender = sequelize.define(GENDER_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_genero',
+  },
+
+  // Define the gender name
+  name: {
+    // Text type with a maximum length of 50 characters
+    type: DataTypes.STRING(50),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'tipo_genero',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_genero',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_actualizacion_genero',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: GENDER_TABLE,
+
+  // Specify the model name
+  modelName: 'gender',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_genero',
+  updatedAt: 'fecha_actualizacion_genero',
+});
+</file>
+
+<file path="src/db/models/index.js">
+// ============================================================
+// VIVE ZARZAL - SEQUELIZE ASSOCIATIONS
+// ============================================================
+// This file defines all relationships between models.
+// Import and call setupAssociations() AFTER all models are
+// loaded, before the database connection is synchronized.
+// ============================================================
+
+import { Country }           from './countryModel.js';
+import { Department }        from './departamentModel.js';
+import { City }              from './cityModel.js';
+import { Location }          from './locationModel.js';
+
+import { Role }              from './roleModel.js';
+import { Gender }            from './genderModel.js';
+import { DocumentType }      from './documentTypeModel.js';
+
+import { User }              from './userModel.js';
+import { UserImage }         from './userImageModel.js';
+import { Phone }             from './phoneModel.js';
+import { UserPhone }         from './userPhoneModel.js';
+
+import { Business }          from './businessModel.js';
+import { BusinessPhone }     from './businessPhoneModel.js';
+
+import { Category }          from './categoryModel.js';
+import { ServiceStatus }      from './serviceStatusModel.js';
+import { AgeRestriction }    from './ageRestrictionModel.js';
+import { Service }           from './serviceModel.js';
+import { ServiceImage }      from './serviceImageModel.js';
+
+import { Reservation }       from './reservationModel.js';
+import { ReservationDetail } from './reservationDetailsModel.js';
+import { ReservationStatus } from './reserveStatusModel.js';
+
+import { MessageStatus }     from './messageStatusModel.js';
+import { Message }           from './messageModel.js';
+
+import { BusinessReview }    from './businessReviewModel.js';
+import { ServiceReview }     from './serviceReviewModel.js';
+
+import { ServiceFavorite }   from './favoriteUserServiceModel.js';
+
+export function setupAssociations() {
+
+  // ============================================================
+  // GEOGRAPHIC CATALOG
+  // Country → Department → City → Location
+  // ============================================================
+
+  // A country has many departments
+  Country.hasMany(Department, {
+    foreignKey: 'countryId',
+    sourceKey: 'id',
+    as: 'departments',
+  });
+
+  // A department belongs to one country
+  Department.belongsTo(Country, {
+    foreignKey: 'countryId',
+    targetKey: 'id',
+    as: 'country',
+  });
+
+  // A department has many cities
+  Department.hasMany(City, {
+    foreignKey: 'departmentId',
+    sourceKey: 'id',
+    as: 'cities',
+  });
+
+  // A city belongs to one department
+  City.belongsTo(Department, {
+    foreignKey: 'departmentId',
+    targetKey: 'id',
+    as: 'department',
+  });
+
+  // A city has many locations
+  City.hasMany(Location, {
+    foreignKey: 'cityId',
+    sourceKey: 'id',
+    as: 'locations',
+  });
+
+  // A location belongs to one city
+  Location.belongsTo(City, {
+    foreignKey: 'cityId',
+    targetKey: 'id',
+    as: 'city',
+  });
+
+  // ============================================================
+  // USER
+  // ============================================================
+
+  // A role can have many users
+  Role.hasMany(User, {
+    foreignKey: 'roleId',
+    sourceKey: 'id',
+    as: 'users',
+  });
+
+  // A user belongs to one role
+  User.belongsTo(Role, {
+    foreignKey: 'roleId',
+    targetKey: 'id',
+    as: 'role',
+  });
+
+  // A gender can have many users
+  Gender.hasMany(User, {
+    foreignKey: 'genderId',
+    sourceKey: 'id',
+    as: 'users',
+  });
+
+  // A user belongs to one gender (optional)
+  User.belongsTo(Gender, {
+    foreignKey: 'genderId',
+    targetKey: 'id',
+    as: 'gender',
+  });
+
+  // A document type can have many users
+  DocumentType.hasMany(User, {
+    foreignKey: 'documentTypeId',
+    sourceKey: 'id',
+    as: 'users',
+  });
+
+  // A user belongs to one document type (optional)
+  User.belongsTo(DocumentType, {
+    foreignKey: 'documentTypeId',
+    targetKey: 'id',
+    as: 'documentType',
+  });
+
+  // ============================================================
+  // USER IMAGE
+  // One-many: User → UserImage
+  // ============================================================
+
+  // A user has many profile image
+  User.hasMany(UserImage, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'profileImage',
+    onDelete: 'CASCADE',
+  });
+
+  // A user image belongs to one user
+  UserImage.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  // ============================================================
+  // USER PHONES (many-to-many via UserPhone)
+  // ============================================================
+
+  // A user has many phones (through the junction table)
+  User.belongsToMany(Phone, {
+    through: UserPhone,
+    foreignKey: 'userId',
+    otherKey: 'phoneId',
+    as: 'phones',
+  });
+
+  // A phone can belong to many users (through the junction table)
+  Phone.belongsToMany(User, {
+    through: UserPhone,
+    foreignKey: 'phoneId',
+    otherKey: 'userId',
+    as: 'users',
+  });
+
+  // Direct associations to the junction table (for eager loading details)
+  User.hasMany(UserPhone, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'userPhones',
+  });
+  UserPhone.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  Phone.hasMany(UserPhone, {
+    foreignKey: 'phoneId',
+    sourceKey: 'id',
+    as: 'userPhones',
+  });
+  UserPhone.belongsTo(Phone, {
+    foreignKey: 'phoneId',
+    targetKey: 'id',
+    as: 'phone',
+  });
+
+  // ============================================================
+  // BUSINESS
+  // ============================================================
+
+  // A user (owner) can have one business
+  User.hasOne(Business, {
+    foreignKey: 'ownerUserId',
+    sourceKey: 'id',
+    as: 'businesses',
+  });
+
+  // A business belongs to one owner user
+  Business.belongsTo(User, {
+    foreignKey: 'ownerUserId',
+    targetKey: 'id',
+    as: 'owner',
+  });
+
+  // A location can have one businesses
+  Location.hasOne(Business, {
+    foreignKey: 'locationId',
+    sourceKey: 'id',
+    as: 'businesses',
+  });
+
+  // A business belongs to one location (optional)
+  Business.belongsTo(Location, {
+    foreignKey: 'locationId',
+    targetKey: 'id',
+    as: 'location',
+  });
+
+  // ============================================================
+  // BUSINESS PHONES (many-to-many via BusinessPhone)
+  // ============================================================
+
+  // A business has many phones (through the junction table)
+  Business.belongsToMany(Phone, {
+    through: BusinessPhone,
+    foreignKey: 'idBusiness',
+    otherKey: 'idPhone',
+    as: 'phones',
+  });
+
+  // A phone can belong to many businesses (through the junction table)
+  Phone.belongsToMany(Business, {
+    through: BusinessPhone,
+    foreignKey: 'idPhone',
+    otherKey: 'idBusiness',
+    as: 'businesses',
+  });
+
+  // Direct associations to the junction table
+  Business.hasMany(BusinessPhone, {
+    foreignKey: 'idBusiness',
+    sourceKey: 'id',
+    as: 'businessPhones',
+  });
+  BusinessPhone.belongsTo(Business, {
+    foreignKey: 'idBusiness',
+    targetKey: 'id',
+    as: 'business',
+  });
+
+  Phone.hasMany(BusinessPhone, {
+    foreignKey: 'idPhone',
+    sourceKey: 'id',
+    as: 'businessPhones',
+  });
+  BusinessPhone.belongsTo(Phone, {
+    foreignKey: 'idPhone',
+    targetKey: 'id',
+    as: 'phone',
+  });
+
+  // ============================================================
+  // SERVICE
+  // ============================================================
+
+  // A category has many services
+  Category.hasMany(Service, {
+    foreignKey: 'categoryId',
+    sourceKey: 'id',
+    as: 'services',
+  });
+
+  // A service belongs to one category
+  Service.belongsTo(Category, {
+    foreignKey: 'categoryId',
+    targetKey: 'id',
+    as: 'category',
+  });
+
+  // A service state has many services
+  ServiceStatus.hasMany(Service, {
+    foreignKey: 'statusId',
+    sourceKey: 'id',
+    as: 'services',
+  });
+
+  // A service belongs to one service state
+  Service.belongsTo(ServiceStatus, {
+    foreignKey: 'statusId',
+    targetKey: 'id',
+    as: 'status',
+  });
+
+  // An age restriction can apply to many services
+  AgeRestriction.hasMany(Service, {
+    foreignKey: 'ageRestrictionId',
+    sourceKey: 'id',
+    as: 'services',
+  });
+
+  // A service belongs to one age restriction (optional)
+  Service.belongsTo(AgeRestriction, {
+    foreignKey: 'ageRestrictionId',
+    targetKey: 'id',
+    as: 'ageRestriction',
+  });
+
+  // A business has many services
+  Business.hasMany(Service, {
+    foreignKey: 'businessId',
+    sourceKey: 'id',
+    as: 'services',
+    onDelete: 'CASCADE',
+  });
+
+  // A service belongs to one business
+  Service.belongsTo(Business, {
+    foreignKey: 'businessId',
+    targetKey: 'id',
+    as: 'business',
+  });
+
+  // ============================================================
+  // SERVICE IMAGES
+  // ============================================================
+
+  // A service has many images
+  Service.hasMany(ServiceImage, {
+    foreignKey: 'serviceId',
+    sourceKey: 'id',
+    as: 'images',
+    onDelete: 'CASCADE',
+  });
+
+  // A service image belongs to one service
+  ServiceImage.belongsTo(Service, {
+    foreignKey: 'serviceId',
+    targetKey: 'id',
+    as: 'service',
+  });
+
+  // ============================================================
+  // RESERVATION
+  // ============================================================
+
+  // A service has many reservations
+  Service.hasMany(Reservation, {
+    foreignKey: 'serviceId',
+    sourceKey: 'id',
+    as: 'reservations',
+    onDelete: 'CASCADE',
+  });
+
+  // A reservation belongs to one service
+  Reservation.belongsTo(Service, {
+    foreignKey: 'serviceId',
+    targetKey: 'id',
+    as: 'service',
+  });
+
+  // A reservation has many detail entries
+  Reservation.hasMany(ReservationDetail, {
+    foreignKey: 'reservationId',
+    sourceKey: 'id',
+    as: 'details',
+    onDelete: 'CASCADE',
+  });
+
+  // A reservation detail belongs to one reservation
+  ReservationDetail.belongsTo(Reservation, {
+    foreignKey: 'reservationId',
+    targetKey: 'id',
+    as: 'reservation',
+  });
+
+  // A user can have many reservation details
+  User.hasMany(ReservationDetail, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'reservationDetails',
+  });
+
+  // A reservation detail belongs to one user
+  ReservationDetail.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  // A reservation status can have many reservation details
+  ReservationStatus.hasMany(ReservationDetail, {
+    foreignKey: 'reservationStatusId',
+    sourceKey: 'id',
+    as: 'reservationDetails',
+  });
+
+  // A reservation detail belongs to one reservation status
+  ReservationDetail.belongsTo(ReservationStatus, {
+    foreignKey: 'reservationStatusId',
+    targetKey: 'id',
+    as: 'status',
+  });
+
+  // ============================================================
+  // MESSAGES
+  // ============================================================
+
+  // A message status can have many messages
+  MessageStatus.hasMany(Message, {
+    foreignKey: 'statusId',
+    sourceKey: 'id',
+    as: 'messages',
+  });
+
+  // A message belongs to one message status
+  Message.belongsTo(MessageStatus, {
+    foreignKey: 'statusId',
+    targetKey: 'id',
+    as: 'status',
+  });
+
+  // A user can send many messages
+  User.hasMany(Message, {
+    foreignKey: 'senderUserId',
+    sourceKey: 'id',
+    as: 'sentMessages',
+  });
+
+  // A message belongs to one sender user
+  Message.belongsTo(User, {
+    foreignKey: 'senderUserId',
+    targetKey: 'id',
+    as: 'sender',
+  });
+
+  // A user can receive many messages
+  User.hasMany(Message, {
+    foreignKey: 'receiverUserId',
+    sourceKey: 'id',
+    as: 'receivedMessages',
+  });
+
+  // A message belongs to one receiver user
+  Message.belongsTo(User, {
+    foreignKey: 'receiverUserId',
+    targetKey: 'id',
+    as: 'receiver',
+  });
+
+  // ============================================================
+  // BUSINESS REVIEWS
+  // ============================================================
+
+  // A business has many reviews
+  Business.hasMany(BusinessReview, {
+    foreignKey: 'businessId',
+    sourceKey: 'id',
+    as: 'reviews',
+    onDelete: 'CASCADE',
+  });
+
+  // A business review belongs to one business
+  BusinessReview.belongsTo(Business, {
+    foreignKey: 'businessId',
+    targetKey: 'id',
+    as: 'business',
+  });
+
+  // A user can write many business reviews
+  User.hasMany(BusinessReview, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'businessReviews',
+  });
+
+  // A business review belongs to one user
+  BusinessReview.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  // ============================================================
+  // SERVICE REVIEWS
+  // ============================================================
+
+  // A service has many reviews
+  Service.hasMany(ServiceReview, {
+    foreignKey: 'serviceId',
+    sourceKey: 'id',
+    as: 'reviews',
+    onDelete: 'CASCADE',
+  });
+
+  // A service review belongs to one service
+  ServiceReview.belongsTo(Service, {
+    foreignKey: 'serviceId',
+    targetKey: 'id',
+    as: 'service',
+  });
+
+  // A user can write many service reviews
+  User.hasMany(ServiceReview, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'serviceReviews',
+  });
+
+  // A service review belongs to one user
+  ServiceReview.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  // ============================================================
+  // FAVORITE SERVICES (many-to-many via ServiceFavorite)
+  // ============================================================
+
+  // A user can have many favorite services (through the junction table)
+  User.belongsToMany(Service, {
+    through: ServiceFavorite,
+    foreignKey: 'userId',
+    otherKey: 'serviceId',
+    as: 'favoriteServices',
+  });
+
+  // A service can be favorited by many users (through the junction table)
+  Service.belongsToMany(User, {
+    through: ServiceFavorite,
+    foreignKey: 'serviceId',
+    otherKey: 'userId',
+    as: 'favoritedBy',
+  });
+
+  // Direct associations to the junction table
+  User.hasMany(ServiceFavorite, {
+    foreignKey: 'userId',
+    sourceKey: 'id',
+    as: 'serviceFavorites',
+  });
+  ServiceFavorite.belongsTo(User, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'user',
+  });
+
+  Service.hasMany(ServiceFavorite, {
+    foreignKey: 'serviceId',
+    sourceKey: 'id',
+    as: 'favorites',
+  });
+  ServiceFavorite.belongsTo(Service, {
+    foreignKey: 'serviceId',
+    targetKey: 'id',
+    as: 'service',
+  });
+
+}
+</file>
+
+<file path="src/db/models/locationModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the locations table
+export const LOCATION_TABLE = 'ubicacion';
+
+// Define the Location model
+export const Location = sequelize.define(LOCATION_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // This field is the primary key
+    primaryKey: true,
+    // This field must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_ubicacion',
+  },
+
+  // Define the foreign key to city
+  cityId: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'id_ciudad',
+    // Foreign key reference
+    references: {
+      model: 'ciudad',
+      key: 'id_ciudad',
+    },
+  },
+
+  // Define the location name
+  name: {
+    // Text type with a maximum length of 150 characters
+    type: DataTypes.STRING(150),
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'nombre_ubicacion',
+  },
+
+  // Define the location description
+  description: {
+    // Long text type
+    type: DataTypes.TEXT,
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_ubicacion',
+  },
+
+  // Define the location code
+  code: {
+    // Text type with a maximum length of 50 characters
+    type: DataTypes.STRING(50),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'codigo_ubicacion',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_ubicacion',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_ubicacion',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: LOCATION_TABLE,
+
+  // Specify the model name
+  modelName: 'location',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_ubicacion',
+  updatedAt: 'fecha_modificacion_ubicacion',
+});
+</file>
+
+<file path="src/db/models/messageModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const MESSAGE_TABLE = 'mensaje';
+
+// Define the Message model
+export const Message = sequelize.define(MESSAGE_TABLE, {
+
+  // Primary key: id_mensaje
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_mensaje',
+  },
+
+  // Message content
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'contenido_mensaje',
+  },
+
+  // Send timestamp
+  sentAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_envio_mensaje',
+  },
+
+  // Foreign key: message status
+  statusId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_estado_mensaje',
+  },
+
+  // Foreign key: sender user
+  senderUserId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_emisor',
+  },
+
+  // Foreign key: receiver user
+  receiverUserId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_receptor',
+  },
+
+}, {
+  sequelize,
+  tableName: MESSAGE_TABLE,
+  modelName: 'message',
+  timestamps: false
+});
+</file>
+
+<file path="src/db/models/messageStatusModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the message status table
+export const MESSAGE_STATUS_TABLE = 'estado_mensaje';
+
+// Define the MessageStatus model
+export const MessageStatus = sequelize.define(MESSAGE_STATUS_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_estado_mensaje',
+  },
+
+  // Define the message status name
+  name: {
+    // Text type with a maximum length of 50 characters
+    type: DataTypes.STRING(50),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_estado_mensaje',
+  },
+
+  // Define the message status description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_estado_mensaje',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_estado_mensaje',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_estado_mensaje',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: MESSAGE_STATUS_TABLE,
+
+  // Specify the model name
+  modelName: 'messageStatus',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_estado_mensaje',
+  updatedAt: 'fecha_modificacion_estado_mensaje',
+});
+</file>
+
+<file path="src/db/models/phoneModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the phones table
+export const PHONE_TABLE = 'telefono';
+
+// Define the Phone model
+export const Phone = sequelize.define(PHONE_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_telefono',
+  },
+
+  // Phone number
+  phoneNumber: {
+    // Text type with a maximum length of 20 characters
+    type: DataTypes.STRING(20),
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'numero_telefono',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Automatically set the current timestamp when the record is created
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_telefono',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Automatically update the timestamp when the record is updated
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_telefono',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: PHONE_TABLE,
+
+  // Specify the model name
+  modelName: 'phone',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_telefono',
+  updatedAt: 'fecha_modificacion_telefono',
+});
+</file>
+
+<file path="src/db/models/reservationDetailsModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const RESERVATION_DETAIL_TABLE = 'reserva_detalle';
+
+// Define the ReservationDetail model
+export const ReservationDetail = sequelize.define(RESERVATION_DETAIL_TABLE, {
+
+  // Primary key: id_reserva_detalle
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_reserva_detalle',
+  },
+
+  // Foreign key: reservation
+  reservationId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_reserva',
+  },
+
+  // Foreign key: user
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario',
+  },
+
+  // Quantity
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'cantidad_reserva',
+    validate: {
+      min: 1,
+    },
+  },
+
+  // Foreign key: reservation status
+  reservationStatusId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_estado_reserva',
+  },
+
+}, {
+  sequelize,
+  tableName: RESERVATION_DETAIL_TABLE,
+  modelName: 'reservationDetail',
+  timestamps: false
+});
+</file>
+
+<file path="src/db/models/reservationModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const RESERVATION_TABLE = 'reserva';
+
+// Define the Reservation model
+export const Reservation = sequelize.define(RESERVATION_TABLE, {
+
+  // Primary key: id_reserva
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_reserva',
+  },
+
+  // Foreign key: service
+  serviceId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_servicio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_reserva',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_reserva',
+  },
+
+}, {
+  sequelize,
+  tableName: RESERVATION_TABLE,
+  modelName: 'reservation',
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_reserva',
+  updatedAt: 'fecha_modificacion_reserva',
+});
+</file>
+
+<file path="src/db/models/reserveStatusModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the reservation status table
+export const RESERVATION_STATUS_TABLE = 'estado_reserva';
+
+// Define the ReservationStatus model
+export const ReservationStatus = sequelize.define(RESERVATION_STATUS_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_estado_reserva',
+  },
+
+  // Define the reservation status name
+  name: {
+    // Text type with a maximum length of 50 characters
+    type: DataTypes.STRING(50),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'nombre_estado_reserva',
+  },
+
+  // Define the reservation status description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_estado_reserva',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_estado_reserva',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_modificacion_estado_reserva',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: RESERVATION_STATUS_TABLE,
+
+  // Specify the model name
+  modelName: 'reservationStatus',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_estado_reserva',
+  updatedAt: 'fecha_modificacion_estado_reserva',
+});
+</file>
+
+<file path="src/db/models/roleModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the roles table
+export const ROLE_TABLE = 'rol';
+
+// Define the Role model
+export const Role = sequelize.define(ROLE_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_rol',
+  },
+
+  // Define the role name
+  name: {
+    // Text type with a maximum length of 50 characters
+    type: DataTypes.STRING(50),
+    // This field cannot be null
+    allowNull: false,
+    // Must be unique
+    unique: true,
+    // Database column name
+    field: 'tipo_rol',
+  },
+
+  // Define the role description
+  description: {
+    // Text type with a maximum length of 255 characters
+    type: DataTypes.STRING(255),
+    // This field can be null
+    allowNull: true,
+    // Database column name
+    field: 'descripcion_rol',
+  },
+
+  // Define the creation timestamp
+  createdAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_creacion_rol',
+  },
+
+  // Define the update timestamp
+  updatedAt: {
+    // Date type
+    type: DataTypes.DATE,
+    // Default value
+    defaultValue: DataTypes.NOW,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'fecha_actualizacion_rol',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: ROLE_TABLE,
+
+  // Specify the model name
+  modelName: 'role',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_rol',
+  updatedAt: 'fecha_actualizacion_rol',
+});
+</file>
+
+<file path="src/db/models/serviceImageModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const SERVICE_IMAGE_TABLE = 'imagen_servicio';
+
+// Define the ServiceImage model
+export const ServiceImage = sequelize.define(SERVICE_IMAGE_TABLE, {
+
+  // Primary key: id_imagen_servicio
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_imagen_servicio',
+  },
+
+  // Image URL
+  imageUrl: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'url_imagen_servicio',
+  },
+
+  // Image description
+  description: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'descripcion_imagen_servicio',
+  },
+
+  // Foreign key: service
+  serviceId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_servicio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_imagen_servicio',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_imagen_servicio',
+  },
+
+}, {
+  sequelize,
+  tableName: SERVICE_IMAGE_TABLE,
+  modelName: 'serviceImage',
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_imagen_servicio',
+  updatedAt: 'fecha_modificacion_imagen_servicio',
+});
+</file>
+
+<file path="src/db/models/serviceModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const SERVICE_TABLE = 'servicio';
+
+// Define the Service model
+export const Service = sequelize.define(SERVICE_TABLE, {
+
+  // Primary key: id_servicio
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_servicio',
+  },
+
+  // Service name
+  name: {
+    type: DataTypes.STRING(200),
+    allowNull: false,
+    field: 'nombre_servicio',
+  },
+
+  // Service description
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'descripcion_servicio',
+  },
+
+  // Service price
+  price: {
+    type: DataTypes.DECIMAL(12, 2),
+    allowNull: false,
+    defaultValue: 0,
+    field: 'precio_servicio',
+    validate: {
+      min: 0,
+    },
+  },
+
+  // Foreign key: category
+  categoryId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_categoria_servicio',
+  },
+
+  // Foreign key: service status
+  statusId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_estado_servicio',
+  },
+
+  // Foreign key: age restriction (optional)
+  ageRestrictionId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'id_restriccion_edad_servicio',
+  },
+
+  // Foreign key: business
+  businessId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_negocio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_servicio',
+  },
+
+  // Last modification timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_servicio',
+  },
+
+}, {
+  sequelize,
+  tableName: SERVICE_TABLE,
+  modelName: 'service',
+  timestamps: true,
+  
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_servicio',
+  updatedAt: 'fecha_modificacion_servicio',
+});
+</file>
+
+<file path="src/db/models/serviceReviewModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const SERVICE_REVIEW_TABLE = 'resena_servicio';
+
+// Define the ServiceReview model
+export const ServiceReview = sequelize.define(SERVICE_REVIEW_TABLE, {
+
+  // Primary key: id_resena_servicio
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_resena_servicio',
+  },
+
+  // Foreign key: service
+  serviceId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_servicio_resena',
+  },
+
+  // Foreign key: user
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_usuario_resena',
+  },
+
+  // Review content
+  content: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'contenido_resena_servicio',
+  },
+
+  // Rating (1 to 5)
+  rating: {
+    type: DataTypes.SMALLINT,
+    allowNull: true,
+    field: 'puntuacion_resena_servicio',
+    validate: {
+      min: 1,
+      max: 5,
+    },
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_resena_servicio',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_resena_servicio',
+  },
+
+}, {
+  sequelize,
+  tableName: SERVICE_REVIEW_TABLE,
+  modelName: 'serviceReview',
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_resena_servicio',
+  updatedAt: 'fecha_modificacion_resena_servicio',
+});
+</file>
+
+<file path="src/db/models/serviceStatusModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the table name
+export const SERVICE_STATUS_TABLE = 'estado_servicio';
+
+// Define the ServiceStatus model
+export const ServiceStatus = sequelize.define(SERVICE_STATUS_TABLE, {
+
+  // Primary key: id_estado_servicio
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+    field: 'id_estado_servicio',
+  },
+
+  // Status name
+  name: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    unique: true,
+    field: 'nombre_estado_servicio',
+  },
+
+  // Status description
+  description: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'descripcion_estado_servicio',
+  },
+
+  // Creation timestamp
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_creacion_estado_servicio',
+  },
+
+  // Update timestamp
+  updatedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+    allowNull: false,
+    field: 'fecha_modificacion_estado_servicio',
+  },
+
+}, {
+  sequelize,
+  tableName: SERVICE_STATUS_TABLE,
+  modelName: 'serviceStatus',
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_estado_servicio',
+  updatedAt: 'fecha_modificacion_estado_servicio',
+});
+</file>
+
+<file path="src/db/models/userImageModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the user images table
+export const USER_IMAGE_TABLE = 'imagen_usuario';
+
+// Define the UserImage model
+export const UserImage = sequelize.define(USER_IMAGE_TABLE, {
+
+    // Define the 'id' column
+    id: {
+        // Integer type
+        type: DataTypes.INTEGER,
+        // This field cannot be null
+        allowNull: false,
+        // Primary key
+        primaryKey: true,
+        // Must be unique
+        unique: true,
+        // Auto increment value
+        autoIncrement: true,
+        // Database column name
+        field: 'id_imagen_usuario',
+    },
+
+    // Foreign key to User
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'id_usuario',
+        references: {
+            model: 'usuario',
+            key: 'id_usuario',
+        },
+    },
+
+    // Image URL
+    url: {
+        type: DataTypes.STRING(500),
+        allowNull: false,
+        field: 'url_imagen_usuario',
+    },
+
+    // Image name
+    name: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'nombre_imagen_usuario',
+    },
+
+    // Alternative text
+    altText: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'texto_alternativo_imagen_usuario',
+    },
+
+    // Creation date
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+        field: 'fecha_creacion_imagen_usuario',
+    },
+
+    // Last update date
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+        field: 'fecha_actualizacion_imagen_usuario',
+    }
+
+}, {
+    // Pass the sequelize instance
+    sequelize,
+
+    // Specify the table name
+    tableName: USER_IMAGE_TABLE,
+
+    // Specify the model name
+    modelName: 'userImage',
+
+    // Enable automatic timestamps
+    timestamps: true,
+
+    // Map Sequelize timestamps to database columns
+    createdAt: 'fecha_creacion_imagen_usuario',
+    updatedAt: 'fecha_actualizacion_imagen_usuario',
+});
+</file>
+
+<file path="src/db/models/userModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the users table
+export const USER_TABLE = 'usuario';
+
+// Define the User model
+export const User = sequelize.define(USER_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_usuario',
+  },
+
+  // Foreign key to Role
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'id_rol',
+    references: {
+      model: 'rol',
+      key: 'id_rol',
+    },
+  },
+
+  // Foreign key to Gender
+  genderId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'id_genero',
+    references: {
+      model: 'genero',
+      key: 'id_genero',
+    },
+  },
+
+  // Foreign key to Document Type
+  documentTypeId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'id_tipo_documento',
+    references: {
+      model: 'tipo_documento',
+      key: 'id_tipo_documento',
+    },
+  },
+
+  // User first name
+  firstName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'nombre_usuario',
+  },
+
+  // User last name
+  lastName: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    field: 'apellido_usuario',
+  },
+
+  // Birth date
+  birthDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'fecha_nacimiento_usuario',
+  },
+
+  // Document number
+  documentNumber: {
+    type: DataTypes.STRING(30),
+    allowNull: true,
+    unique: true,
+    field: 'numero_documento_usuario',
+  },
+
+  // Email
+  email: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+    unique: true,
+    field: 'correo_usuario',
+    validate: {
+      isEmail: true,
+    },
+  },
+
+  // Username
+  username: {
+    type: DataTypes.STRING(80),
+    allowNull: false,
+    unique: true,
+    field: 'username_usuario',
+  },
+
+  // Password hash
+  password: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    field: 'contrasena_usuario',
+  },
+
+  // Creation date
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_creacion_usuario',
+  },
+
+  // Last update date
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_actualizacion_usuario',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: USER_TABLE,
+
+  // Specify the model name
+  modelName: 'user',
+
+  // Enable automatic timestamps
+  timestamps: true,
+
+  // Map Sequelize timestamps to database columns
+  createdAt: 'fecha_creacion_usuario',
+  updatedAt: 'fecha_actualizacion_usuario',
+});
+</file>
+
+<file path="src/db/models/userPhoneModel.js">
+// Import the sequelize instance from the database connection library
+import { sequelize } from '../../libraries/DBConnection.js';
+
+// Import DataTypes from sequelize to define column types
+import { DataTypes } from 'sequelize';
+
+// Define the name of the user phones table
+export const USER_PHONE_TABLE = 'usuario_telefono';
+
+// Define the UserPhone model
+export const UserPhone = sequelize.define(USER_PHONE_TABLE, {
+
+  // Define the 'id' column
+  id: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Primary key
+    primaryKey: true,
+    // Must be unique
+    unique: true,
+    // Auto increment value
+    autoIncrement: true,
+    // Database column name
+    field: 'id_usuario_telefono',
+  },
+
+  // Foreign key to User
+  userId: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'id_usuario',
+
+    references: {
+      model: 'usuario',
+      key: 'id_usuario',
+    },
+
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  },
+
+  // Foreign key to Phone
+  phoneId: {
+    // Integer type
+    type: DataTypes.INTEGER,
+    // This field cannot be null
+    allowNull: false,
+    // Database column name
+    field: 'id_telefono',
+
+    references: {
+      model: 'telefono',
+      key: 'id_telefono',
+    },
+
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  }
+
+}, {
+  // Pass the sequelize instance
+  sequelize,
+
+  // Specify the table name
+  tableName: USER_PHONE_TABLE,
+
+  // Specify the model name
+  modelName: 'userPhone',
+
+  // This table does not have timestamps
+  timestamps: false,
+
+  // Composite unique constraint
+  indexes: [
+    {
+      unique: true,
+      fields: ['id_usuario', 'id_telefono'],
+      name: 'uq_usuario_telefono',
+    },
+  ],
+});
+</file>
+
+<file path="src/libraries/DBConnection.js">
+// Import the Sequelize constructor from the 'sequelize' library
+import { Sequelize } from 'sequelize';
+// Import configuration settings
+import { config } from "../config/config.js";
+
+// Create a new instance of Sequelize with the provided URI and options
+export const sequelize = new Sequelize(
+  config.dbName,
+  config.dbUser,
+  config.dbPassword,
+  {
+  // Specify the data base host
+  host: config.dbHost,
+  // Specify the data base port
+  port: config.dbPort,
+  // Specify the dialect as PostgreSQL
+  dialect: 'postgres',
+  // Enable logging of SQL queries to the console
+  logging: console.log,
+});
+
+/**
+ * Function to test the database connection
+ * @param {Function} next
+ * - Optional callback function to execute after the test
+ */
+export const testConnection = async (next) => {
+  try {
+    // Attempt to authenticate the connection
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (err) {
+    // Log an error message if the connection fails
+    console.log('Impossible to connect the database:', err);
+  }
+};
+</file>
+
+<file path="src/libraries/netConfig.js">
+// Import the 'os' module to interact with the operating system
+import os from 'os';
+
+// Import the configuration object from the config file
+import { config } from "../config/config.js";
+
+// Get the network interfaces from the operating system
+const interfaces = os.networkInterfaces();
+
+// Variable to store the machine's IP address
+let ipAddress;
+
+// Loop through the network interfaces to find a non-internal IPv4 address
+for (const interfaceName in interfaces) {
+    const theInterface = interfaces[interfaceName];
+    for (const network of theInterface) {
+        // Check if the network is not internal
+        // (i.e., not a loopback address) and is IPv4
+        if (!network.internal && network.family === 'IPv4') {
+            // Store the IP address
+            ipAddress = network.address;
+            // Break the loop once the IP address is found
+            break;
+        }
+    }
+    // Break the outer loop if the IP address is already found
+    if (ipAddress) break;
+}
+
+// If no IP address is found, log an error message and exit the
+// process with an error code
+if (!ipAddress) {
+    console.error(`Could not obtain the machine's IP address.`);
+    process.exit(1);
+}
+
+// Export the obtained IP address for use in other parts of the application
+export const theIPAddress = ipAddress;
+
+// Export the port from the configuration, defaulting to 3333 if not set
+export const port = config.appPort || 3333;
+</file>
+
+<file path="src/middlewares/apiAuthHandler.js">
+import Boom from '@hapi/boom';
+import { config } from '../config/config.js';
+
+/**
+ * Middleware to check if the provided API key is valid.
+ *
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const checkApiKey = (req, res, next) => {
+  // Extract the API key from the request headers
+  const APIKey = req.headers['apikey'];
+
+  // Check if the API key matches the expected value
+  if (APIKey === config.APIKey) {
+    next(); // Proceed to the next middleware or route handler
+  } else {
+    // Create an unauthorized error using Boom
+    const boomError = Boom.unauthorized('Invalid API key');
+    next(boomError); // Pass the error to the next middleware
+  }
+}
+</file>
+
+<file path="src/middlewares/checkRoleHandler.js">
+import { verifyToken } from '../utils/auth/tokenVerify.js';
+import { config } from '../config/config.js';
+
+/**
+ * Middleware to check user roles based on the provided token.
+ *
+ * @param {Array<string>} roles
+ * - The roles that are allowed to access the route.
+ * @returns {Function}
+ * - Middleware function for role checking.
+ */
+export const checkRole = (roles) => {
+  return (req, res, next) => {
+    // Extract the authentication token from the request body
+    const authenticationToken = req.body.authentication;
+
+    // Check if the token is provided
+    if (!authenticationToken) {
+      return res.status(403).json({
+        error: 'Access Denied: No authentication token provided.'
+      });
+    }
+
+    try {
+      // Verify the token
+      const user = verifyToken(authenticationToken, config.officialsAppJwtKey);
+
+      // Check if user role is valid and authorized
+      if (!user || !user.role || !roles.includes(user.role)) {
+        return res.status(403).json({
+          error: 'Unauthorized: Insufficient permissions.'
+        });
+      }
+
+      // Attach user information to the request object
+      req.user = user;
+      next();
+    } catch (error) {
+      return res.status(401).json({
+        error: 'Token Invalid: ' + error.message
+      });
+    }
+  };
+};
+</file>
+
+<file path="src/middlewares/errorHandler.js">
+// Import the ValidationError from Sequelize to handle ORM-specific errors
+import { ValidationError } from 'sequelize';
+// Import Boom for HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Middleware to log errors.
+ * This middleware simply passes the error to the next middleware.
+ *
+ * @param {Error} err - The error object.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const logError = (err, req, res, next) => {
+  // Pass the error to the next middleware
+  next(err);
+}
+
+/**
+ * Middleware to handle generic errors.
+ * This middleware sends a generic 500 Internal Server Error response.
+ *
+ * @param {Error} err - The error object.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const errorHandler = (err, req, res, next) => {
+  // Send a 500 Internal Server Error response with error details
+  res.status(500).json({
+    message: err.message,
+    stack: err.stack
+  });
+}
+
+/**
+ * Middleware to handle Boom errors.
+ * This middleware checks if the error is a Boom error and sends
+ * the appropriate response.
+ *
+ * @param {Error} err - The error object.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const boomErrorHandler = (err, req, res, next) => {
+  // Check if the error is a Boom error
+  if (Boom.isBoom(err)) {
+    // Send the Boom error response
+    res.status(err.output.statusCode).json(err.output.payload);
+  } else {
+    // Pass the error to the next middleware
+    next(err);
+  }
+}
+
+/**
+ * Middleware to handle Sequelize ORM validation errors.
+ * This middleware checks if the error is a Sequelize ValidationError
+ * and sends a 409 Conflict response.
+ *
+ * @param {Error} err - The error object.
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const ORMErrorHandler = (err, req, res, next) => {
+  // Check if the error is a Sequelize ValidationError
+  if (err instanceof ValidationError) {
+    // Send a 409 Conflict response with error details
+    res.status(409).json({
+      statusCode: 409,
+      message: err.name,
+      errors: err.errors
+    });
+  }
+  // Pass the error to the next middleware
+  next(err);
+}
+</file>
+
+<file path="src/middlewares/tokenHandlers/authAppTokenHandler.js">
+import { config } from '../../config/config.js';
+import { signUserToken } from '../../utils/auth/tokenSign.js';
+import jwt from 'jsonwebtoken';
+
+/**
+ * Middleware to verify JWT tokens for the application.
+ * Regenerates a new token if the old one is valid.
+ *
+ * @param {Request} req - The request object.
+ * @param {Response} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+export const authAppVerifyToken = (req, res, next) => {
+
+  const authenticationToken = req.cookies.authentication;
+
+  let message = "";
+
+  // Check for the presence of the authentication token
+  if (!authenticationToken) {
+    res.clearCookie('authentication');
+    message = "Acceso denegado. Para acceder a este recurso, por favor inicie sección.";
+    return res.status(403).render("authError", { message: message, type: "no-token" });
+  }
+
+  // Verify the token using the secret key
+  jwt.verify(authenticationToken, config.authAppJwtKey, (err, decoded) => {
+    if (err) {
+      // Handle specific JWT errors
+      if (err.name === 'TokenExpiredError') {
+        res.clearCookie('authentication');
+        message = "La sesión se ha finalizado, por favor inicie sección e inténtelo de nuevo.";
+        return res.status(401).render("authError", { message: message, type: "token-exp" });
+      } else {
+        res.clearCookie('authentication');
+        message = "Acceso denegado. Los datos del usuario no son validos, por favor inicie sección e inténtelo de nuevo.";
+        return res.status(401).render("authError", { message: message, type: "token-inv" });
+      }
+    }
+
+    // Extract user data from the decoded token
+    const userData = {
+      id: decoded.id,
+    };
+
+    // Regenerate a new token for the user
+    const newUserToken = signUserToken(userData, config.authAppJwtKey, '1h');
+
+    // Send the new token in a cookie to the client
+    res.cookie('authentication', newUserToken, { httpOnly: true });
+
+    // Attach user data to the request object for later use
+    req.user = decoded;
+
+    // Proceed to the next middleware or controller
+    next();
+  });
+};
+</file>
+
+<file path="src/middlewares/validatorHandler.js">
+// Import the Boom library for HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Middleware for validating request data against a Joi schema.
+ *
+ * @param {Object} schema - The Joi schema to validate against.
+ * @param {string} property - The property of the request object
+ * to validate (e.g., 'body', 'params', 'query').
+ * @returns {Function} - A middleware function for validation.
+ */
+export const validatorHandler = (schema, property) => {
+  // Return a middleware function
+  return (req, res, next) => {
+    // Extract the data from the specified property of the request object
+    const data = req[property];
+
+    // Validate the data against the provided schema with Joi
+    const { error } = schema.validate(data, { abortEarly: false });
+
+    // If there is a validation error, create a Boom bad request error and
+    // pass it to the next middleware
+    if (error) {
+      const boomError = Boom.badRequest(error);
+      next(boomError);
+    }
+
+    // If no error, proceed to the next middleware
+    next();
+  }
+}
+</file>
+
+<file path="src/router/index.js">
+// Import the Router class from Express
+import { Router } from "express";
+// Import the UIRouter for handling user-interface-related routes
+import { UIRouter } from "./UIRouter.js";
+// Import the UIRouter for handling user-related routes
+import { userRouter } from "./userRouter.js";
+
+// Function to set up API routes
+const routerApi = (app) => {
+
+  // Create a new Router instance
+  const router = Router();
+
+  // Use the router instance for the '/app/v1' path
+  app.use('/app/v1', router);
+
+  // Use the userRouter for handling the root '/' route under '/app/v1/'
+  router.use('/', UIRouter);
+
+  // Use the userRouter for handling '/users' routes under '/app/v1'
+  router.use('/users', userRouter);
+}
+
+// Export the routerApi function for use in other parts of the application
+export default routerApi;
+</file>
+
+<file path="src/router/UIRouter.js">
+// Import the Router class from Express
+import { Router } from "express";
+// Import the middleware to verify tokens from the authentication app
+import { authAppVerifyToken } from
+'../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Import the middleware to verify the API key from the client app
+import { checkApiKey } from '../middlewares/apiAuthHandler.js';
+// Import the middleware to verify the data types sended in the request
+import { validatorHandler  } from '../middlewares/validatorHandler.js';
+// Import the controllers functions to manage user interfaces templates
+
+// Create a new Router instance
+export const UIRouter = Router();
+
+// Define a GET route for login view
+/*
+UIRouter.get(
+  // Route path display the login view
+  '/',
+  // Middleware to validate the data type
+  //validatorHandler(userSchema, 'body'),
+  // Middleware to verify the API key sended by the client before
+  // proceeding to the controller
+  //checkApiKey,
+  // Controller function to render a login template
+  //loginForm
+);
+*/
+</file>
+
+<file path="src/router/userRouter.js">
+// Import the Router class from Express
+import { Router } from "express";
+// Import the middleware to verify tokens from the authentication app
+import { authAppVerifyToken } from
+'../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Import the middleware to verify the API key from the client app
+import { checkApiKey } from '../middlewares/apiAuthHandler.js';
+// Import the middleware to verify the data types sended in the request
+import { validatorHandler  } from '../middlewares/validatorHandler.js';
+// Import the user data types schema
+//import { userSchema } from '../schemas/userSchema.js';
+// Import the controllers functions to authenticate and manage users    
+
+// Create a new Router instance
+
+export const userRouter = Router();
+
+// Define a POST route for users authentication
+/*
+userRouter.post(
+  // Route path to authenticate a users
+  //'/login',
+  // Middleware to validate the data type
+  //validatorHandler(userSchema, 'body'),
+  // Middleware to verify the API key sended by the client before
+  // proceeding to the controller
+  //checkApiKey,
+  // Controller function to login a user
+  //loginUser
+);
+*/
+</file>
+
+<file path="src/schemas/userSchema.js">
+// Import the Joi data types library
+import Joi from 'joi';
+
+// Import authentication RegEx from their module
+import { userAuthToken } from '../utils/RegEx/authRegEx.js';
+
+// Import user RegEx from their module
+import {
+  firstName,
+  middleName,
+  firstLastName,
+  secondLastName,
+  username,
+  password,
+  email,
+  ID
+} from '../utils/RegEx/usersRegEx.js';
+
+// Define global authentication dataType
+const joiAuthentication = Joi.string().pattern(userAuthToken).message({
+  'string.pattern.base': 'token must be between 30 and 160 characters'
+});
+
+// Define global ID dataType
+const joiId = Joi.number().min(1).max(1000).messages({
+  'number.base': 'ID must be a number',
+  'number.min': 'ID must be at least 1',
+  'number.max': 'ID must be at most 1000',
+});
+
+// Define global username dataType
+const joiUsername = Joi.string().pattern(username).messages({
+  'string.pattern.base': 'username must be between 2 and 20 letters only',
+});
+
+// Define global password dataType
+const joiPassword = Joi.string().pattern(password).messages({
+  'string.pattern.base': 'password must be between 5 and 30 characters',
+});
+
+// Validate the email of the user
+// Define global email dataType
+const JoiEmail = Joi.string().pattern(email).message({
+  'string.pattern.base': 'email contains characters must be followed by *@domain.*'
+});
+
+// Validate the first name of the user
+// Define global first name dataType
+const joiFirstName = Joi.string().pattern(firstName).message({
+  'string.pattern.base': 'firstName contains only letters between 3 to 20 characters'
+});
+
+// Validate the middle name of the user
+// Define global middle name dataType
+const joiMiddleName = Joi.string().pattern(middleName).allow('').message({
+  'string.pattern.base': 'middleName must be empty or contains only letters between 3 to 20 characters'
+});
+
+// Validate the first last name of the user
+// Define global first last name dataType
+const joiFirstLastName = Joi.string().pattern(firstLastName).message({
+  'string.pattern.base': 'firstLastName contains only letters between 3 to 20 characters'
+});
+
+// Validate the second last name of the user
+// Define global second last name dataType
+const joiSecondLastName = Joi.string().pattern(secondLastName).message({
+  'string.pattern.base': 'secondLastName contains only letters between 3 to 20 characters'
+});
+
+
+// Define and export user dataType schema
+export const userSchema = Joi.object({
+
+    // Validate the JWT token of the user
+    authentication: joiAuthentication,
+    // Validate the user id
+    id: joiId,
+    // Validate the user credentials
+    credentials: {
+      username: joiUsername,
+      password: joiPassword
+    },
+    // Validate the object new user data
+    newUserData: {
+      username: joiUsername,
+      password: joiPassword,
+      email: JoiEmail,
+      firstName: joiFirstName,
+      middleName: joiMiddleName,
+      firstLastName: joiFirstLastName,
+      secondLastName: joiSecondLastName
+    }
+});
+</file>
+
+<file path="src/utils/auth/authApp/strategies/jwt.strategy.js">
+// Import the necessary modules from passport-jwt
+import { Strategy, ExtractJwt } from "passport-jwt";
+// Import the configuration settings
+import { config } from "../../../../config/config.js";
+
+// Define options for the JWT strategy
+const options = {
+  // Extract JWT from the Authorization header as a Bearer token
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  // Secret key for verifying the JWT
+  secretOrKey: config.jwtSecretKey
+};
+
+/**
+ * JWT strategy for Passport authentication.
+ * This strategy extracts the JWT from the Authorization header and verifies
+ * it using the secret key.
+ * If the token is valid, the payload is returned.
+ *
+ * @param {object} payload
+ * - The payload extracted from the verified JWT.
+ * @param {function} done
+ * - The callback function to be called after verification.
+ * @returns {function}
+ * - The done function with either an error or the payload.
+ */
+export const authAppJwtStrategy = new Strategy(options, (payload, done) => {
+  // Pass the payload to the done function if verification is successful
+  return done(null, payload);
+});
+</file>
+
+<file path="src/utils/auth/authApp/tokenData.js">
+// Import the verifyToken function from the tokenVerify.js module
+import { verifyToken } from '../tokenVerify.js';
+// Import the config object which contains the application configuration settings
+import { config } from '../../config/config.js';
+
+/**
+ * Extracts the user information from a given JWT.
+ *
+ * @param {string} token - The JWT to be verified and decoded.
+ * @returns {string|null} - The user information if the token is valid,
+ * otherwise null.
+ */
+export const getUserData = (token) => {
+  if (!token) {
+    // Return null if no token is provided
+    return null;
+  }
+
+  try {
+    // Verify the token using the secret key from the config and decode it
+    const decoded = verifyToken(token, config.authAppJwtKey);
+    // Return the student fingerprint hash from the decoded token
+    return decoded.userData;
+  } catch (err) {
+    // Return null if token verification fails
+    return null;
+  }
+};
+</file>
+
+<file path="src/utils/auth/index.js">
+/**
+ * Module for configuring Passport authentication strategies.
+ * @module index
+ */
+// Import Passport for authentication
+import passport from 'passport';
+// Import the auth-app JWT authentication strategy for JWT authentication
+import { authAppJwtStrategy } from './authApp/strategies/jwt.strategy.js';
+
+/**
+ * Configure Passport authentication strategies.
+ * This module configures Passport to use authentication strategies:
+ */
+
+// Use the auth-app JwtStrategy for JWT authentication
+passport.use(authAppJwtStrategy);
+</file>
+
+<file path="src/utils/auth/passwordHash.js">
+// Import the bcryptjs library for handling password hashing
+import bcrypt from 'bcryptjs';
+
+/**
+ * Hashes a given password using bcrypt.
+ *
+ * @param {string} userPassword
+ * - The plain text password to be hashed.
+ * @returns {Promise<string>}
+ * - A promise that resolves to the hashed password.
+ */
+export const hashPassword = async (userPassword) => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Define the number of salt rounds to use
+      const saltRounds = 11;
+      // Generate a salt with the defined number of rounds
+      bcrypt.genSalt(saltRounds)
+        // Hash the password with the generated salt
+        .then((salt) => bcrypt.hash(userPassword, salt))
+        // Resolve the promise with the hashed password
+        .then((hashedPass) => resolve(hashedPass))
+        // Catch and reject any error during hashing
+        .catch((err) => reject(`Error in the encryption: ${err.message}`));
+    } catch (err) {
+      // Catch and reject any error during salt generation
+      reject(`Error when generating the salt: ${err.message}`);
+    }
+  });
+};
+</file>
+
+<file path="src/utils/auth/tokenSign.js">
+// Import the jsonwebtoken library for handling JWT operations
+import jwt from 'jsonwebtoken';
+
+/**
+ * Signs a JSON Web Token (JWT) for a user.
+ *
+ * @param {object} payload
+ * - The payload to be included in the token. This typically includes
+ *   user information.
+ * @param {string} secret
+ * - The secret or private key to sign the token.
+ * @param {string|number} timer
+ * - The expiration time for the token. This can be a string
+ *   (e.g., '1h' for 1 hour) or a number of seconds.
+ * @returns {string}
+ * - The signed JWT.
+ */
+
+export const signUserToken = (payload, secret, timer) => {
+  return jwt.sign(payload, secret, { expiresIn: timer });
+};
+</file>
+
+<file path="src/utils/auth/tokenVerify.js">
+// Import the jsonwebtoken library for handling JWT operations
+import jwt from 'jsonwebtoken';
+
+/**
+ * Verifies a given JSON Web Token (JWT).
+ *
+ * @param {string} token
+ * - The JWT to be verified.
+ * @param {string} secret
+ * - The secret or private key to verify the token.
+ * @returns {object|string}
+ * - The decoded token if the verification is successful.
+ *   Throws an error if the token is invalid or verification fails.
+ */
+
+export const verifyToken = (token, secret) => {
+  return jwt.verify(token, secret);
+};
+</file>
+
+<file path="src/utils/RegEx/authRegEx.js">
+// Regex pattern to validate the user authentication token
+// The pattern ensures the token contains
+// letters (both uppercase and lowercase), numbers, and characters
+// and is between 30 to 65 characters long
+export const userAuthToken = /^[A-Za-z0-9_-]{30,160}\.[A-Za-z0-9_-]{30,160}\.[A-Za-z0-9_-]{30,160}$/;
+</file>
+
+</files>
