@@ -1,0 +1,38 @@
+# ==========================================
+# APPLICATION
+# ==========================================
+
+APP_PORT=3377
+NODE_ENV=development
+
+# ==========================================
+# DATABASE - POSTGRESQL
+# ==========================================
+
+DB_DIALECT=postgres
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=vive_zarzal_app
+
+# Usuario de la aplicación
+DB_USER=vive_zarzal_user
+DB_PASSWORD=aa24d32b8b1cfe04a74f668fd58acddbccbe86a9a17a0eff52bb5830e3d1d652
+
+# ==========================================
+# SEQUELIZE CONNECTION POOL
+# ==========================================
+
+DB_POOL_MAX=20
+DB_POOL_MIN=5
+DB_POOL_ACQUIRE=30000
+DB_POOL_IDLE=10000
+
+# ==========================================
+# SECURITY
+# ==========================================
+
+API_KEY=48fdd9794d35198c4867fb0180252908cc742b18835545d4342ae9544748aa0d
+
+AUTH_APP_JWT_SECRET_KEY=b863794517c66b712790c8e8f84038c5ea575c767d8c9444965ea4845ed1e1e5
+
+AUTH_APP_JWT_EXPIRES_IN=24h
