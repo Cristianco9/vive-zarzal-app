@@ -4,11 +4,11 @@ import { UserImageServices } from '../../services/userImageServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to handle the update of a user image (owned by user).
+ * Controller function to handle the update of a user image (admin only).
  *
- * This function processes requests to update a user image's details in the database.
- * It accepts the user image ID from the request parameters, the user ID from the authenticated user,
- * and the new data from the request body. If the update is successful, it returns a success message.
+ * This function processes requests to update any user image's details in the database.
+ * It accepts the user image ID from the request parameters and the new data from the request body.
+ * If the update is successful, it returns a success message.
  *
  * @param {Object} req - The request object, expected to contain the user image ID in params and new data in the body.
  * @param {Object} res - The response object to send the result of the update operation.
@@ -16,13 +16,10 @@ import Boom from '@hapi/boom';
  *
  * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
  */
-export const updateOneUserImage = async (req, res, next) => {
+export const updateOneUserImageAdmin = async (req, res, next) => {
 
   // Extract user image ID from the request parameters
   const { id } = req.params;
-  
-  // Extract the user ID from the authenticated user
-  const userId = req.user.id;
   
   // Extract new data from the request body
   const { newUserImageData } = req.body;
@@ -31,8 +28,8 @@ export const updateOneUserImage = async (req, res, next) => {
   const userImageManager = new UserImageServices();
 
   try {
-    // Attempt to update the user image details in the database
-    const response = await userImageManager.updateOne(id, userId, newUserImageData);
+    // Attempt to update the user image details in the database (admin)
+    const response = await userImageManager.updateOneAdmin(id, newUserImageData);
 
     // If the update is successful, return a 201 response with a success message
     if (response.status === 'UPDATED SUCCESSFULLY') {

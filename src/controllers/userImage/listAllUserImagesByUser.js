@@ -10,7 +10,7 @@ import Boom from '@hapi/boom';
  * a given user ID, invoking the appropriate service method and returning a response
  * with the list of records. If an error occurs, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} req - The request object, expected to contain the user ID in the params.
  * @param {Object} res - The response object to send the list of user images.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -18,8 +18,8 @@ import Boom from '@hapi/boom';
  */
 export const listAllUserImagesByUser = async (req, res, next) => {
 
-  // Destructure the user ID from the request body
-  const { userId } = req.body;
+  // Destructure the user ID from the request params
+  const { userId } = req.params;
 
   // Instantiate the UserImageServices class to manage the user image operations
   const userImageManager = new UserImageServices();

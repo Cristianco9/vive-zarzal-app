@@ -1,35 +1,32 @@
 // Import the UserImageServices class from the userImageServices module
 import { UserImageServices } from '../../services/userImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
+// Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete a user image (owned by user).
+ * Controller function to delete a user image (admin only).
  *
- * This function handles the request to delete an existing user image by extracting
- * the user image ID from the request parameters and the user ID from the authenticated user,
- * invoking the appropriate service method, and returning a response based on the operation's success or failure.
+ * This function handles the request to delete any user image by extracting
+ * the user image ID from the request parameters, invoking the appropriate service method,
+ * and returning a response based on the operation's success or failure.
  *
- * @param {Object} req - The request object containing the authenticated user and user image ID.
+ * @param {Object} req - The request object containing the user image ID.
  * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the operation result.
  */
-export const deleteOneUserImage = async (req, res, next) => {
+export const deleteOneUserImageAdmin = async (req, res, next) => {
 
   // Extract the user image ID from the request parameters
   const { id } = req.params;
-  
-  // Extract the user ID from the authenticated user
-  const userId = req.user.id;
 
   // Instantiate the UserImageServices class to manage the user image operations
   const userImageManager = new UserImageServices();
 
   try {
-    // Attempt to delete the user image by the provided ID and user ID
-    const response = await userImageManager.deleteOne(id, userId);
+    // Attempt to delete the user image by the provided ID (admin)
+    const response = await userImageManager.deleteOneAdmin(id);
 
     // If the user image is deleted successfully, send a success response
     if (response.status === 'DELETED SUCCESSFULLY') {
