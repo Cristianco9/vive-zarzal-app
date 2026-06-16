@@ -7,7 +7,7 @@
 // ============================================================
 
 import { Country }           from './countryModel.js';
-import { Department }        from './departamentModel.js';
+import { Department }        from './departmentModel.js';
 import { City }              from './cityModel.js';
 import { Location }          from './locationModel.js';
 
