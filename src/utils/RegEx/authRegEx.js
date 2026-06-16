@@ -1,3 +1,7 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTHENTICATION TOKEN — Regular Expression Patterns
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Regex pattern to validate the user authentication token
 // The pattern ensures the token contains
 // letters (both uppercase and lowercase), numbers, and characters
