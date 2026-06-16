@@ -11,7 +11,7 @@ import Boom from '@hapi/boom';
  * the user data if found. If an error occurs or the record is not found, it is handled
  * appropriately using Boom.
  *
- * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} req - The request object, expected to contain the user ID in the params.
  * @param {Object} res - The response object to send the user data if found.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -19,8 +19,8 @@ import Boom from '@hapi/boom';
  */
 export const listOneUser = async (req, res, next) => {
 
-  // Destructure the user ID from the request body
-  const { id } = req.body;
+  // Destructure the user ID from the request parameters
+  const { id } = req.params;
 
   // Instantiate the UserServices class to manage user operations
   const userManager = new UserServices();

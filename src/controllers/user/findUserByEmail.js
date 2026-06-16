@@ -11,7 +11,7 @@ import Boom from '@hapi/boom';
  * be used only by the authentication layer for credential verification and must
  * never expose the password through the public API.
  *
- * @param {Object} req - The request object, expected to contain the user's email in the body.
+ * @param {Object} req - The request object, expected to contain the user's email in the params.
  * @param {Object} res - The response object to send the user data if found.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -19,8 +19,8 @@ import Boom from '@hapi/boom';
  */
 export const findUserByEmail = async (req, res, next) => {
 
-  // Destructure the email from the request body
-  const { email } = req.body;
+  // Destructure the email from the request parameters
+  const { email } = req.params;
 
   // Instantiate the UserServices class to manage user operations
   const userManager = new UserServices();

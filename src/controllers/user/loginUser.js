@@ -20,7 +20,7 @@ import Boom from '@hapi/boom';
 export const loginUser = async (req, res, next) => {
 
   // Extract the credentials from the request body
-  const { username, password } = req.body;
+  const { username, password } = req.body.loginCredentials;
 
   // Instantiate the UserServices class to manage the user operations
   const userManager = new UserServices();

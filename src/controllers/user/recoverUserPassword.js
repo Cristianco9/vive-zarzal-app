@@ -18,7 +18,7 @@ import Boom from '@hapi/boom';
 export const recoverUserPassword = async (req, res, next) => {
 
   // Extract the email and new password from the request body
-  const { email, newPassword } = req.body;
+  const { email, newPassword } = req.body.passwordRecoveryData;
 
   // Instantiate the UserServices class to manage the user operations
   const userManager = new UserServices();
