@@ -41,6 +41,11 @@ export const favoriteUserServiceSchema = {
     id: joiId.required(),
   }),
 
+  // GET /favorites/by-user/:id
+  getFavoritesByUserId: Joi.object({
+  userId: joiUserId.required(),
+  }),
+
   // POST /favorites — add a service to user's favorites
   newFavoriteData: Joi.object({
     userId:    joiUserId.required(),
@@ -51,5 +56,4 @@ export const favoriteUserServiceSchema = {
   deleteFavorite: Joi.object({
     id: joiId.required(),
   }),
-
 };
