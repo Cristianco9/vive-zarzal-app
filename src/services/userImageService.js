@@ -56,14 +56,78 @@ export class UserImageServices {
   }
 
   /**
-   * Updates an existing user image by its identifier.
+   * Updates an existing user image by its identifier, ensuring the user owns the image.
+   *
+   * @param {number} userImageId - Identifier of the record to update.
+   * @param {number} userId - Identifier of the user requesting the update.
+   * @param {Object} newData - New values to persist.
+   * @returns {Promise<Object>} Status object confirming the update.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
+   */
+  async updateOne(userImageId, userId, newData) {
+
+    if (!newData) {
+      // reject the request when there is no payload to apply
+      throw Boom.badRequest('No data provided');
+    }
+
+    try {
+      // First, find the user image to check ownership
+      const userImage = await UserImage.findByPk(userImageId);
+      if (!userImage) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // Check if the user is the owner of the image or an administrator
+      // Note: This assumes the caller has already verified admin status if needed
+      if (userImage.userId !== userId) {
+        throw Boom.forbidden('You do not have permission to update this image');
+      }
+
+      // validate the owner relation only when it is being changed
+      if (newData.userId) {
+        const ownerUser = await User.findByPk(newData.userId);
+        if (!ownerUser) {
+          throw Boom.notFound('User not found');
+        }
+      }
+
+      // update the record in the database
+      const [updatedRows] = await UserImage.update(
+        {
+          userId: newData.userId,
+          url: newData.url,
+          name: newData.name,
+          altText: newData.altText,
+        },
+        {
+          where: { id: userImageId }
+        }
+      );
+
+      // if no rows were affected, the record does not exist
+      if (!updatedRows) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // return a success response
+      return { status: 'UPDATED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to update user image' });
+    }
+  }
+
+  /**
+   * Updates an existing user image by its identifier (admin only).
    *
    * @param {number} userImageId - Identifier of the record to update.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(userImageId, newData) {
+  async updateOneAdmin(userImageId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
@@ -107,13 +171,60 @@ export class UserImageServices {
   }
 
   /**
-   * Deletes a user image by its identifier.
+   * Deletes a user image by its identifier, ensuring the user owns the image.
+   *
+   * @param {number} userImageId - Identifier of the record to delete.
+   * @param {number} userId - Identifier of the user requesting the deletion.
+   * @returns {Promise<Object>} Status object confirming the deletion.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
+   */
+  async deleteOne(userImageId, userId) {
+
+    if (!userImageId) {
+      // an identifier is mandatory to perform a deletion
+      throw Boom.badRequest('No user image ID provided');
+    }
+
+    try {
+      // First, find the user image to check ownership
+      const userImage = await UserImage.findByPk(userImageId);
+      if (!userImage) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // Check if the user is the owner of the image or an administrator
+      // Note: This assumes the caller has already verified admin status if needed
+      if (userImage.userId !== userId) {
+        throw Boom.forbidden('You do not have permission to delete this image');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await UserImage.destroy({
+        where: { id: userImageId }
+      });
+
+      // if no rows were deleted, the record does not exist
+      if (!deletedRows) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // return a success response
+      return { status: 'DELETED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to delete user image' });
+    }
+  }
+
+  /**
+   * Deletes a user image by its identifier (admin only).
    *
    * @param {number} userImageId - Identifier of the record to delete.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
    */
-  async deleteOne(userImageId) {
+  async deleteOneAdmin(userImageId) {
 
     if (!userImageId) {
       // an identifier is mandatory to perform a deletion
