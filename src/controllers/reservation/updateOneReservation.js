@@ -1,45 +1,56 @@
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom to create HTTP-friendly error objects
+// Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to handle the update of a reservation.
+ * Controller function to update an existing reservation.
  *
- * This function processes requests to update a reservation's details in the database. It accepts
- * the reservation ID and the new data from the request body. If the update is successful,
- * it returns a success message. If there's an error, it handles the error appropriately.
+ * This function handles the request to update an existing reservation by extracting
+ * the reservation ID from the request parameters and the update data from the request body,
+ * then invoking the appropriate service method with user ownership validation.
  *
- * @param {Object} req - The request object, expected to contain the reservation ID and new data in the body.
- * @param {Object} res - The response object to send the result of the update operation.
+ * @param {Object} req - The request object containing the reservation ID and update data.
+ * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
+ * @returns {Promise<void>} - Returns a JSON response with the operation result.
  */
 export const updateOneReservation = async (req, res, next) => {
 
-  // Extract reservation ID and new reservation data from the request body
-  const { id, newReservationData } = req.body;
-
-  // Instantiate the ReservationServices class to manage reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the reservation ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the update data from the request body
+  const newData = req.body;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
-    // Attempt to update the reservation details in the database
-    const response = await reservationManager.updateOne(id, newReservationData);
-
-    // If the update is successful, return a 201 response with a success message
-    if (response.status === 'UPDATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation updated successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that reservation ID is provided
+    if (!id) {
+      // Throw a Boom bad request error if reservation ID is missing
+      throw Boom.badRequest('Reservation ID is required');
     }
 
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to update the reservation using the provided data and user ID
+    const result = await reservationManager.updateOne(Number(id), newData, userId);
+
+    // If the reservation is updated successfully, send a success response
+    return res.status(200).json({
+      success: true,
+      message: 'Reservation updated successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
+
   } catch (error) {
-    // Handle errors during the update process by returning a 503 error
+    // Handle errors during reservation update by sending a Boom error response
     const boomError = Boom.serverUnavailable(
       'Unable to update the reservation in the database',
       error

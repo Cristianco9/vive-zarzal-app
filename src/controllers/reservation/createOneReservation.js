@@ -18,27 +18,33 @@ import Boom from '@hapi/boom';
  */
 export const createOneReservation = async (req, res, next) => {
 
-  // Extract the new reservation data from the request body
-  const newReservation = {
-    serviceId: req.body.newReservationData.serviceId,
-  };
-
-  // Instantiate the ReservationServices class to manage the reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the service ID from the request body
+  const { serviceId } = req.body;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
+    // Validate that serviceId is provided
+    if (!serviceId) {
+      // Throw a Boom bad request error if serviceId is missing
+      throw Boom.badRequest('serviceId is required');
+    }
+
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
     // Attempt to create a new reservation using the provided data
-    const response = await reservationManager.createOne(newReservation);
+    const result = await reservationManager.createOne({ serviceId }, userId);
 
     // If the reservation is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    return res.status(201).json({
+      success: true,
+      message: 'Reservation created successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
 
   } catch (error) {
     // Handle errors during reservation creation by sending a Boom error response

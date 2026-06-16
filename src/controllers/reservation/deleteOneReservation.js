@@ -4,11 +4,11 @@ import { ReservationServices } from '../../services/reservationServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete a reservation.
+ * Controller function to delete an existing reservation.
  *
  * This function handles the request to delete an existing reservation by extracting
- * the reservation ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * the reservation ID from the request parameters and invoking the appropriate service
+ * method with user ownership validation.
  *
  * @param {Object} req - The request object containing the reservation ID.
  * @param {Object} res - The response object to send the outcome of the operation.
@@ -18,25 +18,33 @@ import Boom from '@hapi/boom';
  */
 export const deleteOneReservation = async (req, res, next) => {
 
-  // Extract the reservation ID from the request body
-  const { id } = req.body;
-
-  // Instantiate the ReservationServices class to manage the reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the reservation ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
-    // Attempt to delete the reservation by the provided ID
-    const response = await reservationManager.deleteOne(id);
+    // Validate that reservation ID is provided
+    if (!id) {
+      // Throw a Boom bad request error if reservation ID is missing
+      throw Boom.badRequest('Reservation ID is required');
+    }
+
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to delete the reservation using the provided ID and user ID
+    const result = await reservationManager.deleteOne(Number(id), userId);
 
     // If the reservation is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      message: 'Reservation deleted successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
 
   } catch (error) {
     // Handle errors during reservation deletion by sending a Boom error response
