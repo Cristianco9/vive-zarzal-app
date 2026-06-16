@@ -2,6 +2,8 @@
 import { ServiceImage } from '../db/models/serviceImageModel.js';
 // import the service model to validate the foreign key relation
 import { Service } from '../db/models/serviceModel.js';
+// import the business model to verify service ownership
+import { Business } from '../db/models/businessModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -56,26 +58,52 @@ export class ServiceImageServices {
   }
 
   /**
-   * Updates an existing service image by its identifier.
+   * Updates an existing service image by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceImageId - Identifier of the image to update.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceImageId, newData) {
+  async updateOne(serviceImageId, businessId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceImageId) {
+      throw Boom.badRequest('No service image ID provided');
+    }
+
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
-      // if the parent service is being changed, validate it exists
+      // First verify that the service image exists and belongs to a service owned by the specified business
+      const existingImage = await ServiceImage.findOne({
+        where: { id: serviceImageId },
+        include: [{
+          model: Service,
+          as: 'service',
+          where: { businessId: businessId }
+        }]
+      });
+
+      if (!existingImage) {
+        throw Boom.notFound('Service image not found or does not belong to a service owned by the specified business');
+      }
+
+      // if the parent service is being changed, validate it exists and belongs to the business
       if (newData.serviceId) {
-        const parentService = await Service.findByPk(newData.serviceId);
+        const parentService = await Service.findOne({
+          where: { id: newData.serviceId, businessId: businessId }
+        });
+        
         if (!parentService) {
-          throw Boom.notFound('Parent service not found');
+          throw Boom.notFound('Parent service not found or does not belong to the specified business');
         }
       }
 
@@ -106,20 +134,39 @@ export class ServiceImageServices {
   }
 
   /**
-   * Deletes a service image by its identifier.
+   * Deletes a service image by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceImageId - Identifier of the image to delete.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceImageId) {
+  async deleteOne(serviceImageId, businessId) {
 
     if (!serviceImageId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service image ID provided');
     }
 
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
+      // First verify that the service image exists and belongs to a service owned by the specified business
+      const existingImage = await ServiceImage.findOne({
+        where: { id: serviceImageId },
+        include: [{
+          model: Service,
+          as: 'service',
+          where: { businessId: businessId }
+        }]
+      });
+
+      if (!existingImage) {
+        throw Boom.notFound('Service image not found or does not belong to a service owned by the specified business');
+      }
+
       // destroy the record in the database
       const deletedRows = await ServiceImage.destroy({
         where: { id: serviceImageId }
