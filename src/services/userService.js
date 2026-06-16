@@ -6,21 +6,24 @@ import { Gender } from '../db/models/genderModel.js';
 import { DocumentType } from '../db/models/documentTypeModel.js';
 // import the user image model to expose the profile image relation
 import { UserImage } from '../db/models/userImageModel.js';
-// bcrypt is used to hash and never store plain-text passwords
-import bcrypt from 'bcrypt';
+// import the promise to encrypt the user's password
+import { hashPassword } from '../utils/auth/passwordHash.js';
+// import the module to sign a JWT
+import { signUserToken } from '../utils/auth/tokenSign.js';
+// bcrypt takes care of comparing the user's password
+import bcrypt from 'bcryptjs';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
-
-// number of salt rounds applied when hashing passwords
-const SALT_ROUNDS = 10;
+// import the configuration module
+import { config } from '../config/config.js';
 
 /**
  * Service layer for the "User" entity.
  *
  * A user belongs to a role ("roleId", required) and optionally to a gender
  * ("genderId") and a document type ("documentTypeId"). Email, username and
- * document number are unique. Passwords are always hashed with bcrypt before
- * being persisted and are excluded from every read response. Foreign keys are
+ * document number are unique. Passwords are always hashed before being
+ * persisted and are excluded from every read response. Foreign keys are
  * validated on every write operation to preserve referential integrity.
  *
  * Association aliases (defined in setupAssociations):
@@ -47,6 +50,51 @@ export class UserServices {
         { model: UserImage, as: 'profileImage' },
       ],
     };
+  }
+
+  /**
+   * Authenticates a user by username and password.
+   *
+   * @param {string} username - Username of the account.
+   * @param {string} password - Plain-text password to verify.
+   * @returns {Promise<Object>} Status object, including a JWT token on success.
+   * @throws {Boom} Internal error if the verification fails unexpectedly.
+   */
+  async login(username, password) {
+
+    try {
+      // Find the user by their username in the database
+      const userRecord = await User.findOne({
+        where: { username }
+      });
+
+      // if not found a user in the database
+      if (!userRecord) {
+        return { status: 'user not found' };
+      }
+
+      // Compare the provided password with the stored password hash
+      const validPassword = await bcrypt.compare(password, userRecord.password);
+
+      // If the password is not valid, reject the promise
+      if (!validPassword) {
+        return { status: 'wrong password' };
+      }
+
+      // Generate JWT token with user data
+      const userToken = signUserToken(
+        { id: userRecord.id },
+        config.authAppJwtKey,
+        '1h'
+      );
+
+      // Resolves the promise with the JWT token
+      return { status: 'logged', token: userToken };
+
+    } catch (error) {
+      // Return a Boom error if there's an exception
+      throw Boom.boomify(error, { message: 'Unable to verify user credentials' });
+    }
   }
 
   /**
@@ -115,7 +163,7 @@ export class UserServices {
       }
 
       // hash the password before storing it
-      const hashedPassword = await bcrypt.hash(newUser.password, SALT_ROUNDS);
+      const hash = await hashPassword(newUser.password);
 
       // create a new record in the database
       await User.create({
@@ -128,7 +176,7 @@ export class UserServices {
         documentNumber: newUser.documentNumber,
         email: newUser.email,
         username: newUser.username,
-        password: hashedPassword,
+        password: hash,
       });
 
       // return a success response
@@ -185,7 +233,7 @@ export class UserServices {
       // hash the new password if one was supplied
       const dataToUpdate = { ...newData };
       if (newData.password) {
-        dataToUpdate.password = await bcrypt.hash(newData.password, SALT_ROUNDS);
+        dataToUpdate.password = await hashPassword(newData.password);
       }
 
       // update the record in the database
@@ -291,6 +339,49 @@ export class UserServices {
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find users' });
+    }
+  }
+
+  /**
+   * Recovers (resets) a user's password identified by email.
+   *
+   * Locates the user by email, hashes the new password and persists it.
+   *
+   * @param {string} email - Email of the account to recover.
+   * @param {string} newPassword - New plain-text password to be hashed.
+   * @returns {Promise<Object>} Status object confirming the password change.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async recoverPassword(email, newPassword) {
+
+    if (!email || !newPassword) {
+      throw Boom.badRequest('Email and new password are required');
+    }
+
+    try {
+      // find the user by their email
+      const userRecord = await User.findOne({ where: { email } });
+
+      // if no user was found
+      if (!userRecord) {
+        throw Boom.notFound('User not found');
+      }
+
+      // hash the new password before storing it
+      const hash = await hashPassword(newPassword);
+
+      // persist the new password
+      await User.update(
+        { password: hash },
+        { where: { id: userRecord.id } }
+      );
+
+      // return a success response
+      return { status: 'PASSWORD UPDATED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to recover password' });
     }
   }
 
