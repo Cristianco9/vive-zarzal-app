@@ -65,21 +65,39 @@ export class ServiceReviewServices {
   }
 
   /**
-   * Updates an existing service review by its identifier.
+   * Updates an existing service review by its identifier, ensuring it belongs to the specified user.
    *
    * @param {number} serviceReviewId - Identifier of the review to update.
+   * @param {number} userId - Identifier of the user who should own the review.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceReviewId, newData) {
+  async updateOne(serviceReviewId, userId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceReviewId) {
+      throw Boom.badRequest('No service review ID provided');
+    }
+
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
     try {
+      // First verify that the service review exists and belongs to the specified user
+      const existingReview = await ServiceReview.findOne({
+        where: { id: serviceReviewId, userId: userId }
+      });
+
+      if (!existingReview) {
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
+      }
+
       // validate the service relation only when it is being changed
       if (newData.serviceId) {
         const parentService = await Service.findByPk(newData.serviceId);
@@ -105,13 +123,13 @@ export class ServiceReviewServices {
           rating: newData.rating,
         },
         {
-          where: { id: serviceReviewId }
+          where: { id: serviceReviewId, userId: userId }
         }
       );
 
-      // if no rows were affected, the review does not exist
+      // if no rows were affected, the review does not exist or doesn't belong to the user
       if (!updatedRows) {
-        throw Boom.notFound('Service review not found');
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
       }
 
       // return a success response
@@ -124,28 +142,42 @@ export class ServiceReviewServices {
   }
 
   /**
-   * Deletes a service review by its identifier.
+   * Deletes a service review by its identifier, ensuring it belongs to the specified user.
    *
    * @param {number} serviceReviewId - Identifier of the review to delete.
+   * @param {number} userId - Identifier of the user who should own the review.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceReviewId) {
+  async deleteOne(serviceReviewId, userId) {
 
     if (!serviceReviewId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service review ID provided');
     }
 
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
     try {
-      // destroy the record in the database
-      const deletedRows = await ServiceReview.destroy({
-        where: { id: serviceReviewId }
+      // First verify that the service review exists and belongs to the specified user
+      const existingReview = await ServiceReview.findOne({
+        where: { id: serviceReviewId, userId: userId }
       });
 
-      // if no rows were deleted, the review does not exist
+      if (!existingReview) {
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await ServiceReview.destroy({
+        where: { id: serviceReviewId, userId: userId }
+      });
+
+      // if no rows were deleted, the review does not exist or doesn't belong to the user
       if (!deletedRows) {
-        throw Boom.notFound('Service review not found');
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
       }
 
       // return a success response
@@ -213,6 +245,42 @@ export class ServiceReviewServices {
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find service reviews' });
+    }
+  }
+
+  /**
+   * Retrieves all service reviews that belong to a specific user.
+   *
+   * @param {number} userId - Identifier of the user.
+   * @returns {Promise<Object[]>} List of service reviews belonging to the user.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async listByUserId(userId) {
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
+    try {
+      // Verify if the user exists
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw Boom.notFound('User not found');
+      }
+
+      // Get all service reviews associated with the user
+      const serviceReviews = await ServiceReview.findAll({
+        where: { userId },
+        order: [['id', 'ASC']],
+        include: [
+          { model: Service, as: 'service' },
+          { model: User, as: 'user' },
+        ],
+      });
+
+      return serviceReviews.length ? serviceReviews : [];
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find service reviews for the user' });
     }
   }
 }
