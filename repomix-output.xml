@@ -236,9 +236,17 @@ src/middlewares/checkRoleHandler.js
 src/middlewares/errorHandler.js
 src/middlewares/tokenHandlers/authAppTokenHandler.js
 src/middlewares/validatorHandler.js
+src/router/ageRestrictionRouter.js
+src/router/BusinessReviewRouter.js
+src/router/businessRouter.js
+src/router/categoryRouter.js
+src/router/cityRouter.js
+src/router/countryRouter.js
+src/router/departmentRouter.js
+src/router/documentTypeRouter.js
+src/router/favoriteUserServiceRouter.js
 src/router/index.js
 src/router/UIRouter.js
-src/router/userRouter.js
 src/schemas/ageRestrictionSchema.js
 src/schemas/businessPhoneSchema.js
 src/schemas/businessReviewSchema.js
@@ -13407,6 +13415,1276 @@ export const validatorHandler = (schema, property) => {
 }
 </file>
 
+<file path="src/router/ageRestrictionRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// AGE RESTRICTION ROUTER
+// Entity: AgeRestriction | Table: restriccion_edad
+//
+// Defines and exposes the HTTP endpoints used to manage the "age restriction"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes 
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/age-restrictions  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the age restriction entity
+import { ageRestrictionSchema } from '../schemas/ageRestrictionSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single age restriction
+import { createOneAgeRestriction } from
+  '../controllers/ageRestriction/createOneAgeRestriction.js';
+// Controller to retrieve every age restriction
+import { listAllAgeRestrictions } from
+  '../controllers/ageRestriction/listAllAgeRestrictions.js';
+// Controller to retrieve a single age restriction by its ID
+import { listOneAgeRestriction } from
+  '../controllers/ageRestriction/listOneAgeRestriction.js';
+// Controller to update a single age restriction by its ID
+import { updateOneAgeRestriction } from
+  '../controllers/ageRestriction/updateOneAgeRestriction.js';
+// Controller to delete a single age restriction by its ID
+import { deleteOneAgeRestriction } from
+  '../controllers/ageRestriction/deleteOneAgeRestriction.js';
+
+// Create a new Router instance dedicated to the age restriction resource
+export const ageRestrictionRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /  →  Create a new age restriction
+// Body: { authentication, newAgeRestrictionData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+ageRestrictionRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(ageRestrictionSchema.newAgeRestrictionData, 'body'),
+  // Step 4: delegate to the controller
+  createOneAgeRestriction
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /  →  List all age restrictions
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+ageRestrictionRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllAgeRestrictions
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /:id  →  Retrieve a single age restriction by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+ageRestrictionRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(ageRestrictionSchema.getAgeRestrictionById, 'body'),
+  // Step 4: delegate to the controller
+  listOneAgeRestriction
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /:id  →  Update an existing age restriction by ID
+// Body: { authentication, id, newAgeRestrictionData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+ageRestrictionRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(ageRestrictionSchema.updateAgeRestrictionData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneAgeRestriction
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /:id  →  Delete an age restriction by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+ageRestrictionRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(ageRestrictionSchema.deleteAgeRestriction, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneAgeRestriction
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default ageRestrictionRouter;
+</file>
+
+<file path="src/router/BusinessReviewRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// BUSINESS REVIEW ROUTER
+// Entity: BusinessReview | Table: resena_negocio
+//
+// Defines and exposes the HTTP endpoints used to manage the "business review"
+// entity. A business review is written by a client (userId) about a business
+// (businessId). Every route is protected:
+//   - 'cliente'      → can create, update, delete, and list (all/one).
+//   - 'anunciante'    → can only list (all/one).
+//   - 'administrador' → can only list (all/one) and delete.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole([...]) → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/business-reviews  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the business review entity
+import { businessReviewSchema } from '../schemas/businessReviewSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single business review
+import { createOneBusinessReview } from
+  '../controllers/businessReview/createOneBusinessReview.js';
+// Controller to retrieve every business review
+import { listAllBusinessReviews } from
+  '../controllers/businessReview/listAllBusinessReviews.js';
+// Controller to retrieve a single business review by its ID
+import { listOneBusinessReview } from
+  '../controllers/businessReview/listOneBusinessReview.js';
+// Controller to update a single business review by its ID
+import { updateOneBusinessReview } from
+  '../controllers/businessReview/updateOneBusinessReview.js';
+// Controller to delete a single business review by its ID
+import { deleteOneBusinessReview } from
+  '../controllers/businessReview/deleteOneBusinessReview.js';
+
+// Create a new Router instance dedicated to the business review resource
+export const businessReviewRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new business review
+// Body: { authentication, newBusinessReviewData: { businessId, userId,
+//         rating, content? } }
+// ─────────────────────────────────────────────────────────────────────────────
+businessReviewRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the creation payload
+  validatorHandler(businessReviewSchema.newBusinessReviewData, 'body'),
+  // Step 4: delegate to the controller
+  createOneBusinessReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all business reviews
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+businessReviewRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllBusinessReviews
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single business review by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+businessReviewRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(businessReviewSchema.getBusinessReviewById, 'body'),
+  // Step 4: delegate to the controller
+  listOneBusinessReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing business review by ID
+// Body: { authentication, id, newBusinessReviewData: { rating?, content? } }
+// ─────────────────────────────────────────────────────────────────────────────
+businessReviewRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the update payload
+  validatorHandler(businessReviewSchema.updateBusinessReviewData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneBusinessReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a business review by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+businessReviewRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator and client role
+  checkRole(['administrador', 'cliente']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(businessReviewSchema.deleteBusinessReview, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneBusinessReview
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default businessReviewRouter;
+</file>
+
+<file path="src/router/businessRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// BUSINESS ROUTER
+// Entity: Business | Table: negocio
+//
+// Defines and exposes the HTTP endpoints used to manage the "business" entity.
+// A business is owned by exactly one user (ownerUserId) and may optionally be
+// tied to a location (locationId). Every route is protected and only users
+// whose JWT carries the 'anunciante' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'anunciante', 'cliente]) → authorizes 
+//      only the advertiser role to create, update, and delete. And the
+//      administrator can delete
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/businesses  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the business entity
+import { businessSchema } from '../schemas/businessSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single business
+import { createOneBusiness } from
+  '../controllers/business/createOneBusiness.js';
+// Controller to retrieve every business
+import { listAllBusinesses } from
+  '../controllers/business/listAllBusinesses.js';
+// Controller to retrieve a single business by its ID
+import { listOneBusiness } from
+  '../controllers/business/listOneBusiness.js';
+// Controller to update a single business by its ID
+import { updateOneBusiness } from
+  '../controllers/business/updateOneBusiness.js';
+// Controller to delete a single business by its ID
+import { deleteOneBusiness } from
+  '../controllers/business/deleteOneBusiness.js';
+
+// Create a new Router instance dedicated to the business resource
+export const businessRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /  →  Create a new business
+// Body: { authentication, newBusinessData: { ownerUserId, name, locationId?,
+//         description?, facebook?, instagram?, tiktok?, website? } }
+// ─────────────────────────────────────────────────────────────────────────────
+businessRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the creation payload
+  validatorHandler(businessSchema.newBusinessData, 'body'),
+  // Step 4: delegate to the controller
+  createOneBusiness
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /  →  List all businesses (with owner and location relations)
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+businessRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllBusinesses
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /:id  →  Retrieve a single business by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+businessRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(businessSchema.getBusinessById, 'body'),
+  // Step 4: delegate to the controller
+  listOneBusiness
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /:id  →  Update an existing business by ID
+// Body: { authentication, id, newBusinessData: { name?, locationId?,
+//         description?, facebook?, instagram?, tiktok?, website? } }
+// ─────────────────────────────────────────────────────────────────────────────
+businessRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(businessSchema.updateBusinessData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneBusiness
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /:id  →  Delete a business by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+businessRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator and advertiser role
+  checkRole(['administrador','anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(businessSchema.deleteBusiness, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneBusiness
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default businessRouter;
+</file>
+
+<file path="src/router/categoryRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// CATEGORY ROUTER
+// Entity: Category | Table: categoria
+//
+// Defines and exposes the HTTP endpoints used to manage the "category"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/categories  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the category entity
+import { categorySchema } from '../schemas/categorySchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single category
+import { createOneCategory } from
+  '../controllers/category/createOneCategory.js';
+// Controller to retrieve every category
+import { listAllCategories } from
+  '../controllers/category/listAllCategories.js';
+// Controller to retrieve a single category by its ID
+import { listOneCategory } from
+  '../controllers/category/listOneCategory.js';
+// Controller to update a single category by its ID
+import { updateOneCategory } from
+  '../controllers/category/updateOneCategory.js';
+// Controller to delete a single category by its ID
+import { deleteOneCategory } from
+  '../controllers/category/deleteOneCategory.js';
+
+// Create a new Router instance dedicated to the category resource
+export const categoryRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new category
+// Body: { authentication, newCategoryData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+categoryRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(categorySchema.newCategoryData, 'body'),
+  // Step 4: delegate to the controller
+  createOneCategory
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all categories
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+categoryRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllCategories
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single category by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+categoryRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(categorySchema.getCategoryById, 'body'),
+  // Step 4: delegate to the controller
+  listOneCategory
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update-one/:id  →  Update an existing category by ID
+// Body: { authentication, id, newCategoryData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+categoryRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(categorySchema.updateCategoryData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneCategory
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a category by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+categoryRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(categorySchema.deleteCategory, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneCategory
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default categoryRouter;
+</file>
+
+<file path="src/router/cityRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// CITY ROUTER
+// Entity: City | Table: ciudad
+//
+// Defines and exposes the HTTP endpoints used to manage the "city"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/cities  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the city entity
+import { citySchema } from '../schemas/citySchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single city
+import { createOneCity } from
+  '../controllers/city/createOneCity.js';
+// Controller to retrieve every city
+import { listAllCities } from
+  '../controllers/city/listAllCities.js';
+// Controller to retrieve a single city by its ID
+import { listOneCity } from
+  '../controllers/city/listOneCity.js';
+// Controller to update a single city by its ID
+import { updateOneCity } from
+  '../controllers/city/updateOneCity.js';
+// Controller to delete a single city by its ID
+import { deleteOneCity } from
+  '../controllers/city/deleteOneCity.js';
+
+// Create a new Router instance dedicated to the city resource
+export const cityRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new city
+// Body: { authentication, newCityData: { departmentId, name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+cityRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(citySchema.newCityData, 'body'),
+  // Step 4: delegate to the controller
+  createOneCity
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all cities
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+cityRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllCities
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single city by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+cityRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(citySchema.getCityById, 'body'),
+  // Step 4: delegate to the controller
+  listOneCity
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update-one/:id  →  Update an existing city by ID
+// Body: { authentication, id, newCityData: { departmentId?, name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+cityRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(citySchema.updateCityData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneCity
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a city by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+cityRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(citySchema.deleteCity, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneCity
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default cityRouter;
+</file>
+
+<file path="src/router/countryRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// COUNTRY ROUTER
+// Entity: Country | Table: pais
+//
+// Defines and exposes the HTTP endpoints used to manage the "country"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/countries  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the country entity
+import { countrySchema } from '../schemas/countrySchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single country
+import { createOneCountry } from
+  '../controllers/country/createOneCountry.js';
+// Controller to retrieve every country
+import { listAllCountries } from
+  '../controllers/country/listAllCountries.js';
+// Controller to retrieve a single country by its ID
+import { listOneCountry } from
+  '../controllers/country/listOneCountry.js';
+// Controller to update a single country by its ID
+import { updateOneCountry } from
+  '../controllers/country/updateOneCountry.js';
+// Controller to delete a single country by its ID
+import { deleteOneCountry } from
+  '../controllers/country/deleteOneCountry.js';
+
+// Create a new Router instance dedicated to the country resource
+export const countryRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new country
+// Body: { authentication, newCountryData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+countryRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(countrySchema.newCountryData, 'body'),
+  // Step 4: delegate to the controller
+  createOneCountry
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all countries
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+countryRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllCountries
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single country by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+countryRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(countrySchema.getCountryById, 'body'),
+  // Step 4: delegate to the controller
+  listOneCountry
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update-one/:id  →  Update an existing country by ID
+// Body: { authentication, id, newCountryData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+countryRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(countrySchema.updateCountryData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneCountry
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a country by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+countryRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(countrySchema.deleteCountry, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneCountry
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default countryRouter;
+</file>
+
+<file path="src/router/departmentRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// DEPARTMENT ROUTER
+// Entity: Department | Table: departamento
+//
+// Defines and exposes the HTTP endpoints used to manage the "department"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/departments  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the department entity
+import { departmentSchema } from '../schemas/departmentSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single department
+import { createOneDepartment } from
+  '../controllers/department/createOneDepartment.js';
+// Controller to retrieve every department
+import { listAllDepartments } from
+  '../controllers/department/listAllDepartments.js';
+// Controller to retrieve a single department by its ID
+import { listOneDepartment } from
+  '../controllers/department/listOneDepartment.js';
+// Controller to update a single department by its ID
+import { updateOneDepartment } from
+  '../controllers/department/updateOneDepartment.js';
+// Controller to delete a single department by its ID
+import { deleteOneDepartment } from
+  '../controllers/department/deleteOneDepartment.js';
+
+// Create a new Router instance dedicated to the department resource
+export const departmentRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new department
+// Body: { authentication, newDepartmentData: { countryId, name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+departmentRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(departmentSchema.newDepartmentData, 'body'),
+  // Step 4: delegate to the controller
+  createOneDepartment
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all departments
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+departmentRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllDepartments
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single department by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+departmentRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(departmentSchema.getDepartmentById, 'body'),
+  // Step 4: delegate to the controller
+  listOneDepartment
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update-one/:id  →  Update an existing department by ID
+// Body: { authentication, id, newDepartmentData: { countryId?, name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+departmentRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(departmentSchema.updateDepartmentData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneDepartment
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a department by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+departmentRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(departmentSchema.deleteDepartment, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneDepartment
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default departmentRouter;
+</file>
+
+<file path="src/router/documentTypeRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// DOCUMENT TYPE ROUTER
+// Entity: DocumentType | Table: tipo_documento
+//
+// Defines and exposes the HTTP endpoints used to manage the "document type"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/document-types  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the document type entity
+import { documentTypeSchema } from '../schemas/documentTypeSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single document type
+import { createOneDocumentType } from
+  '../controllers/documentType/createOneDocumentType.js';
+// Controller to retrieve every document type
+import { listAllDocumentTypes } from
+  '../controllers/documentType/listAllDocumentTypes.js';
+// Controller to retrieve a single document type by its ID
+import { listOneDocumentType } from
+  '../controllers/documentType/listOneDocumentType.js';
+// Controller to update a single document type by its ID
+import { updateOneDocumentType } from
+  '../controllers/documentType/updateOneDocumentType.js';
+// Controller to delete a single document type by its ID
+import { deleteOneDocumentType } from
+  '../controllers/documentType/deleteOneDocumentType.js';
+
+// Create a new Router instance dedicated to the document type resource
+export const documentTypeRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new document type
+// Body: { authentication, newDocumentTypeData: { name } }
+// ─────────────────────────────────────────────────────────────────────────────
+documentTypeRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(documentTypeSchema.newDocumentTypeData, 'body'),
+  // Step 4: delegate to the controller
+  createOneDocumentType
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all document types
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+documentTypeRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllDocumentTypes
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single document type by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+documentTypeRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(documentTypeSchema.getDocumentTypeById, 'body'),
+  // Step 4: delegate to the controller
+  listOneDocumentType
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update-one/:id  →  Update an existing document type by ID
+// Body: { authentication, id, newDocumentTypeData: { name? } }
+// ─────────────────────────────────────────────────────────────────────────────
+documentTypeRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(documentTypeSchema.updateDocumentTypeData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneDocumentType
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a document type by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+documentTypeRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(documentTypeSchema.deleteDocumentType, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneDocumentType
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default documentTypeRouter;
+</file>
+
+<file path="src/router/favoriteUserServiceRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// FAVORITE USER SERVICE ROUTER
+// Entity: ServiceFavorite | Table: servicio_favoritos_usuarios
+//
+// Defines and exposes the HTTP endpoints used to manage the "favorite user
+// service" junction entity (a user marking a service as favorite).
+//
+// Role matrix:
+//   - 'cliente'       → can create, delete, list one, and list by user.
+//   - 'administrador' → can ONLY list one, list all and list by user.
+//   - 'anunciante'     → has NO access to any route on this resource.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole([...]) → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/favorite-user-services  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the favorite user service entity
+import { favoriteUserServiceSchema } from '../schemas/favoriteUserServiceSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single favorite (user-service link)
+import { createOneFavoriteUserService } from
+  '../controllers/favoriteUserService/createOneFavoriteUserService.js';
+// Controller to retrieve every favorite
+import { listAllFavoriteUserServices } from
+  '../controllers/favoriteUserService/listAllFavoriteUserServices.js';
+// Controller to retrieve every favorite belonging to a specific user
+import { listAllFavoriteUserServicesByUser } from
+  '../controllers/favoriteUserService/listAllFavoriteUserServicesByUser.js';
+// Controller to retrieve a single favorite by its ID
+import { listOneFavoriteUserService } from
+  '../controllers/favoriteUserService/listOneFavoriteUserService.js';
+// Controller to delete a single favorite by its ID
+import { deleteOneFavoriteUserService } from
+  '../controllers/favoriteUserService/deleteOneFavoriteUserService.js';
+
+// Create a new Router instance dedicated to the favorite user service resource
+export const favoriteUserServiceRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Mark a service as favorite for a user
+// Body: { authentication, newFavoriteData: { userId, serviceId } }
+// ─────────────────────────────────────────────────────────────────────────────
+favoriteUserServiceRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the creation payload
+  validatorHandler(favoriteUserServiceSchema.newFavoriteData, 'body'),
+  // Step 4: delegate to the controller
+  createOneFavoriteUserService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List every favorite (with related user and service)
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+favoriteUserServiceRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllFavoriteUserServices
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all-by-user  →  List every favorite belonging to a specific user
+// Body: { authentication, userId }
+// ─────────────────────────────────────────────────────────────────────────────
+favoriteUserServiceRouter.get(
+  '/list-all-by-user',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize the administrator and the client role
+  checkRole(['administrador', 'cliente']),
+  // Step 3: validate that a valid user ID was provided
+  validatorHandler(favoriteUserServiceSchema.getFavoritesByUserId, 'body'),
+  // Step 4: delegate to the controller
+  listAllFavoriteUserServicesByUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single favorite by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+favoriteUserServiceRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize the administrator and the client role
+  checkRole(['administrador', 'cliente']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(favoriteUserServiceSchema.getFavoriteById, 'body'),
+  // Step 4: delegate to the controller
+  listOneFavoriteUserService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Remove a favorite by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+favoriteUserServiceRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(favoriteUserServiceSchema.deleteFavorite, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneFavoriteUserService
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default favoriteUserServiceRouter;
+</file>
+
 <file path="src/router/index.js">
 // Import the Router class from Express
 import { Router } from "express";
@@ -13462,40 +14740,6 @@ UIRouter.get(
   //checkApiKey,
   // Controller function to render a login template
   //loginForm
-);
-*/
-</file>
-
-<file path="src/router/userRouter.js">
-// Import the Router class from Express
-import { Router } from "express";
-// Import the middleware to verify tokens from the authentication app
-import { authAppVerifyToken } from
-'../middlewares/tokenHandlers/authAppTokenHandler.js';
-// Import the middleware to verify the API key from the client app
-import { checkApiKey } from '../middlewares/apiAuthHandler.js';
-// Import the middleware to verify the data types sended in the request
-import { validatorHandler  } from '../middlewares/validatorHandler.js';
-// Import the user data types schema
-//import { userSchema } from '../schemas/userSchema.js';
-// Import the controllers functions to authenticate and manage users    
-
-// Create a new Router instance
-
-export const userRouter = Router();
-
-// Define a POST route for users authentication
-/*
-userRouter.post(
-  // Route path to authenticate a users
-  //'/login',
-  // Middleware to validate the data type
-  //validatorHandler(userSchema, 'body'),
-  // Middleware to verify the API key sended by the client before
-  // proceeding to the controller
-  //checkApiKey,
-  // Controller function to login a user
-  //loginUser
 );
 */
 </file>
