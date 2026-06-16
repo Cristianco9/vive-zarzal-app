@@ -58,7 +58,7 @@ import { deleteOneBusiness } from
 export const businessRouter = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /  →  Create a new business
+// POST /create  →  Create a new business
 // Body: { authentication, newBusinessData: { ownerUserId, name, locationId?,
 //         description?, facebook?, instagram?, tiktok?, website? } }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ businessRouter.post(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /  →  List all businesses (with owner and location relations)
+// GET /list-all  →  List all businesses (with owner and location relations)
 // Body: { authentication }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.get(
@@ -89,7 +89,7 @@ businessRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /:id  →  Retrieve a single business by ID
+// GET /list-one/:id  →  Retrieve a single business by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.get(
@@ -105,7 +105,7 @@ businessRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /:id  →  Update an existing business by ID
+// PATCH /update/:id  →  Update an existing business by ID
 // Body: { authentication, id, newBusinessData: { name?, locationId?,
 //         description?, facebook?, instagram?, tiktok?, website? } }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ businessRouter.patch(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DELETE /:id  →  Delete a business by ID
+// DELETE /delete/:id  →  Delete a business by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.delete(

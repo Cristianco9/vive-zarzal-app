@@ -102,7 +102,7 @@ categoryRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing category by ID
+// PATCH /update/:id  →  Update an existing category by ID
 // Body: { authentication, id, newCategoryData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 categoryRouter.patch(

@@ -102,7 +102,7 @@ documentTypeRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing document type by ID
+// PATCH /update/:id  →  Update an existing document type by ID
 // Body: { authentication, id, newDocumentTypeData: { name? } }
 // ─────────────────────────────────────────────────────────────────────────────
 documentTypeRouter.patch(

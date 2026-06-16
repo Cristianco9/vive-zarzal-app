@@ -102,7 +102,7 @@ departmentRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing department by ID
+// PATCH /update/:id  →  Update an existing department by ID
 // Body: { authentication, id, newDepartmentData: { countryId?, name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 departmentRouter.patch(

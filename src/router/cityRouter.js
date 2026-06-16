@@ -102,7 +102,7 @@ cityRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing city by ID
+// PATCH /update/:id  →  Update an existing city by ID
 // Body: { authentication, id, newCityData: { departmentId?, name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 cityRouter.patch(

@@ -124,12 +124,14 @@ src/controllers/messageStatus/updateOneMessageStatus.js
 src/controllers/phone/createOnePhone.js
 src/controllers/phone/deleteOnePhone.js
 src/controllers/phone/listAllPhones.js
+src/controllers/phone/listAllPhonesByUser.js
 src/controllers/phone/listOnePhone.js
 src/controllers/phone/updateOnePhone.js
 src/controllers/reservation/createOneReservation.js
 src/controllers/reservation/deleteOneReservation.js
 src/controllers/reservation/listAllReservations.js
 src/controllers/reservation/listOneReservation.js
+src/controllers/reservation/listUserReservations.js
 src/controllers/reservation/updateOneReservation.js
 src/controllers/reservationStatus/createOneReservationStatus.js
 src/controllers/reservationStatus/deleteOneReservationStatus.js
@@ -144,6 +146,7 @@ src/controllers/role/updateOneRole.js
 src/controllers/service/createOneService.js
 src/controllers/service/deleteOneService.js
 src/controllers/service/listAllServices.js
+src/controllers/service/listByBusinessId.js
 src/controllers/service/listOneService.js
 src/controllers/service/updateOneService.js
 src/controllers/serviceImage/createOneServiceImage.js
@@ -155,6 +158,7 @@ src/controllers/serviceReview/createOneServiceReview.js
 src/controllers/serviceReview/deleteOneServiceReview.js
 src/controllers/serviceReview/listAllServiceReviews.js
 src/controllers/serviceReview/listOneServiceReview.js
+src/controllers/serviceReview/listServiceReviewsByUser.js
 src/controllers/serviceReview/updateOneServiceReview.js
 src/controllers/serviceStatus/createOneServiceStatus.js
 src/controllers/serviceStatus/deleteOneServiceStatus.js
@@ -245,7 +249,18 @@ src/router/countryRouter.js
 src/router/departmentRouter.js
 src/router/documentTypeRouter.js
 src/router/favoriteUserServiceRouter.js
+src/router/genderRouter.js
 src/router/index.js
+src/router/locationRouter.js
+src/router/messageRouter.js
+src/router/messageStatusRouter.js
+src/router/phoneRouter.js
+src/router/reservationsRouter.js
+src/router/reservationStatusRouter.js
+src/router/roleRouter.js
+src/router/serviceImageRouter.js
+src/router/serviceReviewRouter.js
+src/router/serviceRouter.js
 src/router/UIRouter.js
 src/schemas/ageRestrictionSchema.js
 src/schemas/businessPhoneSchema.js
@@ -5594,6 +5609,67 @@ export const listAllPhones = async (req, res, next) => {
 };
 </file>
 
+<file path="src/controllers/phone/listAllPhonesByUser.js">
+// Import the PhoneServices class from the phoneServices module
+import { PhoneServices } from '../../services/phoneServices.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to list all phones related to a specific user.
+ *
+ * This function handles the request to retrieve every phone associated with a
+ * given user, considering BOTH sources defined in the application context:
+ *   1. The user's personal phones   (User ↔ Phone via UserPhone).
+ *   2. The phones of the business the user owns, if any
+ *      (Business ↔ Phone via BusinessPhone).
+ *
+ * It extracts the user ID from the request body, invokes the appropriate service
+ * method, and returns the grouped result. If an error occurs, it is handled
+ * gracefully using Boom.
+ *
+ * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} res - The response object to send the user's phones.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the user's phones or an error.
+ */
+export const listAllPhonesByUser = async (req, res, next) => {
+
+  // Destructure the user ID from the request body
+  const { userId } = req.body;
+
+  // Instantiate the PhoneServices class to manage the phone operations
+  const phoneManager = new PhoneServices();
+
+  try {
+    // Attempt to retrieve all phones (personal + business) for the provided user
+    const userRecords = await phoneManager.listAllByUser(userId);
+
+    // If records are found, send a success response with the data
+    if (userRecords) {
+      return res.status(201).json({
+        success: true,
+        message: 'User phones retrieved successfully',
+        // Include the new token in the response
+        authentication: res.locals.newUserToken,
+        // Grouped result: personalPhones, businessPhones and combined allPhones
+        phones: userRecords
+      });
+    }
+
+  } catch (error) {
+    // Handle errors during retrieval by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to retrieve the user phones from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
 <file path="src/controllers/phone/listOnePhone.js">
 // Import the PhoneServices class from the phoneServices module
 import { PhoneServices } from '../../services/phoneServices.js';
@@ -5723,27 +5799,33 @@ import Boom from '@hapi/boom';
  */
 export const createOneReservation = async (req, res, next) => {
 
-  // Extract the new reservation data from the request body
-  const newReservation = {
-    serviceId: req.body.newReservationData.serviceId,
-  };
-
-  // Instantiate the ReservationServices class to manage the reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the service ID from the request body
+  const { serviceId } = req.body;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
+    // Validate that serviceId is provided
+    if (!serviceId) {
+      // Throw a Boom bad request error if serviceId is missing
+      throw Boom.badRequest('serviceId is required');
+    }
+
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
     // Attempt to create a new reservation using the provided data
-    const response = await reservationManager.createOne(newReservation);
+    const result = await reservationManager.createOne({ serviceId }, userId);
 
     // If the reservation is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    return res.status(201).json({
+      success: true,
+      message: 'Reservation created successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
 
   } catch (error) {
     // Handle errors during reservation creation by sending a Boom error response
@@ -5764,11 +5846,11 @@ import { ReservationServices } from '../../services/reservationServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete a reservation.
+ * Controller function to delete an existing reservation.
  *
  * This function handles the request to delete an existing reservation by extracting
- * the reservation ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * the reservation ID from the request parameters and invoking the appropriate service
+ * method with user ownership validation.
  *
  * @param {Object} req - The request object containing the reservation ID.
  * @param {Object} res - The response object to send the outcome of the operation.
@@ -5778,25 +5860,33 @@ import Boom from '@hapi/boom';
  */
 export const deleteOneReservation = async (req, res, next) => {
 
-  // Extract the reservation ID from the request body
-  const { id } = req.body;
-
-  // Instantiate the ReservationServices class to manage the reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the reservation ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
-    // Attempt to delete the reservation by the provided ID
-    const response = await reservationManager.deleteOne(id);
+    // Validate that reservation ID is provided
+    if (!id) {
+      // Throw a Boom bad request error if reservation ID is missing
+      throw Boom.badRequest('Reservation ID is required');
+    }
+
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to delete the reservation using the provided ID and user ID
+    const result = await reservationManager.deleteOne(Number(id), userId);
 
     // If the reservation is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      message: 'Reservation deleted successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
 
   } catch (error) {
     // Handle errors during reservation deletion by sending a Boom error response
@@ -5817,42 +5907,39 @@ import { ReservationServices } from '../../services/reservationServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to list all reservations.
+ * Controller function to retrieve all reservations.
  *
- * This function handles the request to retrieve all reservations from the database,
- * invoking the appropriate service method and returning a response with the list of records.
- * If an error occurs during the operation, it is handled gracefully using Boom.
+ * This function handles the request to retrieve all reservations in the system
+ * and is typically restricted to administrative users.
  *
  * @param {Object} req - The request object.
- * @param {Object} res - The response object to send the list of reservations.
+ * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the list of reservations.
+ * @returns {Promise<void>} - Returns a JSON response with all reservations.
  */
 export const listAllReservations = async (req, res, next) => {
 
-  // Instantiate the ReservationServices class to manage the reservation operations
-  const reservationManager = new ReservationServices();
-
   try {
-    // Attempt to retrieve all reservation records from the database
-    const allRecords = await reservationManager.listAll();
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to retrieve all reservations in the system
+    const reservations = await reservationManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservations retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        reservations: allRecords
-      });
-    }
+    // If the reservations are retrieved successfully, send them in the response
+    return res.status(200).json({
+      success: true,
+      message: 'All reservations retrieved successfully',
+      data: reservations,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
 
   } catch (error) {
-    // Handle errors during reservation retrieval by sending a Boom error response
+    // Handle errors during reservations retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to retrieve reservations from the database',
+      'Unable to retrieve all reservations from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -5868,46 +5955,104 @@ import { ReservationServices } from '../../services/reservationServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to retrieve a single reservation by ID.
+ * Controller function to retrieve a single reservation.
  *
- * This function handles the request to find a specific reservation in the database
- * based on the provided ID. It calls the appropriate service method and returns
- * the reservation data if found. If an error occurs or the record is not found, it is handled
- * appropriately using Boom.
+ * This function handles the request to retrieve a single reservation by extracting
+ * the reservation ID from the request parameters and invoking the appropriate service
+ * method with user ownership validation.
  *
- * @param {Object} req - The request object, expected to contain the reservation ID in the body.
- * @param {Object} res - The response object to send the reservation data if found.
+ * @param {Object} req - The request object containing the reservation ID.
+ * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the reservation data or an error.
+ * @returns {Promise<void>} - Returns a JSON response with the reservation data.
  */
 export const listOneReservation = async (req, res, next) => {
 
-  // Destructure the reservation ID from the request body
-  const { id } = req.body;
-
-  // Instantiate the ReservationServices class to manage reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the reservation ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
-    // Attempt to find the reservation record by ID
-    const record = await reservationManager.listOne(id);
-
-    // If the reservation record is found, send a success response with the data
-    if (record) {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation found successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        reservation: record
-      });
+    // Validate that reservation ID is provided
+    if (!id) {
+      // Throw a Boom bad request error if reservation ID is missing
+      throw Boom.badRequest('Reservation ID is required');
     }
 
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to retrieve the reservation using the provided ID and user ID
+    const reservation = await reservationManager.listOne(Number(id), userId);
+
+    // If the reservation is retrieved successfully, send it in the response
+    return res.status(200).json({
+      success: true,
+      message: 'Reservation retrieved successfully',
+      data: reservation,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
+
   } catch (error) {
-    // Handle errors during the retrieval process by sending a Boom error response
+    // Handle errors during reservation retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
       'Unable to retrieve the reservation from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/reservation/listUserReservations.js">
+// Import the ReservationServices class from the reservationServices module
+import { ReservationServices } from '../../services/reservationServices.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to retrieve all reservations for the authenticated user.
+ *
+ * This function handles the request to retrieve all reservations belonging to
+ * the authenticated user by extracting the user ID from the authenticated request
+ * and invoking the appropriate service method.
+ *
+ * @param {Object} req - The request object containing the authenticated user data.
+ * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the user's reservations.
+ */
+export const listUserReservations = async (req, res, next) => {
+
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
+
+  try {
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to retrieve all reservations for the authenticated user
+    const reservations = await reservationManager.listUserReservations(userId);
+
+    // If the reservations are retrieved successfully, send them in the response
+    return res.status(200).json({
+      success: true,
+      message: 'User reservations retrieved successfully',
+      data: reservations,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
+
+  } catch (error) {
+    // Handle errors during reservations retrieval by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to retrieve user reservations from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -5919,46 +6064,57 @@ export const listOneReservation = async (req, res, next) => {
 <file path="src/controllers/reservation/updateOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom to create HTTP-friendly error objects
+// Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to handle the update of a reservation.
+ * Controller function to update an existing reservation.
  *
- * This function processes requests to update a reservation's details in the database. It accepts
- * the reservation ID and the new data from the request body. If the update is successful,
- * it returns a success message. If there's an error, it handles the error appropriately.
+ * This function handles the request to update an existing reservation by extracting
+ * the reservation ID from the request parameters and the update data from the request body,
+ * then invoking the appropriate service method with user ownership validation.
  *
- * @param {Object} req - The request object, expected to contain the reservation ID and new data in the body.
- * @param {Object} res - The response object to send the result of the update operation.
+ * @param {Object} req - The request object containing the reservation ID and update data.
+ * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
+ * @returns {Promise<void>} - Returns a JSON response with the operation result.
  */
 export const updateOneReservation = async (req, res, next) => {
 
-  // Extract reservation ID and new reservation data from the request body
-  const { id, newReservationData } = req.body;
-
-  // Instantiate the ReservationServices class to manage reservation operations
-  const reservationManager = new ReservationServices();
+  // Extract the reservation ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the update data from the request body
+  const newData = req.body;
+  
+  // Extract the user ID from the authenticated request
+  const userId = req.user.id;
 
   try {
-    // Attempt to update the reservation details in the database
-    const response = await reservationManager.updateOne(id, newReservationData);
-
-    // If the update is successful, return a 201 response with a success message
-    if (response.status === 'UPDATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Reservation updated successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that reservation ID is provided
+    if (!id) {
+      // Throw a Boom bad request error if reservation ID is missing
+      throw Boom.badRequest('Reservation ID is required');
     }
 
+    // Instantiate the ReservationServices class to manage reservation operations
+    const reservationManager = new ReservationServices();
+    
+    // Attempt to update the reservation using the provided data and user ID
+    const result = await reservationManager.updateOne(Number(id), newData, userId);
+
+    // If the reservation is updated successfully, send a success response
+    return res.status(200).json({
+      success: true,
+      message: 'Reservation updated successfully',
+      data: result,
+      // Include the new token in the response if available
+      authentication: res.locals.newUserToken
+    });
+
   } catch (error) {
-    // Handle errors during the update process by returning a 503 error
+    // Handle errors during reservation update by sending a Boom error response
     const boomError = Boom.serverUnavailable(
       'Unable to update the reservation in the database',
       error
@@ -6514,50 +6670,42 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to create a new service.
  *
- * This function handles the request to create a new service by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * This function handles the request to create a new service in the database,
+ * invoking the appropriate service method and returning a response with the creation status.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service's data.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service data in body.
+ * @param {Object} req.body - The service data to create.
+ * @param {Object} res - The response object to send the creation status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the creation status.
  */
-export const createOneService = async (req, res, next) => {
+export const createService = async (req, res, next) => {
 
-  // Extract the new service data from the request body
-  const newService = {
-    name: req.body.newServiceData.name,
-    description: req.body.newServiceData.description,
-    price: req.body.newServiceData.price,
-    categoryId: req.body.newServiceData.categoryId,
-    statusId: req.body.newServiceData.statusId,
-    ageRestrictionId: req.body.newServiceData.ageRestrictionId,
-    businessId: req.body.newServiceData.businessId,
-  };
+  // Extract the service data from the request body
+  const serviceData = req.body;
 
   // Instantiate the ServiceServices class to manage the service operations
   const serviceManager = new ServiceServices();
 
   try {
-    // Attempt to create a new service using the provided data
-    const response = await serviceManager.createOne(newService);
+    // Attempt to create a new service record in the database
+    const creationResult = await serviceManager.createOne(serviceData);
 
-    // If the service is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    // Send a success response with the creation status
+    return res.status(201).json({
+      success: true,
+      message: 'Service created successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: creationResult
+    });
 
   } catch (error) {
     // Handle errors during service creation by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to create the service in the database',
+      'Unable to create service in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6567,50 +6715,68 @@ export const createOneService = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/deleteOneService.js">
-// Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to delete a service.
+ * Controller function to delete an existing service.
  *
- * This function handles the request to delete an existing service by extracting
- * the service ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * This function handles the request to delete a service from the database,
+ * ensuring that the service belongs to the specified business before allowing the deletion.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service ID.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service ID in params and business ID in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceId - The ID of the service to delete.
+ * @param {Object} req.body - The request body containing the business ID.
+ * @param {number} req.body.businessId - The ID of the business that should own the service.
+ * @param {Object} res - The response object to send the deletion status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the deletion status.
  */
-export const deleteOneService = async (req, res, next) => {
+export const deleteService = async (req, res, next) => {
 
-  // Extract the service ID from the request body
-  const { id } = req.body;
+  // Extract the serviceId from the request parameters
+  const { serviceId } = req.params;
+  
+  // Extract the businessId from the request body
+  const { businessId } = req.body;
 
   // Instantiate the ServiceServices class to manage the service operations
   const serviceManager = new ServiceServices();
 
   try {
-    // Attempt to delete the service by the provided ID
-    const response = await serviceManager.deleteOne(id);
-
-    // If the service is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceId parameter is provided and is a valid number
+    if (!serviceId || isNaN(parseInt(serviceId))) {
+      // If serviceId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service ID provided');
+      return next(boomError);
     }
+
+    // Validate that the businessId is provided and is a valid number
+    if (!businessId || isNaN(parseInt(businessId))) {
+      // If businessId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing business ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to delete the service record from the database
+    const deleteResult = await serviceManager.deleteOne(
+      parseInt(serviceId), 
+      parseInt(businessId)
+    );
+
+    // Send a success response with the deletion status
+    return res.status(200).json({
+      success: true,
+      message: 'Service deleted successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: deleteResult
+    });
 
   } catch (error) {
     // Handle errors during service deletion by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to delete the service from the database',
+      'Unable to delete service from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6620,11 +6786,6 @@ export const deleteOneService = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/listAllServices.js">
-// Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all services.
  *
@@ -6647,16 +6808,15 @@ export const listAllServices = async (req, res, next) => {
     // Attempt to retrieve all service records from the database
     const allRecords = await serviceManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Services retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        services: allRecords
-      });
-    }
+    // Send a success response with the retrieved services data
+    return res.status(200).json({
+      success: true,
+      message: 'Services retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      services: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service retrieval by sending a Boom error response
@@ -6670,53 +6830,111 @@ export const listAllServices = async (req, res, next) => {
 };
 </file>
 
-<file path="src/controllers/service/listOneService.js">
-// Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
+<file path="src/controllers/service/listByBusinessId.js">
 /**
- * Controller function to retrieve a single service by ID.
+ * Controller function to list all services belonging to a specific business.
  *
- * This function handles the request to find a specific service in the database
- * based on the provided ID. It calls the appropriate service method and returns
- * the service data if found. If an error occurs or the record is not found, it is handled
- * appropriately using Boom.
+ * This function handles the request to retrieve all services associated with a particular business
+ * from the database, invoking the appropriate service method and returning a response with the list of records.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the service ID in the body.
- * @param {Object} res - The response object to send the service data if found.
+ * @param {Object} req - The request object containing the business ID in params.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.businessId - The ID of the business whose services are to be retrieved.
+ * @param {Object} res - The response object to send the list of services.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the service data or an error.
+ * @returns {Promise<void>} - Returns a JSON response with the list of services for the specified business.
  */
-export const listOneService = async (req, res, next) => {
+export const listServicesByBusiness = async (req, res, next) => {
 
-  // Destructure the service ID from the request body
-  const { id } = req.body;
+  // Extract the businessId from the request parameters
+  const { businessId } = req.params;
 
-  // Instantiate the ServiceServices class to manage service operations
+  // Instantiate the ServiceServices class to manage the service operations
   const serviceManager = new ServiceServices();
 
   try {
-    // Attempt to find the service record by ID
-    const record = await serviceManager.listOne(id);
-
-    // If the service record is found, send a success response with the data
-    if (record) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service found successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        service: record
-      });
+    // Validate that the businessId parameter is provided and is a valid number
+    if (!businessId || isNaN(parseInt(businessId))) {
+      // If businessId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing business ID provided');
+      return next(boomError);
     }
 
+    // Attempt to retrieve all service records for the specified business from the database
+    const businessServices = await serviceManager.listByBusinessId(parseInt(businessId));
+
+    // Send a success response with the retrieved services data
+    return res.status(200).json({
+      success: true,
+      message: 'Services for the business retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      services: businessServices,
+      count: businessServices.length
+    });
+
   } catch (error) {
-    // Handle errors during the retrieval process by sending a Boom error response
+    // Handle errors during service retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to retrieve the service from the database',
+      'Unable to retrieve services for the business from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/service/listOneService.js">
+/**
+ * Controller function to retrieve a single service by its ID.
+ *
+ * This function handles the request to retrieve a specific service from the database,
+ * invoking the appropriate service method and returning a response with the service data.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
+ *
+ * @param {Object} req - The request object containing the service ID in params.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceId - The ID of the service to retrieve.
+ * @param {Object} res - The response object to send the service data.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the service data.
+ */
+export const getServiceById = async (req, res, next) => {
+
+  // Extract the serviceId from the request parameters
+  const { serviceId } = req.params;
+
+  // Instantiate the ServiceServices class to manage the service operations
+  const serviceManager = new ServiceServices();
+
+  try {
+    // Validate that the serviceId parameter is provided and is a valid number
+    if (!serviceId || isNaN(parseInt(serviceId))) {
+      // If serviceId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to retrieve the service record from the database
+    const service = await serviceManager.listOne(parseInt(serviceId));
+
+    // Send a success response with the service data
+    return res.status(200).json({
+      success: true,
+      message: 'Service retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      service: service
+    });
+
+  } catch (error) {
+    // Handle errors during service retrieval by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to retrieve service from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6787,46 +7005,42 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to create a new service image.
  *
- * This function handles the request to create a new service image by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * This function handles the request to create a new service image in the database,
+ * invoking the appropriate service method and returning a response with the creation status.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service image's data.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service image data in body.
+ * @param {Object} req.body - The service image data to create.
+ * @param {Object} res - The response object to send the creation status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the creation status.
  */
-export const createOneServiceImage = async (req, res, next) => {
+export const createServiceImage = async (req, res, next) => {
 
-  // Extract the new service image data from the request body
-  const newServiceImage = {
-    imageUrl: req.body.newServiceImageData.imageUrl,
-    description: req.body.newServiceImageData.description,
-    serviceId: req.body.newServiceImageData.serviceId,
-  };
+  // Extract the service image data from the request body
+  const serviceImageData = req.body;
 
   // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to create a new service image using the provided data
-    const response = await serviceImageManager.createOne(newServiceImage);
+    // Attempt to create a new service image record in the database
+    const creationResult = await serviceImageManager.createOne(serviceImageData);
 
-    // If the service image is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    // Send a success response with the creation status
+    return res.status(201).json({
+      success: true,
+      message: 'Service image created successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: creationResult
+    });
 
   } catch (error) {
     // Handle errors during service image creation by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to create the service image in the database',
+      'Unable to create service image in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6836,50 +7050,68 @@ export const createOneServiceImage = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/deleteOneServiceImage.js">
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to delete a service image.
+ * Controller function to delete an existing service image.
  *
- * This function handles the request to delete an existing service image by extracting
- * the service image ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * This function handles the request to delete a service image from the database,
+ * ensuring that the service image belongs to a service owned by the specified business.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service image ID.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service image ID in params and business ID in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceImageId - The ID of the service image to delete.
+ * @param {Object} req.body - The request body containing the business ID.
+ * @param {number} req.body.businessId - The ID of the business that should own the service.
+ * @param {Object} res - The response object to send the deletion status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the deletion status.
  */
-export const deleteOneServiceImage = async (req, res, next) => {
+export const deleteServiceImage = async (req, res, next) => {
 
-  // Extract the service image ID from the request body
-  const { id } = req.body;
+  // Extract the serviceImageId from the request parameters
+  const { serviceImageId } = req.params;
+  
+  // Extract the businessId from the request body
+  const { businessId } = req.body;
 
   // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to delete the service image by the provided ID
-    const response = await serviceImageManager.deleteOne(id);
-
-    // If the service image is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceImageId parameter is provided and is a valid number
+    if (!serviceImageId || isNaN(parseInt(serviceImageId))) {
+      // If serviceImageId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service image ID provided');
+      return next(boomError);
     }
+
+    // Validate that the businessId is provided and is a valid number
+    if (!businessId || isNaN(parseInt(businessId))) {
+      // If businessId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing business ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to delete the service image record from the database
+    const deleteResult = await serviceImageManager.deleteOne(
+      parseInt(serviceImageId), 
+      parseInt(businessId)
+    );
+
+    // Send a success response with the deletion status
+    return res.status(200).json({
+      success: true,
+      message: 'Service image deleted successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: deleteResult
+    });
 
   } catch (error) {
     // Handle errors during service image deletion by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to delete the service image from the database',
+      'Unable to delete service image from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6889,11 +7121,6 @@ export const deleteOneServiceImage = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/listAllServiceImages.js">
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all service images.
  *
@@ -6916,16 +7143,15 @@ export const listAllServiceImages = async (req, res, next) => {
     // Attempt to retrieve all service image records from the database
     const allRecords = await serviceImageManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service images retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceImages: allRecords
-      });
-    }
+    // Send a success response with the retrieved service images data
+    return res.status(200).json({
+      success: true,
+      message: 'Service images retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceImages: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service image retrieval by sending a Boom error response
@@ -6940,52 +7166,53 @@ export const listAllServiceImages = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/listOneServiceImage.js">
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to retrieve a single service image by ID.
+ * Controller function to retrieve a single service image by its ID.
  *
- * This function handles the request to find a specific service image in the database
- * based on the provided ID. It calls the appropriate service method and returns
- * the service image data if found. If an error occurs or the record is not found, it is handled
- * appropriately using Boom.
+ * This function handles the request to retrieve a specific service image from the database,
+ * invoking the appropriate service method and returning a response with the service image data.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the service image ID in the body.
- * @param {Object} res - The response object to send the service image data if found.
+ * @param {Object} req - The request object containing the service image ID in params.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceImageId - The ID of the service image to retrieve.
+ * @param {Object} res - The response object to send the service image data.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the service image data or an error.
+ * @returns {Promise<void>} - Returns a JSON response with the service image data.
  */
-export const listOneServiceImage = async (req, res, next) => {
+export const getServiceImageById = async (req, res, next) => {
 
-  // Destructure the service image ID from the request body
-  const { id } = req.body;
+  // Extract the serviceImageId from the request parameters
+  const { serviceImageId } = req.params;
 
-  // Instantiate the ServiceImageServices class to manage service image operations
+  // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to find the service image record by ID
-    const record = await serviceImageManager.listOne(id);
-
-    // If the service image record is found, send a success response with the data
-    if (record) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image found successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceImage: record
-      });
+    // Validate that the serviceImageId parameter is provided and is a valid number
+    if (!serviceImageId || isNaN(parseInt(serviceImageId))) {
+      // If serviceImageId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service image ID provided');
+      return next(boomError);
     }
 
+    // Attempt to retrieve the service image record from the database
+    const serviceImage = await serviceImageManager.listOne(parseInt(serviceImageId));
+
+    // Send a success response with the service image data
+    return res.status(200).json({
+      success: true,
+      message: 'Service image retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceImage: serviceImage
+    });
+
   } catch (error) {
-    // Handle errors during the retrieval process by sending a Boom error response
+    // Handle errors during service image retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to retrieve the service image from the database',
+      'Unable to retrieve service image from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -6995,50 +7222,69 @@ export const listOneServiceImage = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/updateOneServiceImage.js">
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom to create HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to handle the update of a service image.
+ * Controller function to update an existing service image.
  *
- * This function processes requests to update a service image's details in the database. It accepts
- * the service image ID and the new data from the request body. If the update is successful,
- * it returns a success message. If there's an error, it handles the error appropriately.
+ * This function handles the request to update a service image in the database,
+ * ensuring that the service image belongs to a service owned by the specified business.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the service image ID and new data in the body.
- * @param {Object} res - The response object to send the result of the update operation.
+ * @param {Object} req - The request object containing the service image ID in params and update data in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceImageId - The ID of the service image to update.
+ * @param {Object} req.body - The service image update data.
+ * @param {number} req.body.businessId - The ID of the business that should own the service.
+ * @param {Object} res - The response object to send the update status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
+ * @returns {Promise<void>} - Returns a JSON response with the update status.
  */
-export const updateOneServiceImage = async (req, res, next) => {
+export const updateServiceImage = async (req, res, next) => {
 
-  // Extract service image ID and new service image data from the request body
-  const { id, newServiceImageData } = req.body;
+  // Extract the serviceImageId from the request parameters
+  const { serviceImageId } = req.params;
+  
+  // Extract the update data and businessId from the request body
+  const { businessId, ...updateData } = req.body;
 
-  // Instantiate the ServiceImageServices class to manage service image operations
+  // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to update the service image details in the database
-    const response = await serviceImageManager.updateOne(id, newServiceImageData);
-
-    // If the update is successful, return a 201 response with a success message
-    if (response.status === 'UPDATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image updated successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceImageId parameter is provided and is a valid number
+    if (!serviceImageId || isNaN(parseInt(serviceImageId))) {
+      // If serviceImageId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service image ID provided');
+      return next(boomError);
     }
 
+    // Validate that the businessId is provided and is a valid number
+    if (!businessId || isNaN(parseInt(businessId))) {
+      // If businessId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing business ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to update the service image record in the database
+    const updateResult = await serviceImageManager.updateOne(
+      parseInt(serviceImageId), 
+      parseInt(businessId), 
+      updateData
+    );
+
+    // Send a success response with the update status
+    return res.status(200).json({
+      success: true,
+      message: 'Service image updated successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: updateResult
+    });
+
   } catch (error) {
-    // Handle errors during the update process by returning a 503 error
+    // Handle errors during service image update by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to update the service image in the database',
+      'Unable to update service image in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -7056,47 +7302,42 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to create a new service review.
  *
- * This function handles the request to create a new service review by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * This function handles the request to create a new service review in the database,
+ * invoking the appropriate service method and returning a response with the creation status.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review's data.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service review data in body.
+ * @param {Object} req.body - The service review data to create.
+ * @param {Object} res - The response object to send the creation status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the creation status.
  */
-export const createOneServiceReview = async (req, res, next) => {
+export const createServiceReview = async (req, res, next) => {
 
-  // Extract the new service review data from the request body
-  const newServiceReview = {
-    serviceId: req.body.newServiceReviewData.serviceId,
-    userId: req.body.newServiceReviewData.userId,
-    content: req.body.newServiceReviewData.content,
-    rating: req.body.newServiceReviewData.rating,
-  };
+  // Extract the service review data from the request body
+  const serviceReviewData = req.body;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Attempt to create a new service review using the provided data
-    const response = await serviceReviewManager.createOne(newServiceReview);
+    // Attempt to create a new service review record in the database
+    const creationResult = await serviceReviewManager.createOne(serviceReviewData);
 
-    // If the service review is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service review created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    // Send a success response with the creation status
+    return res.status(201).json({
+      success: true,
+      message: 'Service review created successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: creationResult
+    });
 
   } catch (error) {
     // Handle errors during service review creation by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to create the service review in the database',
+      'Unable to create service review in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -7106,50 +7347,68 @@ export const createOneServiceReview = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceReview/deleteOneServiceReview.js">
-// Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to delete a service review.
+ * Controller function to delete an existing service review.
  *
- * This function handles the request to delete an existing service review by extracting
- * the service review ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * This function handles the request to delete a service review from the database,
+ * ensuring that the service review belongs to the specified user.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review ID.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service review ID in params and user ID in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceReviewId - The ID of the service review to delete.
+ * @param {Object} req.body - The request body containing the user ID.
+ * @param {number} req.body.userId - The ID of the user who should own the review.
+ * @param {Object} res - The response object to send the deletion status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the deletion status.
  */
-export const deleteOneServiceReview = async (req, res, next) => {
+export const deleteServiceReview = async (req, res, next) => {
 
-  // Extract the service review ID from the request body
-  const { id } = req.body;
+  // Extract the serviceReviewId from the request parameters
+  const { serviceReviewId } = req.params;
+  
+  // Extract the userId from the request body
+  const { userId } = req.body;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Attempt to delete the service review by the provided ID
-    const response = await serviceReviewManager.deleteOne(id);
-
-    // If the service review is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service review deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceReviewId parameter is provided and is a valid number
+    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
+      // If serviceReviewId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
+      return next(boomError);
     }
+
+    // Validate that the userId is provided and is a valid number
+    if (!userId || isNaN(parseInt(userId))) {
+      // If userId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing user ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to delete the service review record from the database
+    const deleteResult = await serviceReviewManager.deleteOne(
+      parseInt(serviceReviewId), 
+      parseInt(userId)
+    );
+
+    // Send a success response with the deletion status
+    return res.status(200).json({
+      success: true,
+      message: 'Service review deleted successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: deleteResult
+    });
 
   } catch (error) {
     // Handle errors during service review deletion by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to delete the service review from the database',
+      'Unable to delete service review from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -7159,11 +7418,6 @@ export const deleteOneServiceReview = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceReview/listAllServiceReviews.js">
-// Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all service reviews.
  *
@@ -7186,16 +7440,15 @@ export const listAllServiceReviews = async (req, res, next) => {
     // Attempt to retrieve all service review records from the database
     const allRecords = await serviceReviewManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service reviews retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceReviews: allRecords
-      });
-    }
+    // Send a success response with the retrieved service reviews data
+    return res.status(200).json({
+      success: true,
+      message: 'Service reviews retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceReviews: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service review retrieval by sending a Boom error response
@@ -7210,52 +7463,110 @@ export const listAllServiceReviews = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceReview/listOneServiceReview.js">
-// Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to retrieve a single service review by ID.
+ * Controller function to retrieve a single service review by its ID.
  *
- * This function handles the request to find a specific service review in the database
- * based on the provided ID. It calls the appropriate service method and returns
- * the service review data if found. If an error occurs or the record is not found, it is handled
- * appropriately using Boom.
+ * This function handles the request to retrieve a specific service review from the database,
+ * invoking the appropriate service method and returning a response with the service review data.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the service review ID in the body.
- * @param {Object} res - The response object to send the service review data if found.
+ * @param {Object} req - The request object containing the service review ID in params.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceReviewId - The ID of the service review to retrieve.
+ * @param {Object} res - The response object to send the service review data.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the service review data or an error.
+ * @returns {Promise<void>} - Returns a JSON response with the service review data.
  */
-export const listOneServiceReview = async (req, res, next) => {
+export const getServiceReviewById = async (req, res, next) => {
 
-  // Destructure the service review ID from the request body
-  const { id } = req.body;
+  // Extract the serviceReviewId from the request parameters
+  const { serviceReviewId } = req.params;
 
-  // Instantiate the ServiceReviewServices class to manage service review operations
+  // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Attempt to find the service review record by ID
-    const record = await serviceReviewManager.listOne(id);
-
-    // If the service review record is found, send a success response with the data
-    if (record) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service review found successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceReview: record
-      });
+    // Validate that the serviceReviewId parameter is provided and is a valid number
+    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
+      // If serviceReviewId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
+      return next(boomError);
     }
 
+    // Attempt to retrieve the service review record from the database
+    const serviceReview = await serviceReviewManager.listOne(parseInt(serviceReviewId));
+
+    // Send a success response with the service review data
+    return res.status(200).json({
+      success: true,
+      message: 'Service review retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceReview: serviceReview
+    });
+
   } catch (error) {
-    // Handle errors during the retrieval process by sending a Boom error response
+    // Handle errors during service review retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to retrieve the service review from the database',
+      'Unable to retrieve service review from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/serviceReview/listServiceReviewsByUser.js">
+/**
+ * Controller function to list all service reviews that belong to a specific user.
+ *
+ * This function handles the request to retrieve all service reviews associated with a user,
+ * invoking the appropriate service method and returning a response with the list of records.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
+ *
+ * @param {Object} req - The request object containing the user ID in params.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.userId - The ID of the user whose reviews to retrieve.
+ * @param {Object} res - The response object to send the list of service reviews.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the list of service reviews.
+ */
+export const listServiceReviewsByUser = async (req, res, next) => {
+
+  // Extract the userId from the request parameters
+  const { userId } = req.params;
+
+  // Instantiate the ServiceReviewServices class to manage the service review operations
+  const serviceReviewManager = new ServiceReviewServices();
+
+  try {
+    // Validate that the userId parameter is provided and is a valid number
+    if (!userId || isNaN(parseInt(userId))) {
+      // If userId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing user ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to retrieve all service reviews for the specified user
+    const userReviews = await serviceReviewManager.listByUserId(parseInt(userId));
+
+    // Send a success response with the retrieved service reviews data
+    return res.status(200).json({
+      success: true,
+      message: 'User service reviews retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceReviews: userReviews,
+      count: userReviews.length
+    });
+
+  } catch (error) {
+    // Handle errors during service review retrieval by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to retrieve user service reviews from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -7265,50 +7576,69 @@ export const listOneServiceReview = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceReview/updateOneServiceReview.js">
-// Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
-// Import Boom to create HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to handle the update of a service review.
+ * Controller function to update an existing service review.
  *
- * This function processes requests to update a service review's details in the database. It accepts
- * the service review ID and the new data from the request body. If the update is successful,
- * it returns a success message. If there's an error, it handles the error appropriately.
+ * This function handles the request to update a service review in the database,
+ * ensuring that the service review belongs to the specified user.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the service review ID and new data in the body.
- * @param {Object} res - The response object to send the result of the update operation.
+ * @param {Object} req - The request object containing the service review ID in params and update data in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceReviewId - The ID of the service review to update.
+ * @param {Object} req.body - The service review update data.
+ * @param {number} req.body.userId - The ID of the user who should own the review.
+ * @param {Object} res - The response object to send the update status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
+ * @returns {Promise<void>} - Returns a JSON response with the update status.
  */
-export const updateOneServiceReview = async (req, res, next) => {
+export const updateServiceReview = async (req, res, next) => {
 
-  // Extract service review ID and new service review data from the request body
-  const { id, newServiceReviewData } = req.body;
+  // Extract the serviceReviewId from the request parameters
+  const { serviceReviewId } = req.params;
+  
+  // Extract the update data and userId from the request body
+  const { userId, ...updateData } = req.body;
 
-  // Instantiate the ServiceReviewServices class to manage service review operations
+  // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Attempt to update the service review details in the database
-    const response = await serviceReviewManager.updateOne(id, newServiceReviewData);
-
-    // If the update is successful, return a 201 response with a success message
-    if (response.status === 'UPDATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service review updated successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceReviewId parameter is provided and is a valid number
+    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
+      // If serviceReviewId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
+      return next(boomError);
     }
 
+    // Validate that the userId is provided and is a valid number
+    if (!userId || isNaN(parseInt(userId))) {
+      // If userId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing user ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to update the service review record in the database
+    const updateResult = await serviceReviewManager.updateOne(
+      parseInt(serviceReviewId), 
+      parseInt(userId), 
+      updateData
+    );
+
+    // Send a success response with the update status
+    return res.status(200).json({
+      success: true,
+      message: 'Service review updated successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: updateResult
+    });
+
   } catch (error) {
-    // Handle errors during the update process by returning a 503 error
+    // Handle errors during service review update by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to update the service review in the database',
+      'Unable to update service review in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
@@ -13474,7 +13804,7 @@ import { deleteOneAgeRestriction } from
 export const ageRestrictionRouter = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /  →  Create a new age restriction
+// POST /create  →  Create a new age restriction
 // Body: { authentication, newAgeRestrictionData: { name, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.post(
@@ -13490,7 +13820,7 @@ ageRestrictionRouter.post(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /  →  List all age restrictions
+// GET /list-all  →  List all age restrictions
 // Body: { authentication }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.get(
@@ -13504,7 +13834,7 @@ ageRestrictionRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /:id  →  Retrieve a single age restriction by ID
+// GET /list-one/:id  →  Retrieve a single age restriction by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.get(
@@ -13520,7 +13850,7 @@ ageRestrictionRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /:id  →  Update an existing age restriction by ID
+// PATCH /update/:id  →  Update an existing age restriction by ID
 // Body: { authentication, id, newAgeRestrictionData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.patch(
@@ -13536,7 +13866,7 @@ ageRestrictionRouter.patch(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DELETE /:id  →  Delete an age restriction by ID
+// DELETE /delete/:id  →  Delete an age restriction by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.delete(
@@ -13759,7 +14089,7 @@ import { deleteOneBusiness } from
 export const businessRouter = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /  →  Create a new business
+// POST /create  →  Create a new business
 // Body: { authentication, newBusinessData: { ownerUserId, name, locationId?,
 //         description?, facebook?, instagram?, tiktok?, website? } }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -13776,7 +14106,7 @@ businessRouter.post(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /  →  List all businesses (with owner and location relations)
+// GET /list-all  →  List all businesses (with owner and location relations)
 // Body: { authentication }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.get(
@@ -13790,7 +14120,7 @@ businessRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /:id  →  Retrieve a single business by ID
+// GET /list-one/:id  →  Retrieve a single business by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.get(
@@ -13806,7 +14136,7 @@ businessRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /:id  →  Update an existing business by ID
+// PATCH /update/:id  →  Update an existing business by ID
 // Body: { authentication, id, newBusinessData: { name?, locationId?,
 //         description?, facebook?, instagram?, tiktok?, website? } }
 // ─────────────────────────────────────────────────────────────────────────────
@@ -13823,7 +14153,7 @@ businessRouter.patch(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DELETE /:id  →  Delete a business by ID
+// DELETE /delete/:id  →  Delete a business by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 businessRouter.delete(
@@ -13947,7 +14277,7 @@ categoryRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing category by ID
+// PATCH /update/:id  →  Update an existing category by ID
 // Body: { authentication, id, newCategoryData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 categoryRouter.patch(
@@ -14087,7 +14417,7 @@ cityRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing city by ID
+// PATCH /update/:id  →  Update an existing city by ID
 // Body: { authentication, id, newCityData: { departmentId?, name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 cityRouter.patch(
@@ -14227,7 +14557,7 @@ countryRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing country by ID
+// PATCH /update/:id  →  Update an existing country by ID
 // Body: { authentication, id, newCountryData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 countryRouter.patch(
@@ -14367,7 +14697,7 @@ departmentRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing department by ID
+// PATCH /update/:id  →  Update an existing department by ID
 // Body: { authentication, id, newDepartmentData: { countryId?, name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 departmentRouter.patch(
@@ -14507,7 +14837,7 @@ documentTypeRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing document type by ID
+// PATCH /update/:id  →  Update an existing document type by ID
 // Body: { authentication, id, newDocumentTypeData: { name? } }
 // ─────────────────────────────────────────────────────────────────────────────
 documentTypeRouter.patch(
@@ -14634,11 +14964,11 @@ favoriteUserServiceRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /list-all-by-user  →  List every favorite belonging to a specific user
+// GET /list-all-by-user/:id  →  List every favorite belonging to a specific user
 // Body: { authentication, userId }
 // ─────────────────────────────────────────────────────────────────────────────
 favoriteUserServiceRouter.get(
-  '/list-all-by-user',
+  '/list-all-by-user/:id',
   // Step 1: verify the session token
   authAppVerifyToken,
   // Step 2: authorize the administrator and the client role
@@ -14685,6 +15015,146 @@ favoriteUserServiceRouter.delete(
 export default favoriteUserServiceRouter;
 </file>
 
+<file path="src/router/genderRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// GENDER ROUTER
+// Entity: Gender | Table: genero
+//
+// Defines and exposes the HTTP endpoints used to manage the "gender"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/genders  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the gender entity
+import { genderSchema } from '../schemas/genderSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single gender
+import { createOneGender } from
+  '../controllers/gender/createOneGender.js';
+// Controller to retrieve every gender
+import { listAllGenders } from
+  '../controllers/gender/listAllGenders.js';
+// Controller to retrieve a single gender by its ID
+import { listOneGender } from
+  '../controllers/gender/listOneGender.js';
+// Controller to update a single gender by its ID
+import { updateOneGender } from
+  '../controllers/gender/updateOneGender.js';
+// Controller to delete a single gender by its ID
+import { deleteOneGender } from
+  '../controllers/gender/deleteOneGender.js';
+
+// Create a new Router instance dedicated to the gender resource
+export const genderRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new gender
+// Body: { authentication, newGenderData: { name } }
+// ─────────────────────────────────────────────────────────────────────────────
+genderRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(genderSchema.newGenderData, 'body'),
+  // Step 4: delegate to the controller
+  createOneGender
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all genders
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+genderRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllGenders
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single gender by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+genderRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(genderSchema.getGenderById, 'body'),
+  // Step 4: delegate to the controller
+  listOneGender
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing gender by ID
+// Body: { authentication, id, newGenderData: { name? } }
+// ─────────────────────────────────────────────────────────────────────────────
+genderRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(genderSchema.updateGenderData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneGender
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a gender by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+genderRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(genderSchema.deleteGender, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneGender
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default genderRouter;
+</file>
+
 <file path="src/router/index.js">
 // Import the Router class from Express
 import { Router } from "express";
@@ -14711,6 +15181,1386 @@ const routerApi = (app) => {
 
 // Export the routerApi function for use in other parts of the application
 export default routerApi;
+</file>
+
+<file path="src/router/locationRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// LOCATION ROUTER
+// Entity: Location | Table: ubicacion
+//
+// Defines and exposes the HTTP endpoints used to manage the "location"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/locations  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the location entity
+import { locationSchema } from '../schemas/locationSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single location
+import { createOneLocation } from
+  '../controllers/location/createOneLocation.js';
+// Controller to retrieve every location
+import { listAllLocations } from
+  '../controllers/location/listAllLocations.js';
+// Controller to retrieve a single location by its ID
+import { listOneLocation } from
+  '../controllers/location/listOneLocation.js';
+// Controller to update a single location by its ID
+import { updateOneLocation } from
+  '../controllers/location/updateOneLocation.js';
+// Controller to delete a single location by its ID
+import { deleteOneLocation } from
+  '../controllers/location/deleteOneLocation.js';
+
+// Create a new Router instance dedicated to the location resource
+export const locationRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new location
+// Body: { authentication, newLocationData: { cityId, name, description?, code? } }
+// ─────────────────────────────────────────────────────────────────────────────
+locationRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(locationSchema.newLocationData, 'body'),
+  // Step 4: delegate to the controller
+  createOneLocation
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all locations
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+locationRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllLocations
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single location by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+locationRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(locationSchema.getLocationById, 'body'),
+  // Step 4: delegate to the controller
+  listOneLocation
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing location by ID
+// Body: { authentication, id, newLocationData: { cityId?, name?, description?, code? } }
+// ─────────────────────────────────────────────────────────────────────────────
+locationRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(locationSchema.updateLocationData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneLocation
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a location by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+locationRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(locationSchema.deleteLocation, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneLocation
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default locationRouter;
+</file>
+
+<file path="src/router/messageRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// MESSAGE ROUTER
+// Entity: Message | Table: mensaje
+//
+// Defines and exposes the HTTP endpoints used to manage the "message" entity
+// (direct messages exchanged between two users).
+//
+// Role matrix:
+//   - 'cliente' / 'anunciante' → can create, update, delete, and list a
+//     single conversation (listConversationMessages) between two users.
+//   - 'administrador'          → can ONLY list all messages or a single
+//     message (no create/update/delete, no conversation listing).
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole([...]) → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/messages  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the message entity
+import { messageSchema } from '../schemas/messageSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single message
+import { createOneMessage } from
+  '../controllers/message/createOneMessage.js';
+// Controller to retrieve every message
+import { listAllMessages } from
+  '../controllers/message/listAllMessages.js';
+// Controller to retrieve every message of a conversation between two users
+import { listConversationMessages } from
+  '../controllers/message/listConversationMessages.js';
+// Controller to retrieve a single message by its ID
+import { listOneMessage } from
+  '../controllers/message/listOneMessage.js';
+// Controller to update a single message by its ID
+import { updateOneMessage } from
+  '../controllers/message/updateOneMessage.js';
+// Controller to delete a single message by its ID
+import { deleteOneMessage } from
+  '../controllers/message/deleteOneMessage.js';
+
+// Create a new Router instance dedicated to the message resource
+export const messageRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Send a new message
+// Body: { authentication, newMessageData: { senderUserId, receiverUserId,
+//         statusId, content } }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate the creation payload
+  validatorHandler(messageSchema.newMessageData, 'body'),
+  // Step 4: delegate to the controller
+  createOneMessage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List every message in the system
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllMessages
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-conversation  →  List the messages exchanged between two users
+// Body: { authentication, userAId, userBId }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.get(
+  '/list-conversation',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate that both conversation user IDs were provided
+  validatorHandler(messageSchema.getConversationMessages, 'body'),
+  // Step 4: delegate to the controller
+  listConversationMessages
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single message by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(messageSchema.getMessageById, 'body'),
+  // Step 4: delegate to the controller
+  listOneMessage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing message by ID
+// Body: { authentication, id, updateMessageData: { statusId?, content? } }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(messageSchema.updateMessageData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneMessage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a message by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+messageRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(messageSchema.deleteMessage, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneMessage
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default messageRouter;
+</file>
+
+<file path="src/router/messageStatusRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// MESSAGE STATUS ROUTER
+// Entity: MessageStatus | Table: estado_mensaje
+//
+// Defines and exposes the HTTP endpoints used to manage the "message status"
+// catalog. This is an administrative catalog: every route is protected and only
+// users whose JWT carries the 'administrador' role are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'cliente', 'anunciante']) → authorizes
+//      only the administrator role to create, update, and delete.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/message-statuses  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the message status entity
+import { messageStatusSchema } from '../schemas/messageStatusSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single message status
+import { createOneMessageStatus } from
+  '../controllers/messageStatus/createOneMessageStatus.js';
+// Controller to retrieve every message status
+import { listAllMessageStatuses } from
+  '../controllers/messageStatus/listAllMessageStatuses.js';
+// Controller to retrieve a single message status by its ID
+import { listOneMessageStatus } from
+  '../controllers/messageStatus/listOneMessageStatus.js';
+// Controller to update a single message status by its ID
+import { updateOneMessageStatus } from
+  '../controllers/messageStatus/updateOneMessageStatus.js';
+// Controller to delete a single message status by its ID
+import { deleteOneMessageStatus } from
+  '../controllers/messageStatus/deleteOneMessageStatus.js';
+
+// Create a new Router instance dedicated to the message status resource
+export const messageStatusRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new message status
+// Body: { authentication, newMessageStatusData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+messageStatusRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(messageStatusSchema.newMessageStatusData, 'body'),
+  // Step 4: delegate to the controller
+  createOneMessageStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all message statuses
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+messageStatusRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllMessageStatuses
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single message status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+messageStatusRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(messageStatusSchema.getMessageStatusById, 'body'),
+  // Step 4: delegate to the controller
+  listOneMessageStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing message status by ID
+// Body: { authentication, id, newMessageStatusData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+messageStatusRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(messageStatusSchema.updateMessageStatusData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneMessageStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a message status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+messageStatusRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(messageStatusSchema.deleteMessageStatus, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneMessageStatus
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default messageStatusRouter;
+</file>
+
+<file path="src/router/phoneRouter.js">
+// ────
+// PHONE ROUTER
+// Entity: Phone | Table: telefono
+//
+// Role matrix:
+//   - 'cliente' / 'anunciante' → can create, update, delete and list their phones.
+//   - 'administrador'          → can ONLY list all and list one.
+// 
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates JWT and refreshes it.
+//   2. checkRole([...]) → authorizes based on allowed roles.
+//   3. validatorHandler(schema, 'body') → validates payload (Joi) when applicable.
+//   4. controller → executes the operation.
+// 
+// Mounted at: /app/v1/phones  (see src/router/index.js)
+// ────
+
+import { Router } from 'express';
+
+// Middlewares
+import { authAppVerifyToken } from '../middlewares/tokenHandlers/authAppTokenHandler.js';
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// Schemas
+import { phoneSchema } from '../schemas/phoneSchema.js';
+
+// Controllers
+import { createOnePhone } from '../controllers/phone/createOnePhone.js';
+import { listAllPhones } from '../controllers/phone/listAllPhones.js';
+import { listAllPhonesByUser } from '../controllers/phone/listAllPhonesByUser.js';
+import { listOnePhone } from '../controllers/phone/listOnePhone.js';
+import { updateOnePhone } from '../controllers/phone/updateOnePhone.js';
+import { deleteOnePhone } from '../controllers/phone/deleteOnePhone.js';
+
+export const phoneRouter = Router();
+
+// ────
+// POST /create  →  Create a new phone
+// Body: { authentication, newPhoneData: { phoneNumber } }
+// Allowed: cliente, anunciante
+// ────
+phoneRouter.post(
+  '/create',
+  authAppVerifyToken,
+  checkRole(['cliente', 'anunciante']),
+  validatorHandler(phoneSchema.newPhoneData, 'body'),
+  createOnePhone
+);
+
+// ────
+// GET /list-all  →  List every phone in the system
+// Body: { authentication }
+// Allowed: administrador (only admin can list all)
+// ────
+phoneRouter.get(
+  '/list-all',
+  authAppVerifyToken,
+  checkRole(['administrador']),
+  listAllPhones
+);
+
+// ────
+// GET /list-all-by-user/:id  →  List every phone related to a specific user
+// Body: { authentication, userId }
+// Allowed: cliente, anunciante (list their phones)
+// Note: the controller expects userId in the body.
+// ────
+phoneRouter.get(
+  '/list-all-by-user/:id',
+  authAppVerifyToken,
+  checkRole(['cliente', 'anunciante']),
+  listAllPhonesByUser
+);
+
+// ────
+// GET /list-one/:id  →  Retrieve a single phone by ID
+// Body: { authentication, id }
+// Allowed: administrador (only admin can list one)
+// ────
+phoneRouter.get(
+  '/list-one/:id',
+  authAppVerifyToken,
+  checkRole(['administrador']),
+  validatorHandler(phoneSchema.getPhoneById, 'body'),
+  listOnePhone
+);
+
+// ────
+// PATCH /update/:id  →  Update an existing phone by ID
+// Body: { authentication, id, newPhoneData: { phoneNumber? } }
+// Allowed: cliente, anunciante
+// ────
+phoneRouter.patch(
+  '/update/:id',
+  authAppVerifyToken,
+  checkRole(['cliente', 'anunciante']),
+  validatorHandler(phoneSchema.updatePhoneData, 'body'),
+  updateOnePhone
+);
+
+// ────
+// DELETE /delete/:id  →  Delete a phone by ID
+// Body: { authentication, id }
+// Allowed: cliente, anunciante
+// ────
+phoneRouter.delete(
+  '/delete/:id',
+  authAppVerifyToken,
+  checkRole(['cliente', 'anunciante']),
+  validatorHandler(phoneSchema.deletePhone, 'body'),
+  deleteOnePhone
+);
+
+export default phoneRouter;
+</file>
+
+<file path="src/router/reservationsRouter.js">
+
+</file>
+
+<file path="src/router/reservationStatusRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// RESERVATION STATUS ROUTER
+// Entity: ReservationStatus | Table: estado_reserva
+//
+// Defines and exposes the HTTP endpoints used to manage the "reservation
+// status" catalog. This is an administrative catalog: only users whose JWT
+// carries the 'administrador' role are allowed to create, update, or delete
+// records. Every role can read it (list-all / list-one), since reservation
+// statuses are referenced across the application (e.g. to display a
+// reservation's current state to clients and advertisers).
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole([...]) → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/reservation-statuses  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the reservation status entity
+import { reservationStatusSchema } from '../schemas/reservationStatusSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single reservation status
+import { createOneReservationStatus } from
+  '../controllers/reservationStatus/createOneReservationStatus.js';
+// Controller to retrieve every reservation status
+import { listAllReservationStatuses } from
+  '../controllers/reservationStatus/listAllReservationStatuses.js';
+// Controller to retrieve a single reservation status by its ID
+import { listOneReservationStatus } from
+  '../controllers/reservationStatus/listOneReservationStatus.js';
+// Controller to update a single reservation status by its ID
+import { updateOneReservationStatus } from
+  '../controllers/reservationStatus/updateOneReservationStatus.js';
+// Controller to delete a single reservation status by its ID
+import { deleteOneReservationStatus } from
+  '../controllers/reservationStatus/deleteOneReservationStatus.js';
+
+// Create a new Router instance dedicated to the reservation status resource
+export const reservationStatusRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new reservation status
+// Body: { authentication, newReservationStatusData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+reservationStatusRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(reservationStatusSchema.newReservationStatusData, 'body'),
+  // Step 4: delegate to the controller
+  createOneReservationStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all reservation statuses
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+reservationStatusRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllReservationStatuses
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single reservation status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+reservationStatusRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(reservationStatusSchema.getReservationStatusById, 'body'),
+  // Step 4: delegate to the controller
+  listOneReservationStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing reservation status by ID
+// Body: { authentication, id, newReservationStatusData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+reservationStatusRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(reservationStatusSchema.updateReservationStatusData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneReservationStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a reservation status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+reservationStatusRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(reservationStatusSchema.deleteReservationStatus, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneReservationStatus
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default reservationStatusRouter;
+</file>
+
+<file path="src/router/roleRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// ROLE ROUTER
+// Entity: Role | Table: rol
+//
+// Defines and exposes the HTTP endpoints used to manage the "role" catalog.
+// This is an administrative catalog: only users whose JWT carries the
+// 'administrador' role are allowed to create, update, or delete records.
+// Every role can read it (list-all / list-one), since roles are referenced
+// across the application (e.g. to display or validate a user's role).
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole([...]) → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Mounted at: /app/v1/roles  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the role entity
+import { roleSchema } from '../schemas/roleSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single role
+import { createOneRole } from
+  '../controllers/role/createOneRole.js';
+// Controller to retrieve every role
+import { listAllRoles } from
+  '../controllers/role/listAllRoles.js';
+// Controller to retrieve a single role by its ID
+import { listOneRole } from
+  '../controllers/role/listOneRole.js';
+// Controller to update a single role by its ID
+import { updateOneRole } from
+  '../controllers/role/updateOneRole.js';
+// Controller to delete a single role by its ID
+import { deleteOneRole } from
+  '../controllers/role/deleteOneRole.js';
+
+// Create a new Router instance dedicated to the role resource
+export const roleRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new role
+// Body: { authentication, newRoleData: { name, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+roleRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(roleSchema.newRoleData, 'body'),
+  // Step 4: delegate to the controller
+  createOneRole
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all roles
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+roleRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllRoles
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single role by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+roleRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(roleSchema.getRoleById, 'body'),
+  // Step 4: delegate to the controller
+  listOneRole
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing role by ID
+// Body: { authentication, id, newRoleData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+roleRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(roleSchema.updateRoleData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneRole
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a role by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+roleRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(roleSchema.deleteRole, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneRole
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default roleRouter;
+</file>
+
+<file path="src/router/serviceImageRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// SERVICE IMAGE ROUTER
+// Entity: ServiceImage | Table: imagen_servicio
+//
+// Defines and exposes the HTTP endpoints used to manage the "serviceImage" entity.
+// A service image belongs to exactly one service (serviceId) and stores an image URL
+// with an optional description. Every route is protected and only users with 
+// appropriate roles are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'anunciante']) → authorizes 
+//      based on role-specific permissions for each operation
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Advertiser (Anunciante): Can create, update, delete (own images), list all, list one
+//   - Administrator (Administrador): Can delete any image, list all, list one
+//   - Client (Cliente): No access to any endpoints
+//
+// Mounted at: /app/v1/service-images  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the service image entity
+import { serviceImageSchema } from '../schemas/serviceImageSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single service image
+import { createServiceImage } from
+  '../controllers/serviceImage/createServiceImage.js';
+// Controller to retrieve every service image
+import { listAllServiceImages } from
+  '../controllers/serviceImage/listAllServiceImages.js';
+// Controller to retrieve a single service image by its ID
+import { getServiceImageById } from
+  '../controllers/serviceImage/getServiceImageById.js';
+// Controller to update a single service image by its ID
+import { updateServiceImage } from
+  '../controllers/serviceImage/updateServiceImage.js';
+// Controller to delete a single service image by its ID
+import { deleteServiceImage } from
+  '../controllers/serviceImage/deleteServiceImage.js';
+
+// Create a new Router instance dedicated to the service image resource
+export const serviceImageRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new service image
+// Body: { authentication, newServiceImageData: { imageUrl, description?, serviceId } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the creation payload
+  validatorHandler(serviceImageSchema.newServiceImageData, 'body'),
+  // Step 4: delegate to the controller
+  createServiceImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all service images (with service relations)
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize advertiser and administrator roles
+  checkRole(['anunciante', 'administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllServiceImages
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single service image by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize advertiser and administrator roles
+  checkRole(['anunciante', 'administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceImageSchema.getServiceImageById, 'params'),
+  // Step 4: delegate to the controller
+  getServiceImageById
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing service image by ID
+// Body: { authentication, id, businessId, updateServiceImageData: { imageUrl?, 
+//         description?, serviceId? } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(serviceImageSchema.updateServiceImageData, 'body'),
+  // Step 4: delegate to the controller
+  updateServiceImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a service image by ID (advertiser version - checks ownership)
+// Body: { authentication, id, businessId }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the deletion payload
+  validatorHandler(serviceImageSchema.deleteServiceImage, 'body'),
+  // Step 4: delegate to the controller
+  deleteServiceImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /admin-delete/:id  →  Delete any service image by ID (administrator version)
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceImageRouter.delete(
+  '/admin-delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceImageSchema.getServiceImageById, 'params'),
+  // Step 4: delegate to the controller
+  deleteServiceImage
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default serviceImageRouter;
+</file>
+
+<file path="src/router/serviceReviewRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// SERVICE REVIEW ROUTER
+// Entity: ServiceReview | Table: reseña_servicio
+//
+// Defines and exposes the HTTP endpoints used to manage the "serviceReview" entity.
+// A service review belongs to exactly one service (serviceId) and one user (userId),
+// storing an optional content and rating. Every route is protected and only users 
+// with appropriate roles are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'anunciante', 'cliente']) → authorizes 
+//      based on role-specific permissions for each operation
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Client (Cliente): Can create, update (own reviews), delete (own reviews), 
+//                       list one, list all, list reviews by user ID
+//   - Advertiser (Anunciante): Can list one, list all
+//   - Administrator (Administrador): Can delete any review, list one, list all, 
+//                                   list reviews by user ID
+//
+// Mounted at: /app/v1/service-reviews  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the service review entity
+import { serviceReviewSchema } from '../schemas/serviceReviewSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single service review
+import { createServiceReview } from
+  '../controllers/serviceReview/createServiceReview.js';
+// Controller to retrieve every service review
+import { listAllServiceReviews } from
+  '../controllers/serviceReview/listAllServiceReviews.js';
+// Controller to retrieve a single service review by its ID
+import { getServiceReviewById } from
+  '../controllers/serviceReview/getServiceReviewById.js';
+// Controller to update a single service review by its ID
+import { updateServiceReview } from
+  '../controllers/serviceReview/updateServiceReview.js';
+// Controller to delete a single service review by its ID
+import { deleteServiceReview } from
+  '../controllers/serviceReview/deleteServiceReview.js';
+// Controller to list service reviews by user ID
+import { listServiceReviewsByUser } from
+  '../controllers/serviceReview/listServiceReviewsByUser.js';
+
+// Create a new Router instance dedicated to the service review resource
+export const serviceReviewRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new service review
+// Body: { authentication, newServiceReviewData: { serviceId, userId, content?, rating? } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the creation payload
+  validatorHandler(serviceReviewSchema.newServiceReviewData, 'body'),
+  // Step 4: delegate to the controller
+  createServiceReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all service reviews (with service and user relations)
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize client, advertiser, and administrator roles
+  checkRole(['cliente', 'anunciante', 'administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllServiceReviews
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single service review by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize client, advertiser, and administrator roles
+  checkRole(['cliente', 'anunciante', 'administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceReviewSchema.getServiceReviewById, 'params'),
+  // Step 4: delegate to the controller
+  getServiceReviewById
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing service review by ID
+// Body: { authentication, id, userId, updateServiceReviewData: { serviceId?, 
+//         userId?, content?, rating? } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the update payload
+  validatorHandler(serviceReviewSchema.updateServiceReviewData, 'body'),
+  // Step 4: delegate to the controller
+  updateServiceReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a service review by ID (client version - checks ownership)
+// Body: { authentication, id, userId }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the client role
+  checkRole(['cliente']),
+  // Step 3: validate the deletion payload
+  validatorHandler(serviceReviewSchema.deleteServiceReview, 'body'),
+  // Step 4: delegate to the controller
+  deleteServiceReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /admin-delete/:id  →  Delete any service review by ID (administrator version)
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.delete(
+  '/admin-delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceReviewSchema.getServiceReviewById, 'params'),
+  // Step 4: delegate to the controller
+  deleteServiceReview
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /user/:userId  →  List all service reviews for a specific user
+// Body: { authentication, userId }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceReviewRouter.get(
+  '/user/:userId',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize client and administrator roles
+  checkRole(['cliente', 'administrador']),
+  // Step 3: validate that a valid user ID was provided
+  validatorHandler(serviceReviewSchema.getServiceReviewsByUserId, 'params'),
+  // Step 4: delegate to the controller
+  listServiceReviewsByUser
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default serviceReviewRouter;
+</file>
+
+<file path="src/router/serviceRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// SERVICE ROUTER
+// Entity: Service | Table: servicio
+//
+// Defines and exposes the HTTP endpoints used to manage the "service" entity.
+// A service belongs to exactly one business (businessId) and may optionally be
+// tied to a category (categoryId), status (statusId) and age restriction (ageRestrictionId).
+// Every route is protected and only users with appropriate roles are allowed to operate on it.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'anunciante', 'cliente]) → authorizes 
+//      based on role-specific permissions for each operation
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Advertiser (Anunciante): Can create, update, delete (own services), 
+//     list all, list one, list services by business
+//   - Client (Cliente): Can list all, list one service
+//   - Administrator (Administrador): Can delete any service, list all, list one service
+//
+// Mounted at: /app/v1/services  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the service entity
+import { serviceSchema } from '../schemas/serviceSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single service
+import { createService } from
+  '../controllers/service/createService.js';
+// Controller to retrieve every service
+import { listAllServices } from
+  '../controllers/service/listAllServices.js';
+// Controller to retrieve a single service by its ID
+import { getServiceById } from
+  '../controllers/service/getServiceById.js';
+// Controller to update a single service by its ID
+import { updateService } from
+  '../controllers/service/updateService.js';
+// Controller to delete a single service by its ID
+import { deleteService } from
+  '../controllers/service/deleteService.js';
+// Controller to list services by business ID
+import { listServicesByBusiness } from
+  '../controllers/service/listServicesByBusiness.js';
+
+// Create a new Router instance dedicated to the service resource
+export const serviceRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new service
+// Body: { authentication, newServiceData: { name, description?, price, categoryId, 
+//         statusId, ageRestrictionId?, businessId } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the creation payload
+  validatorHandler(serviceSchema.newServiceData, 'body'),
+  // Step 4: delegate to the controller
+  createService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all services (with category, status, age restriction and business relations)
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllServices
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single service by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all the roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceSchema.getServiceById, 'params'),
+  // Step 4: delegate to the controller
+  getServiceById
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing service by ID
+// Body: { authentication, id, businessId, updateServiceData: { name?, description?, 
+//         price?, categoryId?, statusId?, ageRestrictionId?, businessId? } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(serviceSchema.updateServiceData, 'body'),
+  // Step 4: delegate to the controller
+  updateService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a service by ID (advertiser version - checks ownership)
+// Body: { authentication, id, businessId }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate the deletion payload
+  validatorHandler(serviceSchema.deleteService, 'body'),
+  // Step 4: delegate to the controller
+  deleteService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /admin-delete/:id  →  Delete any service by ID (administrator version)
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.delete(
+  '/admin-delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceSchema.getServiceById, 'params'),
+  // Step 4: delegate to the controller
+  deleteService
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /business/:businessId  →  List all services for a specific business
+// Body: { authentication, businessId }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceRouter.get(
+  '/business/:businessId',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the advertiser role
+  checkRole(['anunciante']),
+  // Step 3: validate that a valid business ID was provided
+  validatorHandler(serviceSchema.getServicesByBusinessId, 'params'),
+  // Step 4: delegate to the controller
+  listServicesByBusiness
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default serviceRouter;
 </file>
 
 <file path="src/router/UIRouter.js">
@@ -15388,6 +17238,11 @@ export const favoriteUserServiceSchema = {
     id: joiId.required(),
   }),
 
+  // GET /favorites/by-user/:id
+  getFavoritesByUserId: Joi.object({
+  userId: joiUserId.required(),
+  }),
+
   // POST /favorites — add a service to user's favorites
   newFavoriteData: Joi.object({
     userId:    joiUserId.required(),
@@ -15398,7 +17253,6 @@ export const favoriteUserServiceSchema = {
   deleteFavorite: Joi.object({
     id: joiId.required(),
   }),
-
 };
 </file>
 
@@ -19189,6 +21043,9 @@ export class MessageStatusServices {
 <file path="src/services/phoneService.js">
 // import the phone data model
 import { Phone } from '../db/models/phoneModel.js';
+// import the user and business models to resolve their related phones
+import { User } from '../db/models/userModel.js';
+import { Business } from '../db/models/businessModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -19196,8 +21053,9 @@ import Boom from '@hapi/boom';
  * Service layer for the "Phone" entity.
  *
  * Stores phone numbers that are later linked to businesses through the
- * BusinessPhone junction table. Every public method resolves with the
- * requested data or rejects with a normalized Boom error.
+ * BusinessPhone junction table and to users through the UserPhone junction
+ * table. Every public method resolves with the requested data or rejects
+ * with a normalized Boom error.
  */
 export class PhoneServices {
 
@@ -19361,6 +21219,87 @@ export class PhoneServices {
       throw Boom.boomify(error, { message: 'Unable to find phones' });
     }
   }
+
+  /**
+   * Retrieves all phones related to a given user, considering BOTH sources:
+   *   1. Personal phones the user owns directly  (User ↔ Phone via UserPhone).
+   *   2. Phones of the business the user owns     (Business ↔ Phone via BusinessPhone).
+   *
+   * This reflects the application context where a person (client) can have
+   * their own phone numbers and, if they are also a business owner, the
+   * business has its own phone numbers as well.
+   *
+   * @param {number} userId - Identifier of the user.
+   * @returns {Promise<Object>} Object grouping personal, business and combined phones.
+   * @throws {Boom} BadRequest if no id is provided, NotFound if the user does not exist.
+   */
+  async listAllByUser(userId) {
+
+    if (!userId) {
+      // an identifier is mandatory to resolve the related phones
+      throw Boom.badRequest('No user ID provided');
+    }
+
+    try {
+      // fetch the user together with their personal phones and, if any,
+      // the business they own along with its phones
+      const theUser = await User.findOne({
+        where: { id: userId },
+        include: [
+          {
+            // personal phones (User ↔ Phone via UserPhone)
+            model: Phone,
+            as: 'phones',
+            through: { attributes: [] }, // omit junction table columns
+          },
+          {
+            // business owned by the user (may be null) and its phones
+            model: Business,
+            as: 'businesses',
+            include: [
+              {
+                model: Phone,
+                as: 'phones',
+                through: { attributes: [] },
+              },
+            ],
+          },
+        ],
+        order: [['id', 'ASC']],
+      });
+
+      // if the user does not exist, report it
+      if (!theUser) {
+        throw Boom.notFound('User not found');
+      }
+
+      // personal phones of the user (client)
+      const personalPhones = theUser.phones || [];
+
+      // phones belonging to the user's business (if the user owns one)
+      const businessPhones = theUser.businesses?.phones || [];
+
+      // merge both lists removing duplicates by phone id
+      const phonesById = new Map();
+      [...personalPhones, ...businessPhones].forEach((phone) => {
+        phonesById.set(phone.id, phone);
+      });
+      const allPhones = Array.from(phonesById.values())
+        .sort((a, b) => a.id - b.id);
+
+      // return the phones grouped by source plus a combined, de-duplicated list
+      return {
+        userId,
+        personalPhones,
+        businessPhones,
+        allPhones,
+      };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find phones for user' });
+    }
+  }
 }
 </file>
 
@@ -19371,6 +21310,8 @@ import { Reservation } from '../db/models/reservationModel.js';
 import { Service } from '../db/models/serviceModel.js';
 // import the reservation detail model to expose its related details
 import { ReservationDetail } from '../db/models/reservationDetailsModel.js';
+// import the user model to validate ownership
+import { User } from '../db/models/userModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -19393,10 +21334,11 @@ export class ReservationServices {
    *
    * @param {Object} newReservation - Reservation data.
    * @param {number} newReservation.serviceId - Parent service identifier.
+   * @param {number} userId - ID of the user creating the reservation.
    * @returns {Promise<Object>} Status object confirming the creation.
    * @throws {Boom} NotFound if the service does not exist, internal error otherwise.
    */
-  async createOne(newReservation) {
+  async createOne(newReservation, userId) {
 
     try {
       // ensure the parent service exists before creating the reservation
@@ -19407,12 +21349,12 @@ export class ReservationServices {
       }
 
       // create a new record in the database
-      await Reservation.create({
+      const reservation = await Reservation.create({
         serviceId: newReservation.serviceId,
       });
 
       // return a success response
-      return { status: 'CREATED SUCCESSFULLY' };
+      return { status: 'CREATED SUCCESSFULLY', reservationId: reservation.id };
 
     } catch (error) {
       // preserve Boom errors, wrap any unexpected one
@@ -19426,10 +21368,11 @@ export class ReservationServices {
    *
    * @param {number} reservationId - Identifier of the reservation to update.
    * @param {Object} newData - New values to persist.
+   * @param {number} userId - ID of the user attempting the update.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(reservationId, newData) {
+  async updateOne(reservationId, newData, userId) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
@@ -19437,6 +21380,22 @@ export class ReservationServices {
     }
 
     try {
+      // find the reservation with its details to check ownership
+      const reservation = await Reservation.findOne({
+        where: { id: reservationId },
+        include: [{ model: ReservationDetail, as: 'details' }]
+      });
+
+      if (!reservation) {
+        throw Boom.notFound('Reservation not found');
+      }
+
+      // check if user owns this reservation
+      const isOwner = reservation.details.some(detail => detail.userId === userId);
+      if (!isOwner) {
+        throw Boom.forbidden('User not authorized to update this reservation');
+      }
+
       // if the parent service is being changed, validate it exists
       if (newData.serviceId) {
         const parentService = await Service.findByPk(newData.serviceId);
@@ -19473,10 +21432,11 @@ export class ReservationServices {
    * Deletes a reservation by its identifier.
    *
    * @param {number} reservationId - Identifier of the reservation to delete.
+   * @param {number} userId - ID of the user attempting the deletion.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(reservationId) {
+  async deleteOne(reservationId, userId) {
 
     if (!reservationId) {
       // an identifier is mandatory to perform a deletion
@@ -19484,6 +21444,22 @@ export class ReservationServices {
     }
 
     try {
+      // find the reservation with its details to check ownership
+      const reservation = await Reservation.findOne({
+        where: { id: reservationId },
+        include: [{ model: ReservationDetail, as: 'details' }]
+      });
+
+      if (!reservation) {
+        throw Boom.notFound('Reservation not found');
+      }
+
+      // check if user owns this reservation
+      const isOwner = reservation.details.some(detail => detail.userId === userId);
+      if (!isOwner) {
+        throw Boom.forbidden('User not authorized to delete this reservation');
+      }
+
       // destroy the record in the database
       const deletedRows = await Reservation.destroy({
         where: { id: reservationId }
@@ -19507,10 +21483,11 @@ export class ReservationServices {
    * Retrieves a single reservation, including its service and details.
    *
    * @param {number} reservationId - Identifier of the reservation.
+   * @param {number} userId - ID of the user requesting the reservation.
    * @returns {Promise<Object>} The reservation record with its relations.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async listOne(reservationId) {
+  async listOne(reservationId, userId) {
 
     if (!reservationId) {
       throw Boom.badRequest('No reservation ID provided');
@@ -19529,11 +21506,48 @@ export class ReservationServices {
         throw Boom.notFound('Reservation not found');
       }
 
+      // check if user owns this reservation
+      const isOwner = theReservation.details.some(detail => detail.userId === userId);
+      if (!isOwner) {
+        throw Boom.forbidden('User not authorized to access this reservation');
+      }
+
       return theReservation;
 
     } catch (error) {
       if (Boom.isBoom(error)) throw error;
       throw Boom.boomify(error, { message: 'Unable to find reservation' });
+    }
+  }
+
+  /**
+   * Retrieves reservations belonging to the specified user.
+   *
+   * @param {number} userId - ID of the user whose reservations to retrieve.
+   * @returns {Promise<Object[]>} List of user's reservations (empty array if none).
+   * @throws {Boom} Internal error if the query fails.
+   */
+  async listUserReservations(userId) {
+
+    try {
+      // Find all reservations that have details associated with the user
+      const userReservations = await Reservation.findAll({
+        include: [
+          { 
+            model: ReservationDetail, 
+            as: 'details',
+            where: { userId: userId }
+          },
+          { model: Service, as: 'service' }
+        ],
+        order: [['id', 'ASC']]
+      });
+
+      // always return an array, even when there are no records
+      return userReservations.length ? userReservations : [];
+
+    } catch (error) {
+      throw Boom.boomify(error, { message: 'Unable to find user reservations' });
     }
   }
 
@@ -19932,6 +21946,8 @@ export class RoleServices {
 import { ServiceImage } from '../db/models/serviceImageModel.js';
 // import the service model to validate the foreign key relation
 import { Service } from '../db/models/serviceModel.js';
+// import the business model to verify service ownership
+import { Business } from '../db/models/businessModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -19986,26 +22002,52 @@ export class ServiceImageServices {
   }
 
   /**
-   * Updates an existing service image by its identifier.
+   * Updates an existing service image by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceImageId - Identifier of the image to update.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceImageId, newData) {
+  async updateOne(serviceImageId, businessId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceImageId) {
+      throw Boom.badRequest('No service image ID provided');
+    }
+
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
-      // if the parent service is being changed, validate it exists
+      // First verify that the service image exists and belongs to a service owned by the specified business
+      const existingImage = await ServiceImage.findOne({
+        where: { id: serviceImageId },
+        include: [{
+          model: Service,
+          as: 'service',
+          where: { businessId: businessId }
+        }]
+      });
+
+      if (!existingImage) {
+        throw Boom.notFound('Service image not found or does not belong to a service owned by the specified business');
+      }
+
+      // if the parent service is being changed, validate it exists and belongs to the business
       if (newData.serviceId) {
-        const parentService = await Service.findByPk(newData.serviceId);
+        const parentService = await Service.findOne({
+          where: { id: newData.serviceId, businessId: businessId }
+        });
+        
         if (!parentService) {
-          throw Boom.notFound('Parent service not found');
+          throw Boom.notFound('Parent service not found or does not belong to the specified business');
         }
       }
 
@@ -20036,20 +22078,39 @@ export class ServiceImageServices {
   }
 
   /**
-   * Deletes a service image by its identifier.
+   * Deletes a service image by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceImageId - Identifier of the image to delete.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceImageId) {
+  async deleteOne(serviceImageId, businessId) {
 
     if (!serviceImageId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service image ID provided');
     }
 
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
+      // First verify that the service image exists and belongs to a service owned by the specified business
+      const existingImage = await ServiceImage.findOne({
+        where: { id: serviceImageId },
+        include: [{
+          model: Service,
+          as: 'service',
+          where: { businessId: businessId }
+        }]
+      });
+
+      if (!existingImage) {
+        throw Boom.notFound('Service image not found or does not belong to a service owned by the specified business');
+      }
+
       // destroy the record in the database
       const deletedRows = await ServiceImage.destroy({
         where: { id: serviceImageId }
@@ -20192,21 +22253,39 @@ export class ServiceReviewServices {
   }
 
   /**
-   * Updates an existing service review by its identifier.
+   * Updates an existing service review by its identifier, ensuring it belongs to the specified user.
    *
    * @param {number} serviceReviewId - Identifier of the review to update.
+   * @param {number} userId - Identifier of the user who should own the review.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceReviewId, newData) {
+  async updateOne(serviceReviewId, userId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceReviewId) {
+      throw Boom.badRequest('No service review ID provided');
+    }
+
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
     try {
+      // First verify that the service review exists and belongs to the specified user
+      const existingReview = await ServiceReview.findOne({
+        where: { id: serviceReviewId, userId: userId }
+      });
+
+      if (!existingReview) {
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
+      }
+
       // validate the service relation only when it is being changed
       if (newData.serviceId) {
         const parentService = await Service.findByPk(newData.serviceId);
@@ -20232,13 +22311,13 @@ export class ServiceReviewServices {
           rating: newData.rating,
         },
         {
-          where: { id: serviceReviewId }
+          where: { id: serviceReviewId, userId: userId }
         }
       );
 
-      // if no rows were affected, the review does not exist
+      // if no rows were affected, the review does not exist or doesn't belong to the user
       if (!updatedRows) {
-        throw Boom.notFound('Service review not found');
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
       }
 
       // return a success response
@@ -20251,28 +22330,42 @@ export class ServiceReviewServices {
   }
 
   /**
-   * Deletes a service review by its identifier.
+   * Deletes a service review by its identifier, ensuring it belongs to the specified user.
    *
    * @param {number} serviceReviewId - Identifier of the review to delete.
+   * @param {number} userId - Identifier of the user who should own the review.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceReviewId) {
+  async deleteOne(serviceReviewId, userId) {
 
     if (!serviceReviewId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service review ID provided');
     }
 
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
     try {
-      // destroy the record in the database
-      const deletedRows = await ServiceReview.destroy({
-        where: { id: serviceReviewId }
+      // First verify that the service review exists and belongs to the specified user
+      const existingReview = await ServiceReview.findOne({
+        where: { id: serviceReviewId, userId: userId }
       });
 
-      // if no rows were deleted, the review does not exist
+      if (!existingReview) {
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await ServiceReview.destroy({
+        where: { id: serviceReviewId, userId: userId }
+      });
+
+      // if no rows were deleted, the review does not exist or doesn't belong to the user
       if (!deletedRows) {
-        throw Boom.notFound('Service review not found');
+        throw Boom.notFound('Service review not found or does not belong to the specified user');
       }
 
       // return a success response
@@ -20340,6 +22433,42 @@ export class ServiceReviewServices {
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find service reviews' });
+    }
+  }
+
+  /**
+   * Retrieves all service reviews that belong to a specific user.
+   *
+   * @param {number} userId - Identifier of the user.
+   * @returns {Promise<Object[]>} List of service reviews belonging to the user.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async listByUserId(userId) {
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
+    try {
+      // Verify if the user exists
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw Boom.notFound('User not found');
+      }
+
+      // Get all service reviews associated with the user
+      const serviceReviews = await ServiceReview.findAll({
+        where: { userId },
+        order: [['id', 'ASC']],
+        include: [
+          { model: Service, as: 'service' },
+          { model: User, as: 'user' },
+        ],
+      });
+
+      return serviceReviews.length ? serviceReviews : [];
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find service reviews for the user' });
     }
   }
 }
@@ -20434,21 +22563,39 @@ export class ServiceServices {
   }
 
   /**
-   * Updates an existing service by its identifier.
+   * Updates an existing service by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceId - Identifier of the service to update.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceId, newData) {
+  async updateOne(serviceId, businessId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceId) {
+      throw Boom.badRequest('No service ID provided');
+    }
+
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
+      // First verify that the service exists and belongs to the specified business
+      const existingService = await Service.findOne({
+        where: { id: serviceId, businessId: businessId }
+      });
+
+      if (!existingService) {
+        throw Boom.notFound('Service not found or does not belong to the specified business');
+      }
+
       // validate any relation that is being changed
       if (newData.categoryId) {
         const parentCategory = await Category.findByPk(newData.categoryId);
@@ -20490,13 +22637,13 @@ export class ServiceServices {
           businessId: newData.businessId,
         },
         {
-          where: { id: serviceId }
+          where: { id: serviceId, businessId: businessId }
         }
       );
 
-      // if no rows were affected, the service does not exist
+      // if no rows were affected, the service does not exist or doesn't belong to the business
       if (!updatedRows) {
-        throw Boom.notFound('Service not found');
+        throw Boom.notFound('Service not found or does not belong to the specified business');
       }
 
       // return a success response
@@ -20509,28 +22656,42 @@ export class ServiceServices {
   }
 
   /**
-   * Deletes a service by its identifier.
+   * Deletes a service by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceId - Identifier of the service to delete.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceId) {
+  async deleteOne(serviceId, businessId) {
 
     if (!serviceId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service ID provided');
     }
 
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
-      // destroy the record in the database
-      const deletedRows = await Service.destroy({
-        where: { id: serviceId }
+      // First verify that the service exists and belongs to the specified business
+      const existingService = await Service.findOne({
+        where: { id: serviceId, businessId: businessId }
       });
 
-      // if no rows were deleted, the service does not exist
+      if (!existingService) {
+        throw Boom.notFound('Service not found or does not belong to the specified business');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await Service.destroy({
+        where: { id: serviceId, businessId: businessId }
+      });
+
+      // if no rows were deleted, the service does not exist or doesn't belong to the business
       if (!deletedRows) {
-        throw Boom.notFound('Service not found');
+        throw Boom.notFound('Service not found or does not belong to the specified business');
       }
 
       // return a success response
@@ -20602,6 +22763,44 @@ export class ServiceServices {
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find services' });
+    }
+  }
+
+  /**
+   * Retrieves all services that belong to a specific business.
+   *
+   * @param {number} businessId - Identifier of the business.
+   * @returns {Promise<Object[]>} List of services belonging to the business.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async listByBusinessId(businessId) {
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
+    try {
+      // Verificar si el negocio existe
+      const business = await Business.findByPk(businessId);
+      if (!business) {
+        throw Boom.notFound('Business not found');
+      }
+
+      // Obtener todos los servicios asociados al negocio
+      const services = await Service.findAll({
+        where: { businessId },
+        order: [['id', 'ASC']],
+        include: [
+          { model: Category, as: 'category' },
+          { model: ServiceStatus, as: 'status' },
+          { model: AgeRestriction, as: 'ageRestriction' },
+          { model: Business, as: 'business' },
+        ],
+      });
+
+      return services.length ? services : [];
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find services for the business' });
     }
   }
 }

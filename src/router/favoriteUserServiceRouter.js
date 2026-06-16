@@ -89,11 +89,11 @@ favoriteUserServiceRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /list-all-by-user  →  List every favorite belonging to a specific user
+// GET /list-all-by-user/:id  →  List every favorite belonging to a specific user
 // Body: { authentication, userId }
 // ─────────────────────────────────────────────────────────────────────────────
 favoriteUserServiceRouter.get(
-  '/list-all-by-user',
+  '/list-all-by-user/:id',
   // Step 1: verify the session token
   authAppVerifyToken,
   // Step 2: authorize the administrator and the client role

@@ -56,7 +56,7 @@ import { deleteOneAgeRestriction } from
 export const ageRestrictionRouter = Router();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /  →  Create a new age restriction
+// POST /create  →  Create a new age restriction
 // Body: { authentication, newAgeRestrictionData: { name, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.post(
@@ -72,7 +72,7 @@ ageRestrictionRouter.post(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /  →  List all age restrictions
+// GET /list-all  →  List all age restrictions
 // Body: { authentication }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.get(
@@ -86,7 +86,7 @@ ageRestrictionRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /:id  →  Retrieve a single age restriction by ID
+// GET /list-one/:id  →  Retrieve a single age restriction by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.get(
@@ -102,7 +102,7 @@ ageRestrictionRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /:id  →  Update an existing age restriction by ID
+// PATCH /update/:id  →  Update an existing age restriction by ID
 // Body: { authentication, id, newAgeRestrictionData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.patch(
@@ -118,7 +118,7 @@ ageRestrictionRouter.patch(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DELETE /:id  →  Delete an age restriction by ID
+// DELETE /delete/:id  →  Delete an age restriction by ID
 // Body: { authentication, id }
 // ─────────────────────────────────────────────────────────────────────────────
 ageRestrictionRouter.delete(

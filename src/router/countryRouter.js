@@ -102,7 +102,7 @@ countryRouter.get(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PATCH /update-one/:id  →  Update an existing country by ID
+// PATCH /update/:id  →  Update an existing country by ID
 // Body: { authentication, id, newCountryData: { name?, description? } }
 // ─────────────────────────────────────────────────────────────────────────────
 countryRouter.patch(
