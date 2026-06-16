@@ -1,8 +1,3 @@
-// Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all services.
  *
@@ -25,16 +20,15 @@ export const listAllServices = async (req, res, next) => {
     // Attempt to retrieve all service records from the database
     const allRecords = await serviceManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Services retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        services: allRecords
-      });
-    }
+    // Send a success response with the retrieved services data
+    return res.status(200).json({
+      success: true,
+      message: 'Services retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      services: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service retrieval by sending a Boom error response
