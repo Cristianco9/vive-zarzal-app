@@ -51,12 +51,13 @@ env/.envExample
 LICENSE
 nodemon.json
 package.json
+projectContext.md
 README.md
 src/app.js
 src/config/config.js
 src/db/config.js
 src/db/migrations/20260615092518-country.cjs
-src/db/migrations/20260615092634-departament.cjs
+src/db/migrations/20260615092634-department.cjs
 src/db/migrations/20260615092727-city.cjs
 src/db/migrations/20260615092824-location.cjs
 src/db/migrations/20260615092904-role.cjs
@@ -88,7 +89,7 @@ src/db/models/businessReviewModel.js
 src/db/models/categoryModel.js
 src/db/models/cityModel.js
 src/db/models/countryModel.js
-src/db/models/departamentModel.js
+src/db/models/departmentModel.js
 src/db/models/documentTypeModel.js
 src/db/models/favoriteUserServiceModel.js
 src/db/models/genderModel.js
@@ -118,6 +119,32 @@ src/middlewares/validatorHandler.js
 src/router/index.js
 src/router/UIRouter.js
 src/router/userRouter.js
+src/schemas/ageRestrictionSchema.js
+src/schemas/businessPhoneSchema.js
+src/schemas/businessReviewSchema.js
+src/schemas/businessSchema.js
+src/schemas/categorySchema.js
+src/schemas/citySchema.js
+src/schemas/countrySchema.js
+src/schemas/departmentSchema.js
+src/schemas/documentTypeSchema.js
+src/schemas/favoriteUserServiceSchema.js
+src/schemas/genderSchema.js
+src/schemas/index.js
+src/schemas/locationSchema.js
+src/schemas/messageSchema.js
+src/schemas/messageStatusSchema.js
+src/schemas/phoneSchema.js
+src/schemas/reservationDetailsSchema.js
+src/schemas/reservationSchema.js
+src/schemas/reservationStatusSchema.js
+src/schemas/roleSchema.js
+src/schemas/serviceImageSchema.js
+src/schemas/serviceReviewSchema.js
+src/schemas/serviceSchema.js
+src/schemas/serviceStatusSchema.js
+src/schemas/userImageSchema.js
+src/schemas/userPhoneSchema.js
 src/schemas/userSchema.js
 src/utils/auth/authApp/strategies/jwt.strategy.js
 src/utils/auth/authApp/tokenData.js
@@ -125,7 +152,33 @@ src/utils/auth/index.js
 src/utils/auth/passwordHash.js
 src/utils/auth/tokenSign.js
 src/utils/auth/tokenVerify.js
-src/utils/RegEx/authRegEx.js
+src/utils/regEx/ageRestrictionRegEx.js
+src/utils/regEx/authRegEx.js
+src/utils/regEx/businessPhoneRegEx.js
+src/utils/regEx/businessRegEx.js
+src/utils/regEx/businessReviewRegEx.js
+src/utils/regEx/categoryRegEx.js
+src/utils/regEx/cityRegEx.js
+src/utils/regEx/countryRegEx.js
+src/utils/regEx/departmentRegEx.js
+src/utils/regEx/documentTypeRegEx.js
+src/utils/regEx/favoriteUserServiceRegEx.js
+src/utils/regEx/genderRegEx.js
+src/utils/regEx/locationRegEx.js
+src/utils/regEx/messageRegEx.js
+src/utils/regEx/messageStatusRegEx.js
+src/utils/regEx/phoneRegEx.js
+src/utils/regEx/reservationDetailsRegEx.js
+src/utils/regEx/reservationRegEx.js
+src/utils/regEx/reservationStatusRegEx.js
+src/utils/regEx/roleRegEx.js
+src/utils/regEx/serviceImageRegEx.js
+src/utils/regEx/serviceRegEx.js
+src/utils/regEx/serviceReviewRegEx.js
+src/utils/regEx/serviceStatusRegEx.js
+src/utils/regEx/userImageRegEx.js
+src/utils/regEx/userPhoneRegEx.js
+src/utils/regEx/userRegEx.js
 </directory_structure>
 
 <files>
@@ -1134,6 +1187,385 @@ SOFTWARE.
 }
 </file>
 
+<file path="projectContext.md">
+# Contexto del Proyecto: Vive Zarzal
+
+## Descripción General
+
+**Vive Zarzal** es una aplicación web tipo **Marketplace Turístico** diseñada para promover el turismo 
+local en el municipio de Zarzal, Valle del Cauca, Colombia.
+
+La plataforma conecta turistas, visitantes y consumidores con comercios, emprendedores y prestadores 
+de servicios turísticos locales, permitiéndoles descubrir experiencias, productos y servicios 
+disponibles dentro del municipio.
+
+La aplicación no funciona como una plataforma de comercio electrónico ni procesa pagos en línea.
+ Su propósito es actuar como intermediario entre la oferta turística local y la demanda de visitantes.
+
+---
+
+# Objetivo del Sistema
+
+Centralizar la oferta turística del municipio de Zarzal mediante una plataforma digital que permita:
+
+* Promover negocios locales.
+* Facilitar el descubrimiento de servicios turísticos.
+* Permitir solicitudes de reserva.
+* Facilitar el contacto entre clientes y anunciantes.
+* Incrementar la visibilidad digital de los prestadores de servicios turísticos.
+
+---
+
+# Tipo de Plataforma
+
+Marketplace Turístico.
+
+La plataforma opera bajo un modelo de oferta y demanda:
+
+* Los anunciantes publican servicios o productos.
+* Los clientes exploran las publicaciones y realizan solicitudes de reserva o contacto.
+
+---
+
+# Roles del Sistema
+
+## 1. Cliente (Turista)
+
+Representa a los usuarios que desean descubrir y reservar servicios turísticos.
+
+### Funciones
+
+* Explorar publicaciones.
+* Buscar servicios.
+* Filtrar servicios por categoría.
+* Visualizar detalles de un producto o servicio.
+* Contactar anunciantes mediante WhatsApp.
+* Realizar solicitudes de reserva.
+* Gestionar su perfil.
+
+### Dominio del Cliente
+
+```text
+id
+nombre
+apellido
+tipoDocumento
+numeroDocumento
+telefono
+correo
+usuario
+password
+direccion
+genero
+fechaNacimiento
+nacionalidad
+ciudadOrigen
+fotoPerfil
+fechaRegistro
+estado
+```
+
+---
+
+## 2. Anunciante
+
+Representa a comerciantes, emprendedores o empresas que publican productos y servicios turísticos.
+
+### Funciones
+
+* Crear publicaciones.
+* Editar publicaciones.
+* Eliminar publicaciones.
+* Gestionar reservas.
+* Aceptar reservas.
+* Cancelar reservas.
+* Contactar clientes.
+* Gestionar información de su negocio.
+
+### Dominio del Anunciante
+
+```text
+id
+nombre
+apellido
+tipoDocumento
+numeroDocumento
+telefono
+correo
+usuario
+password
+genero
+fechaNacimiento
+
+nombreNegocio
+direccionNegocio
+descripcionNegocio
+
+paginaWeb
+facebook
+instagram
+tiktok
+
+fechaRegistro
+estado
+```
+
+---
+
+## 3. Administrador
+
+Responsable de la gestión y moderación del sistema.
+
+### Funciones
+
+* Gestionar usuarios.
+* Gestionar anunciantes.
+* Moderar publicaciones.
+* Eliminar contenido inapropiado.
+* Suspender usuarios.
+* Supervisar la plataforma.
+
+---
+
+# Entidades Principales
+
+## Usuario
+
+Entidad base del sistema.
+
+Tipos:
+
+* Cliente
+* Anunciante
+* Administrador
+
+---
+
+## Categoria
+
+Agrupa productos y servicios.
+
+Ejemplos:
+
+* Gastronomía
+* Hospedaje
+* Turismo Cultural
+* Ecoturismo
+* Recreación
+* Artesanías
+* Transporte Turístico
+
+### Atributos
+
+```text
+id
+nombre
+descripcion
+estado
+```
+
+---
+
+## Publicacion
+
+Representa un producto o servicio publicado por un anunciante.
+
+### Atributos
+
+```text
+id
+titulo
+descripcion
+precio
+imagenPrincipal
+estado
+
+fechaCreacion
+fechaActualizacion
+
+anuncianteId
+categoriaId
+```
+
+### Estados
+
+```text
+ACTIVA
+INACTIVA
+ELIMINADA
+```
+
+---
+
+## ImagenPublicacion
+
+Permite almacenar múltiples imágenes para una publicación.
+
+### Atributos
+
+```text
+id
+url
+publicacionId
+```
+
+---
+
+## Reserva
+
+Representa una solicitud realizada por un cliente sobre una publicación.
+
+### Atributos
+
+```text
+id
+fechaReserva
+cantidadPersonas
+comentarios
+
+clienteId
+publicacionId
+
+estado
+fechaCreacion
+```
+
+### Estados
+
+```text
+PENDIENTE
+CONFIRMADA
+CANCELADA
+COMPLETADA
+```
+
+---
+
+# Flujo Principal del Sistema
+
+## Descubrimiento
+
+1. El visitante ingresa al sitio.
+2. Explora las publicaciones.
+3. Filtra por categorías.
+4. Visualiza detalles de la publicación.
+5. Decide reservar o contactar al anunciante.
+
+---
+
+## Reserva
+
+1. Cliente inicia sesión.
+2. Selecciona una publicación.
+3. Realiza una solicitud de reserva.
+4. El anunciante recibe la solicitud.
+5. El anunciante acepta o cancela la reserva.
+6. El cliente recibe la notificación correspondiente.
+
+---
+
+## Contacto por WhatsApp
+
+Cada publicación posee un botón:
+
+```text
+Contactar por WhatsApp
+```
+
+Al presionarlo:
+
+1. Se muestra una ventana de confirmación.
+2. Se abre WhatsApp con un mensaje predefinido.
+
+Mensaje sugerido:
+
+```text
+Hola, encontré este servicio en Vive Zarzal y me gustaría recibir más información o 
+consultar disponibilidad.
+```
+
+---
+
+# Dashboard del Anunciante
+
+Opciones principales:
+
+```text
+Servicios
+Reservas
+Perfil
+Configuración
+```
+
+Estado inicial:
+
+```text
+Bienvenido a Vive Zarzal
+
+Administra tus publicaciones, consulta tus reservas y gestiona la información de tu negocio 
+desde este panel.
+
+Selecciona una opción del menú para comenzar.
+```
+
+---
+
+# Tecnologías Previstas
+
+Frontend:
+
+```text
+React
+TypeScript
+TailwindCSS
+```
+
+Backend:
+
+```text
+Java
+Spring Boot
+Spring Security
+JWT
+```
+
+Base de Datos:
+
+```text
+PostgreSQL
+```
+
+Infraestructura:
+
+```text
+Docker
+Nginx
+```
+
+---
+
+# Reglas de Negocio Importantes
+
+1. Los visitantes pueden navegar sin autenticarse.
+2. Solo usuarios registrados pueden realizar reservas.
+3. Solo anunciantes pueden publicar productos o servicios.
+4. Un anunciante puede tener múltiples publicaciones.
+5. Una publicación pertenece a una única categoría.
+6. Una publicación puede tener múltiples imágenes.
+7. Una reserva pertenece a un cliente.
+8. Una reserva pertenece a una publicación.
+9. El anunciante puede aceptar o cancelar reservas.
+10. El administrador puede moderar cualquier contenido del sistema.
+
+---
+
+# Visión del Proyecto
+
+Vive Zarzal busca convertirse en la plataforma digital de referencia para la promoción del 
+turismo local en Zarzal, permitiendo a visitantes descubrir experiencias auténticas mientras 
+impulsa el crecimiento económico de los negocios y emprendedores de la región.
+</file>
+
 <file path="README.md">
 
 </file>
@@ -1406,7 +1838,7 @@ module.exports = {
 };
 </file>
 
-<file path="src/db/migrations/20260615092634-departament.cjs">
+<file path="src/db/migrations/20260615092634-department.cjs">
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
@@ -3825,7 +4257,7 @@ export const Country = sequelize.define(COUNTRY_TABLE, {
 });
 </file>
 
-<file path="src/db/models/departamentModel.js">
+<file path="src/db/models/departmentModel.js">
 // Import the sequelize instance from the database connection library
 import { sequelize } from '../../libraries/DBConnection.js';
 
@@ -4140,7 +4572,7 @@ export const Gender = sequelize.define(GENDER_TABLE, {
 // ============================================================
 
 import { Country }           from './countryModel.js';
-import { Department }        from './departamentModel.js';
+import { Department }        from './departmentModel.js';
 import { City }              from './cityModel.js';
 import { Location }          from './locationModel.js';
 
@@ -6458,101 +6890,1841 @@ userRouter.post(
 */
 </file>
 
-<file path="src/schemas/userSchema.js">
-// Import the Joi data types library
+<file path="src/schemas/ageRestrictionSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// AGE RESTRICTION SCHEMA — Joi Validation
+// Entity: AgeRestriction | Table: restriccion_edad
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Joi from 'joi';
 
-// Import authentication RegEx from their module
-import { userAuthToken } from '../utils/RegEx/authRegEx.js';
-
-// Import user RegEx from their module
 import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/ageRestrictionRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre de la restricción de edad debe tener entre 3 y 100 caracteres (solo letras y espacios).',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const ageRestrictionSchema = {
+
+  // GET /age-restrictions/:id
+  getAgeRestrictionById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /age-restrictions
+  newAgeRestrictionData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /age-restrictions/:id
+  updateAgeRestrictionData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /age-restrictions/:id
+  deleteAgeRestriction: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/businessPhoneSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS PHONE SCHEMA — Joi Validation
+// Entity: BusinessPhone | Table: negocio_telefono
+// Junction table: Business ↔ Phone
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  businessId,
+  phoneId,
+} from '../utils/regEx/businessPhoneRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiBusinessId = Joi.number().integer().positive().messages({
+  'number.base':     'El businessId debe ser un número.',
+  'number.integer':  'El businessId debe ser un número entero.',
+  'number.positive': 'El businessId debe ser un número positivo.',
+});
+
+const joiPhoneId = Joi.number().integer().positive().messages({
+  'number.base':     'El phoneId debe ser un número.',
+  'number.integer':  'El phoneId debe ser un número entero.',
+  'number.positive': 'El phoneId debe ser un número positivo.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const businessPhoneSchema = {
+
+  // GET /business-phones/:id
+  getBusinessPhoneById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /business-phones — assign a phone to a business
+  newBusinessPhoneData: Joi.object({
+    businessId: joiBusinessId.required(),
+    phoneId:    joiPhoneId.required(),
+  }),
+
+  // DELETE /business-phones/:id
+  deleteBusinessPhone: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/businessReviewSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS REVIEW SCHEMA — Joi Validation
+// Entity: BusinessReview | Table: resena_negocio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  businessId,
+  userId,
+  content,
+  rating,
+} from '../utils/regEx/businessReviewRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiBusinessId = Joi.number().integer().positive().messages({
+  'number.base':     'El businessId debe ser un número.',
+  'number.integer':  'El businessId debe ser un número entero.',
+  'number.positive': 'El businessId debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiContent = Joi.string().pattern(content).messages({
+  'string.pattern.base': 'El contenido de la reseña debe tener entre 10 y 5000 caracteres.',
+});
+
+const joiRating = Joi.string().pattern(rating).messages({
+  'string.pattern.base': 'La puntuación debe ser un número entre 1 y 5.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const businessReviewSchema = {
+
+  // GET /business-reviews/:id
+  getBusinessReviewById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /business-reviews
+  newBusinessReviewData: Joi.object({
+    businessId: joiBusinessId.required(),
+    userId:     joiUserId.required(),
+    rating:     joiRating.required(),
+    content:    joiContent.optional(),
+  }),
+
+  // PATCH /business-reviews/:id
+  updateBusinessReviewData: Joi.object({
+    rating:  joiRating.optional(),
+    content: joiContent.optional(),
+  }),
+
+  // DELETE /business-reviews/:id
+  deleteBusinessReview: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/businessSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS SCHEMA — Joi Validation
+// Entity: Business | Table: negocio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+  facebook,
+  instagram,
+  tiktok,
+  website,
+} from '../utils/regEx/businessRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiOwnerUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El ownerUserId debe ser un número.',
+  'number.integer':  'El ownerUserId debe ser un número entero.',
+  'number.positive': 'El ownerUserId debe ser un número positivo.',
+});
+
+const joiLocationId = Joi.number().integer().positive().messages({
+  'number.base':     'El locationId debe ser un número.',
+  'number.integer':  'El locationId debe ser un número entero.',
+  'number.positive': 'El locationId debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del negocio debe tener entre 2 y 150 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción del negocio debe tener al menos 10 caracteres.',
+});
+
+const joiFacebook = Joi.string().pattern(facebook).messages({
+  'string.pattern.base': 'La URL o usuario de Facebook no es válida.',
+});
+
+const joiInstagram = Joi.string().pattern(instagram).messages({
+  'string.pattern.base': 'La URL o usuario de Instagram no es válida.',
+});
+
+const joiTiktok = Joi.string().pattern(tiktok).messages({
+  'string.pattern.base': 'La URL o usuario de TikTok no es válida.',
+});
+
+const joiWebsite = Joi.string().pattern(website).messages({
+  'string.pattern.base': 'La URL del sitio web debe comenzar con http:// o https:// y ser válida.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const businessSchema = {
+
+  // GET /businesses/:id
+  getBusinessById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /businesses
+  newBusinessData: Joi.object({
+    ownerUserId: joiOwnerUserId.required(),
+    name:        joiName.required(),
+    locationId:  joiLocationId.optional(),
+    description: joiDescription.optional(),
+    facebook:    joiFacebook.optional(),
+    instagram:   joiInstagram.optional(),
+    tiktok:      joiTiktok.optional(),
+    website:     joiWebsite.optional(),
+  }),
+
+  // PATCH /businesses/:id
+  updateBusinessData: Joi.object({
+    name:        joiName.optional(),
+    locationId:  joiLocationId.optional(),
+    description: joiDescription.optional(),
+    facebook:    joiFacebook.optional(),
+    instagram:   joiInstagram.optional(),
+    tiktok:      joiTiktok.optional(),
+    website:     joiWebsite.optional(),
+  }),
+
+  // DELETE /businesses/:id
+  deleteBusiness: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/categorySchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY SCHEMA — Joi Validation
+// Entity: Category | Table: categoria
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/categoryRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre de la categoría debe tener entre 2 y 100 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción de la categoría debe tener al menos 5 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const categorySchema = {
+
+  // GET /categories/:id
+  getCategoryById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /categories
+  newCategoryData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /categories/:id
+  updateCategoryData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /categories/:id
+  deleteCategory: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/citySchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// CITY SCHEMA — Joi Validation
+// Entity: City | Table: ciudad
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  departmentId,
+  name,
+  description,
+} from '../utils/regEx/cityRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiDepartmentId = Joi.number().integer().positive().messages({
+  'number.base':     'El departmentId debe ser un número.',
+  'number.integer':  'El departmentId debe ser un número entero.',
+  'number.positive': 'El departmentId debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre de la ciudad debe tener entre 2 y 100 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const citySchema = {
+
+  // GET /cities/:id
+  getCityById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /cities
+  newCityData: Joi.object({
+    departmentId: joiDepartmentId.required(),
+    name:         joiName.required(),
+    description:  joiDescription.optional(),
+  }),
+
+  // PATCH /cities/:id
+  updateCityData: Joi.object({
+    departmentId: joiDepartmentId.optional(),
+    name:         joiName.optional(),
+    description:  joiDescription.optional(),
+  }),
+
+  // DELETE /cities/:id
+  deleteCity: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/countrySchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNTRY SCHEMA — Joi Validation
+// Entity: Country | Table: pais
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/countryRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del país debe tener entre 2 y 100 caracteres (letras, espacios, guiones, puntos).',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const countrySchema = {
+
+  // GET /countries/:id
+  getCountryById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /countries
+  newCountryData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /countries/:id
+  updateCountryData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /countries/:id
+  deleteCountry: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/departmentSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// DEPARTMENT SCHEMA — Joi Validation
+// Entity: Department | Table: departamento
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  countryId,
+  name,
+  description,
+} from '../utils/regEx/departamentRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiCountryId = Joi.number().integer().positive().messages({
+  'number.base':     'El countryId debe ser un número.',
+  'number.integer':  'El countryId debe ser un número entero.',
+  'number.positive': 'El countryId debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del departamento debe tener entre 2 y 100 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const departmentSchema = {
+
+  // GET /departments/:id
+  getDepartmentById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /departments
+  newDepartmentData: Joi.object({
+    countryId:   joiCountryId.required(),
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /departments/:id
+  updateDepartmentData: Joi.object({
+    countryId:   joiCountryId.optional(),
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /departments/:id
+  deleteDepartment: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/documentTypeSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// DOCUMENT TYPE SCHEMA — Joi Validation
+// Entity: DocumentType | Table: tipo_documento
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+} from '../utils/regEx/documentTypeRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del tipo de documento debe tener entre 2 y 100 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const documentTypeSchema = {
+
+  // GET /document-types/:id
+  getDocumentTypeById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /document-types
+  newDocumentTypeData: Joi.object({
+    name: joiName.required(),
+  }),
+
+  // PATCH /document-types/:id
+  updateDocumentTypeData: Joi.object({
+    name: joiName.optional(),
+  }),
+
+  // DELETE /document-types/:id
+  deleteDocumentType: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/favoriteUserServiceSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// FAVORITE USER SERVICE SCHEMA — Joi Validation
+// Entity: ServiceFavorite | Table: servicio_favoritos_usuarios
+// Junction table: User ↔ Service (favorites)
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  userId,
+  serviceId,
+} from '../utils/regEx/favoriteUserServiceRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiServiceId = Joi.number().integer().positive().messages({
+  'number.base':     'El serviceId debe ser un número.',
+  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.positive': 'El serviceId debe ser un número positivo.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const favoriteUserServiceSchema = {
+
+  // GET /favorites/:id
+  getFavoriteById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /favorites — add a service to user's favorites
+  newFavoriteData: Joi.object({
+    userId:    joiUserId.required(),
+    serviceId: joiServiceId.required(),
+  }),
+
+  // DELETE /favorites/:id — remove from favorites
+  deleteFavorite: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/genderSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// GENDER SCHEMA — Joi Validation
+// Entity: Gender | Table: genero
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+} from '../utils/regEx/genderRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El tipo de género debe tener entre 2 y 50 caracteres (letras, espacios, guiones).',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const genderSchema = {
+
+  // GET /genders/:id
+  getGenderById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /genders
+  newGenderData: Joi.object({
+    name: joiName.required(),
+  }),
+
+  // PATCH /genders/:id
+  updateGenderData: Joi.object({
+    name: joiName.optional(),
+  }),
+
+  // DELETE /genders/:id
+  deleteGender: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/index.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHEMAS INDEX — Vive Zarzal API
+// Central export for all Joi validation schemas
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Geographic catalog ────────────────────────────────────────────────────────
+export { countrySchema }            from './countrySchema.js';
+export { departmentSchema }         from './departmentSchema.js';
+export { citySchema }               from './citySchema.js';
+export { locationSchema }           from './locationSchema.js';
+
+// ── User catalog ─────────────────────────────────────────────────────────────
+export { roleSchema }               from './roleSchema.js';
+export { genderSchema }             from './genderSchema.js';
+export { documentTypeSchema }       from './documentTypeSchema.js';
+
+// ── User ─────────────────────────────────────────────────────────────────────
+export { userSchema }               from './userSchema.js';
+export { userImageSchema }          from './userImageSchema.js';
+export { phoneSchema }              from './phoneSchema.js';
+export { userPhoneSchema }          from './userPhoneSchema.js';
+
+// ── Business ─────────────────────────────────────────────────────────────────
+export { businessSchema }           from './businessSchema.js';
+export { businessPhoneSchema }      from './businessPhoneSchema.js';
+
+// ── Service ──────────────────────────────────────────────────────────────────
+export { categorySchema }           from './categorySchema.js';
+export { ageRestrictionSchema }     from './ageRestrictionSchema.js';
+export { serviceStatusSchema }      from './serviceStatusSchema.js';
+export { serviceSchema }            from './serviceSchema.js';
+export { serviceImageSchema }       from './serviceImageSchema.js';
+
+// ── Reservations ─────────────────────────────────────────────────────────────
+export { reservationStatusSchema }  from './reservationStatusSchema.js';
+export { reservationSchema }        from './reservationSchema.js';
+export { reservationDetailsSchema } from './reservationDetailsSchema.js';
+
+// ── Messaging ────────────────────────────────────────────────────────────────
+export { messageStatusSchema }      from './messageStatusSchema.js';
+export { messageSchema }            from './messageSchema.js';
+
+// ── Reviews ──────────────────────────────────────────────────────────────────
+export { businessReviewSchema }     from './businessReviewSchema.js';
+export { serviceReviewSchema }      from './serviceReviewSchema.js';
+
+// ── Favorites ────────────────────────────────────────────────────────────────
+export { favoriteUserServiceSchema } from './favoriteUserServiceSchema.js';
+</file>
+
+<file path="src/schemas/locationSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCATION SCHEMA — Joi Validation
+// Entity: Location | Table: ubicacion
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  cityId,
+  name,
+  description,
+  code,
+} from '../utils/regEx/locationRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiCityId = Joi.number().integer().positive().messages({
+  'number.base':     'El cityId debe ser un número.',
+  'number.integer':  'El cityId debe ser un número entero.',
+  'number.positive': 'El cityId debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre de la ubicación debe tener entre 3 y 150 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción de la ubicación debe tener al menos 5 caracteres.',
+});
+
+const joiCode = Joi.string().pattern(code).messages({
+  'string.pattern.base': 'El código de ubicación debe tener entre 2 y 50 caracteres alfanuméricos.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const locationSchema = {
+
+  // GET /locations/:id
+  getLocationById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /locations
+  newLocationData: Joi.object({
+    cityId:      joiCityId.required(),
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+    code:        joiCode.optional(),
+  }),
+
+  // PATCH /locations/:id
+  updateLocationData: Joi.object({
+    cityId:      joiCityId.optional(),
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+    code:        joiCode.optional(),
+  }),
+
+  // DELETE /locations/:id
+  deleteLocation: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/messageSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE SCHEMA — Joi Validation
+// Entity: Message | Table: mensaje
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  content,
+  statusId,
+  senderUserId,
+  receiverUserId,
+} from '../utils/regEx/messageRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiSenderUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El senderUserId debe ser un número.',
+  'number.integer':  'El senderUserId debe ser un número entero.',
+  'number.positive': 'El senderUserId debe ser un número positivo.',
+});
+
+const joiReceiverUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El receiverUserId debe ser un número.',
+  'number.integer':  'El receiverUserId debe ser un número entero.',
+  'number.positive': 'El receiverUserId debe ser un número positivo.',
+});
+
+const joiStatusId = Joi.number().integer().positive().messages({
+  'number.base':     'El statusId debe ser un número.',
+  'number.integer':  'El statusId debe ser un número entero.',
+  'number.positive': 'El statusId debe ser un número positivo.',
+});
+
+const joiContent = Joi.string().pattern(content).messages({
+  'string.pattern.base': 'El contenido del mensaje debe tener entre 1 y 10,000 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const messageSchema = {
+
+  // GET /messages/:id
+  getMessageById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /messages — send a message
+  newMessageData: Joi.object({
+    senderUserId:   joiSenderUserId.required(),
+    receiverUserId: joiReceiverUserId.required(),
+    statusId:       joiStatusId.required(),
+    content:        joiContent.required(),
+  }),
+
+  // PATCH /messages/:id — update status (e.g. mark as read)
+  updateMessageData: Joi.object({
+    statusId: joiStatusId.optional(),
+    content:  joiContent.optional(),
+  }),
+
+  // DELETE /messages/:id
+  deleteMessage: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/messageStatusSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE STATUS SCHEMA — Joi Validation
+// Entity: MessageStatus | Table: estado_mensaje
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/messageStatusRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del estado de mensaje debe tener entre 2 y 50 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const messageStatusSchema = {
+
+  // GET /message-statuses/:id
+  getMessageStatusById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /message-statuses
+  newMessageStatusData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /message-statuses/:id
+  updateMessageStatusData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /message-statuses/:id
+  deleteMessageStatus: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/phoneSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// PHONE SCHEMA — Joi Validation
+// Entity: Phone | Table: telefono
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  phoneNumber,
+} from '../utils/regEx/phoneRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiPhoneNumber = Joi.string().pattern(phoneNumber).messages({
+  'string.pattern.base': 'El número de teléfono debe tener entre 7 y 20 caracteres en formato válido.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const phoneSchema = {
+
+  // GET /phones/:id
+  getPhoneById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /phones
+  newPhoneData: Joi.object({
+    phoneNumber: joiPhoneNumber.required(),
+  }),
+
+  // PATCH /phones/:id
+  updatePhoneData: Joi.object({
+    phoneNumber: joiPhoneNumber.optional(),
+  }),
+
+  // DELETE /phones/:id
+  deletePhone: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/reservationDetailsSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION DETAIL SCHEMA — Joi Validation
+// Entity: ReservationDetail | Table: reserva_detalle
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  reservationId,
+  userId,
+  quantity,
+  reservationStatusId,
+} from '../utils/regEx/reservationDetailsRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiReservationId = Joi.number().integer().positive().messages({
+  'number.base':     'El reservationId debe ser un número.',
+  'number.integer':  'El reservationId debe ser un número entero.',
+  'number.positive': 'El reservationId debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiReservationStatusId = Joi.number().integer().positive().messages({
+  'number.base':     'El reservationStatusId debe ser un número.',
+  'number.integer':  'El reservationStatusId debe ser un número entero.',
+  'number.positive': 'El reservationStatusId debe ser un número positivo.',
+});
+
+const joiQuantity = Joi.string().pattern(quantity).messages({
+  'string.pattern.base': 'La cantidad debe ser un número entero entre 1 y 9999.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const reservationDetailsSchema = {
+
+  // GET /reservation-details/:id
+  getReservationDetailById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /reservation-details
+  newReservationDetailData: Joi.object({
+    reservationId:       joiReservationId.required(),
+    userId:              joiUserId.required(),
+    reservationStatusId: joiReservationStatusId.required(),
+    quantity:            joiQuantity.required(),
+  }),
+
+  // PATCH /reservation-details/:id — anunciante acepta/cancela
+  updateReservationDetailData: Joi.object({
+    reservationStatusId: joiReservationStatusId.optional(),
+    quantity:            joiQuantity.optional(),
+  }),
+
+  // DELETE /reservation-details/:id
+  deleteReservationDetail: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/reservationSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION SCHEMA — Joi Validation
+// Entity: Reservation | Table: reserva
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  serviceId,
+} from '../utils/regEx/reservationRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiServiceId = Joi.number().integer().positive().messages({
+  'number.base':     'El serviceId debe ser un número.',
+  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.positive': 'El serviceId debe ser un número positivo.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const reservationSchema = {
+
+  // GET /reservations/:id
+  getReservationById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /reservations — client creates a reservation for a service
+  newReservationData: Joi.object({
+    serviceId: joiServiceId.required(),
+  }),
+
+  // DELETE /reservations/:id
+  deleteReservation: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/reservationStatusSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION STATUS SCHEMA — Joi Validation
+// Entity: ReservationStatus | Table: estado_reserva
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/reservationStatusRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del estado de reserva debe tener entre 2 y 50 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const reservationStatusSchema = {
+
+  // GET /reservation-statuses/:id
+  getReservationStatusById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /reservation-statuses
+  newReservationStatusData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /reservation-statuses/:id
+  updateReservationStatusData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /reservation-statuses/:id
+  deleteReservationStatus: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/roleSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// ROLE SCHEMA — Joi Validation
+// Entity: Role | Table: rol
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/roleRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del rol debe tener entre 2 y 50 caracteres (letras, espacios, guiones bajos).',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción del rol debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const roleSchema = {
+
+  // GET /roles/:id
+  getRoleById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /roles
+  newRoleData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /roles/:id
+  updateRoleData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /roles/:id
+  deleteRole: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/serviceImageSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE IMAGE SCHEMA — Joi Validation
+// Entity: ServiceImage | Table: imagen_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  serviceId,
+  imageUrl,
+  description,
+} from '../utils/regEx/serviceImageRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiServiceId = Joi.number().integer().positive().messages({
+  'number.base':     'El serviceId debe ser un número.',
+  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.positive': 'El serviceId debe ser un número positivo.',
+});
+
+const joiImageUrl = Joi.string().pattern(imageUrl).messages({
+  'string.pattern.base': 'La URL de la imagen debe ser válida y terminar en una extensión de imagen.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción (texto alternativo) debe tener entre 3 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const serviceImageSchema = {
+
+  // GET /service-images/:id
+  getServiceImageById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /service-images
+  newServiceImageData: Joi.object({
+    serviceId:   joiServiceId.required(),
+    imageUrl:    joiImageUrl.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /service-images/:id
+  updateServiceImageData: Joi.object({
+    imageUrl:    joiImageUrl.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /service-images/:id
+  deleteServiceImage: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/serviceReviewSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE REVIEW SCHEMA — Joi Validation
+// Entity: ServiceReview | Table: resena_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  serviceId,
+  userId,
+  content,
+  rating,
+} from '../utils/regEx/serviceReviewRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiServiceId = Joi.number().integer().positive().messages({
+  'number.base':     'El serviceId debe ser un número.',
+  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.positive': 'El serviceId debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiContent = Joi.string().pattern(content).messages({
+  'string.pattern.base': 'El contenido de la reseña debe tener entre 10 y 5000 caracteres.',
+});
+
+const joiRating = Joi.string().pattern(rating).messages({
+  'string.pattern.base': 'La puntuación debe ser un número entre 1 y 5.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const serviceReviewSchema = {
+
+  // GET /service-reviews/:id
+  getServiceReviewById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /service-reviews
+  newServiceReviewData: Joi.object({
+    serviceId: joiServiceId.required(),
+    userId:    joiUserId.required(),
+    rating:    joiRating.required(),
+    content:   joiContent.optional(),
+  }),
+
+  // PATCH /service-reviews/:id
+  updateServiceReviewData: Joi.object({
+    rating:  joiRating.optional(),
+    content: joiContent.optional(),
+  }),
+
+  // DELETE /service-reviews/:id
+  deleteServiceReview: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/serviceSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE SCHEMA — Joi Validation
+// Entity: Service | Table: servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+  price,
+  categoryId,
+  statusId,
+  ageRestrictionId,
+  businessId,
+} from '../utils/regEx/serviceRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiBusinessId = Joi.number().integer().positive().messages({
+  'number.base':     'El businessId debe ser un número.',
+  'number.integer':  'El businessId debe ser un número entero.',
+  'number.positive': 'El businessId debe ser un número positivo.',
+});
+
+const joiCategoryId = Joi.number().integer().positive().messages({
+  'number.base':     'El categoryId debe ser un número.',
+  'number.integer':  'El categoryId debe ser un número entero.',
+  'number.positive': 'El categoryId debe ser un número positivo.',
+});
+
+const joiStatusId = Joi.number().integer().positive().messages({
+  'number.base':     'El statusId debe ser un número.',
+  'number.integer':  'El statusId debe ser un número entero.',
+  'number.positive': 'El statusId debe ser un número positivo.',
+});
+
+const joiAgeRestrictionId = Joi.number().integer().positive().messages({
+  'number.base':     'El ageRestrictionId debe ser un número.',
+  'number.integer':  'El ageRestrictionId debe ser un número entero.',
+  'number.positive': 'El ageRestrictionId debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del servicio debe tener entre 2 y 200 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción del servicio debe tener al menos 10 caracteres.',
+});
+
+const joiPrice = Joi.string().pattern(price).messages({
+  'string.pattern.base': 'El precio debe ser un número decimal válido (ej: 1500 o 29.99).',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const serviceSchema = {
+
+  // GET /services/:id
+  getServiceById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /services
+  newServiceData: Joi.object({
+    businessId:       joiBusinessId.required(),
+    categoryId:       joiCategoryId.required(),
+    statusId:         joiStatusId.required(),
+    name:             joiName.required(),
+    price:            joiPrice.required(),
+    description:      joiDescription.optional(),
+    ageRestrictionId: joiAgeRestrictionId.optional(),
+  }),
+
+  // PATCH /services/:id
+  updateServiceData: Joi.object({
+    categoryId:       joiCategoryId.optional(),
+    statusId:         joiStatusId.optional(),
+    name:             joiName.optional(),
+    price:            joiPrice.optional(),
+    description:      joiDescription.optional(),
+    ageRestrictionId: joiAgeRestrictionId.optional(),
+  }),
+
+  // DELETE /services/:id
+  deleteService: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/serviceStatusSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE STATUS SCHEMA — Joi Validation
+// Entity: ServiceStatus | Table: estado_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  name,
+  description,
+} from '../utils/regEx/serviceStatusRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del estado debe tener entre 2 y 50 caracteres.',
+});
+
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción debe tener entre 5 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const serviceStatusSchema = {
+
+  // GET /service-statuses/:id
+  getServiceStatusById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /service-statuses
+  newServiceStatusData: Joi.object({
+    name:        joiName.required(),
+    description: joiDescription.optional(),
+  }),
+
+  // PATCH /service-statuses/:id
+  updateServiceStatusData: Joi.object({
+    name:        joiName.optional(),
+    description: joiDescription.optional(),
+  }),
+
+  // DELETE /service-statuses/:id
+  deleteServiceStatus: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/userImageSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER IMAGE SCHEMA — Joi Validation
+// Entity: UserImage | Table: imagen_usuario
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  userId,
+  url,
+  name,
+  altText,
+} from '../utils/regEx/userImageRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiUrl = Joi.string().pattern(url).messages({
+  'string.pattern.base': 'La URL de la imagen debe ser válida y terminar en una extensión de imagen (.jpg, .png, .webp, etc.).',
+});
+
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre de la imagen debe tener entre 2 y 255 caracteres.',
+});
+
+const joiAltText = Joi.string().pattern(altText).messages({
+  'string.pattern.base': 'El texto alternativo debe tener entre 3 y 255 caracteres.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const userImageSchema = {
+
+  // GET /user-images/:id
+  getUserImageById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /user-images
+  newUserImageData: Joi.object({
+    userId:  joiUserId.required(),
+    url:     joiUrl.required(),
+    name:    joiName.optional(),
+    altText: joiAltText.optional(),
+  }),
+
+  // PATCH /user-images/:id
+  updateUserImageData: Joi.object({
+    url:     joiUrl.optional(),
+    name:    joiName.optional(),
+    altText: joiAltText.optional(),
+  }),
+
+  // DELETE /user-images/:id
+  deleteUserImage: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/userPhoneSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER PHONE SCHEMA — Joi Validation
+// Entity: UserPhone | Table: usuario_telefono
+// Junction table: User ↔ Phone
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+import {
+  ID,
+  userId,
+  phoneId,
+} from '../utils/regEx/userPhoneRegEx.js';
+
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
+});
+
+const joiUserId = Joi.number().integer().positive().messages({
+  'number.base':     'El userId debe ser un número.',
+  'number.integer':  'El userId debe ser un número entero.',
+  'number.positive': 'El userId debe ser un número positivo.',
+});
+
+const joiPhoneId = Joi.number().integer().positive().messages({
+  'number.base':     'El phoneId debe ser un número.',
+  'number.integer':  'El phoneId debe ser un número entero.',
+  'number.positive': 'El phoneId debe ser un número positivo.',
+});
+
+// ── Schema export ─────────────────────────────────────────────────────────────
+
+export const userPhoneSchema = {
+
+  // GET /user-phones/:id
+  getUserPhoneById: Joi.object({
+    id: joiId.required(),
+  }),
+
+  // POST /user-phones — assign a phone to a user
+  newUserPhoneData: Joi.object({
+    userId:  joiUserId.required(),
+    phoneId: joiPhoneId.required(),
+  }),
+
+  // DELETE /user-phones/:id
+  deleteUserPhone: Joi.object({
+    id: joiId.required(),
+  }),
+
+};
+</file>
+
+<file path="src/schemas/userSchema.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER SCHEMA — Joi Validation
+// Entity: User | Table: usuario
+// ─────────────────────────────────────────────────────────────────────────────
+
+import Joi from 'joi';
+
+// Import authentication RegEx
+import { userAuthToken } from '../utils/regEx/authRegEx.js';
+
+// Import user RegEx
+import {
+  ID,
+  roleId,
+  genderId,
+  documentTypeId,
   firstName,
-  middleName,
-  firstLastName,
-  secondLastName,
+  lastName,
+  birthDate,
+  documentNumber,
+  email,
   username,
   password,
-  email,
-  ID
-} from '../utils/RegEx/usersRegEx.js';
+} from '../utils/regEx/userRegEx.js';
 
-// Define global authentication dataType
-const joiAuthentication = Joi.string().pattern(userAuthToken).message({
-  'string.pattern.base': 'token must be between 30 and 160 characters'
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiAuthentication = Joi.string().pattern(userAuthToken).messages({
+  'string.pattern.base': 'El token de autenticación no tiene un formato válido.',
 });
 
-// Define global ID dataType
-const joiId = Joi.number().min(1).max(1000).messages({
-  'number.base': 'ID must be a number',
-  'number.min': 'ID must be at least 1',
-  'number.max': 'ID must be at most 1000',
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
 });
 
-// Define global username dataType
+const joiRoleId = Joi.number().integer().positive().messages({
+  'number.base':     'El roleId debe ser un número.',
+  'number.integer':  'El roleId debe ser un número entero.',
+  'number.positive': 'El roleId debe ser un número positivo.',
+});
+
+const joiGenderId = Joi.number().integer().positive().messages({
+  'number.base':     'El genderId debe ser un número.',
+  'number.integer':  'El genderId debe ser un número entero.',
+  'number.positive': 'El genderId debe ser un número positivo.',
+});
+
+const joiDocumentTypeId = Joi.number().integer().positive().messages({
+  'number.base':     'El documentTypeId debe ser un número.',
+  'number.integer':  'El documentTypeId debe ser un número entero.',
+  'number.positive': 'El documentTypeId debe ser un número positivo.',
+});
+
+const joiFirstName = Joi.string().pattern(firstName).messages({
+  'string.pattern.base': 'El nombre debe contener solo letras y tener entre 2 y 100 caracteres.',
+});
+
+const joiLastName = Joi.string().pattern(lastName).messages({
+  'string.pattern.base': 'El apellido debe contener solo letras y tener entre 2 y 100 caracteres.',
+});
+
+const joiBirthDate = Joi.string().pattern(birthDate).messages({
+  'string.pattern.base': 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.',
+});
+
+const joiDocumentNumber = Joi.string().pattern(documentNumber).messages({
+  'string.pattern.base': 'El número de documento debe tener entre 5 y 30 caracteres alfanuméricos.',
+});
+
+const joiEmail = Joi.string().pattern(email).messages({
+  'string.pattern.base': 'El correo electrónico no tiene un formato válido.',
+});
+
 const joiUsername = Joi.string().pattern(username).messages({
-  'string.pattern.base': 'username must be between 2 and 20 letters only',
+  'string.pattern.base': 'El nombre de usuario debe tener entre 3 y 80 caracteres (letras, dígitos, . - _).',
 });
 
-// Define global password dataType
 const joiPassword = Joi.string().pattern(password).messages({
-  'string.pattern.base': 'password must be between 5 and 30 characters',
+  'string.pattern.base': 'La contraseña debe tener entre 8 y 30 caracteres, con al menos una letra y un dígito.',
 });
 
-// Validate the email of the user
-// Define global email dataType
-const JoiEmail = Joi.string().pattern(email).message({
-  'string.pattern.base': 'email contains characters must be followed by *@domain.*'
-});
+// ── Schema export ─────────────────────────────────────────────────────────────
 
-// Validate the first name of the user
-// Define global first name dataType
-const joiFirstName = Joi.string().pattern(firstName).message({
-  'string.pattern.base': 'firstName contains only letters between 3 to 20 characters'
-});
+export const userSchema = {
 
-// Validate the middle name of the user
-// Define global middle name dataType
-const joiMiddleName = Joi.string().pattern(middleName).allow('').message({
-  'string.pattern.base': 'middleName must be empty or contains only letters between 3 to 20 characters'
-});
+  // GET /users/:id — validate route param
+  getUserById: Joi.object({
+    id: joiId.required(),
+  }),
 
-// Validate the first last name of the user
-// Define global first last name dataType
-const joiFirstLastName = Joi.string().pattern(firstLastName).message({
-  'string.pattern.base': 'firstLastName contains only letters between 3 to 20 characters'
-});
+  // POST /users — create a new user
+  newUserData: Joi.object({
+    roleId:         joiRoleId.required(),
+    firstName:      joiFirstName.required(),
+    lastName:       joiLastName.required(),
+    email:          joiEmail.required(),
+    username:       joiUsername.required(),
+    password:       joiPassword.required(),
+    genderId:       joiGenderId.optional(),
+    documentTypeId: joiDocumentTypeId.optional(),
+    documentNumber: joiDocumentNumber.optional(),
+    birthDate:      joiBirthDate.optional(),
+  }),
 
-// Validate the second last name of the user
-// Define global second last name dataType
-const joiSecondLastName = Joi.string().pattern(secondLastName).message({
-  'string.pattern.base': 'secondLastName contains only letters between 3 to 20 characters'
-});
+  // PATCH /users/:id — update an existing user (all fields optional)
+  updateUserData: Joi.object({
+    roleId:         joiRoleId.optional(),
+    firstName:      joiFirstName.optional(),
+    lastName:       joiLastName.optional(),
+    email:          joiEmail.optional(),
+    username:       joiUsername.optional(),
+    password:       joiPassword.optional(),
+    genderId:       joiGenderId.optional(),
+    documentTypeId: joiDocumentTypeId.optional(),
+    documentNumber: joiDocumentNumber.optional(),
+    birthDate:      joiBirthDate.optional(),
+  }),
 
+  // DELETE /users/:id — validate route param
+  deleteUser: Joi.object({
+    id: joiId.required(),
+  }),
 
-// Define and export user dataType schema
-export const userSchema = Joi.object({
+  // POST /auth/login — login body
+  loginData: Joi.object({
+    username:       joiUsername.required(),
+    password:       joiPassword.required(),
+  }),
 
-    // Validate the JWT token of the user
-    authentication: joiAuthentication,
-    // Validate the user id
-    id: joiId,
-    // Validate the user credentials
-    credentials: {
-      username: joiUsername,
-      password: joiPassword
-    },
-    // Validate the object new user data
-    newUserData: {
-      username: joiUsername,
-      password: joiPassword,
-      email: JoiEmail,
-      firstName: joiFirstName,
-      middleName: joiMiddleName,
-      firstLastName: joiFirstLastName,
-      secondLastName: joiSecondLastName
-    }
-});
+};
 </file>
 
 <file path="src/utils/auth/authApp/strategies/jwt.strategy.js">
@@ -6716,12 +8888,836 @@ export const verifyToken = (token, secret) => {
 };
 </file>
 
-<file path="src/utils/RegEx/authRegEx.js">
+<file path="src/utils/regEx/ageRestrictionRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// AGE RESTRICTION — Regular Expression Patterns
+// Entity: AgeRestriction | Table: restriccion_edad
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the age restriction record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long, supporting up to 1,000,000,000 records.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the age restriction name.
+// The pattern ensures the name contains only Unicode letters and spaces,
+// supports accented characters and international scripts,
+// and is between 3 and 100 characters long.
+export const name = /^[\p{L}\s]{3,100}$/u;
+
+// Regex pattern to validate the age restriction description.
+// The pattern accepts any printable Unicode character including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/authRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTHENTICATION TOKEN — Regular Expression Patterns
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Regex pattern to validate the user authentication token
 // The pattern ensures the token contains
 // letters (both uppercase and lowercase), numbers, and characters
 // and is between 30 to 65 characters long
 export const userAuthToken = /^[A-Za-z0-9_-]{30,160}\.[A-Za-z0-9_-]{30,160}\.[A-Za-z0-9_-]{30,160}$/;
+</file>
+
+<file path="src/utils/regEx/businessPhoneRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS PHONE — Regular Expression Patterns
+// Entity: BusinessPhone | Table: negocio_telefono
+// Junction table linking Business ↔ Phone records.
+// All validatable fields are foreign-key integers; no string fields exist.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the business-phone junction record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Business record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const businessId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Phone record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const phoneId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/businessRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS — Regular Expression Patterns
+// Entity: Business | Table: negocio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the business record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the business name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens,
+// ampersands, and dots — covering trade names in any language.
+// The name must be between 2 and 150 characters long.
+export const name = /^[\p{L}\p{N}\s\-&.]{2,150}$/u;
+
+// Regex pattern to validate the business description.
+// The pattern accepts any printable Unicode content (letters, digits,
+// punctuation, and spaces), allowing rich free-text descriptions.
+// The description is optional but, when provided, must be
+// at least 10 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{10,}$/u;
+
+// Regex pattern to validate the business Facebook page URL or handle.
+// The pattern accepts a full HTTPS URL pointing to facebook.com
+// or a plain alphanumeric username/handle (3–100 characters).
+export const facebook = /^(https:\/\/(www\.)?facebook\.com\/[\w.%-]{1,100}|[\w.%-]{3,100})$/;
+
+// Regex pattern to validate the business Instagram profile URL or handle.
+// The pattern accepts a full HTTPS URL pointing to instagram.com
+// or a plain alphanumeric username preceded by an optional '@' (1–30 chars).
+export const instagram = /^(https:\/\/(www\.)?instagram\.com\/[\w.%-]{1,100}|@?[\w.]{1,30})$/;
+
+// Regex pattern to validate the business TikTok profile URL or handle.
+// The pattern accepts a full HTTPS URL pointing to tiktok.com
+// or a plain handle preceded by an optional '@' (2–24 chars).
+export const tiktok = /^(https:\/\/(www\.)?tiktok\.com\/@[\w.%-]{2,24}|@?[\w.]{2,24})$/;
+
+// Regex pattern to validate the business website URL.
+// The pattern ensures the URL starts with http:// or https://,
+// followed by a valid domain name and an optional path/query string,
+// with an overall length between 10 and 255 characters.
+export const website = /^https?:\/\/[\w.-]{2,}\.[a-zA-Z]{2,}(\/[\w\-./?%&=]*)?$/;
+</file>
+
+<file path="src/utils/regEx/businessReviewRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// BUSINESS REVIEW — Regular Expression Patterns
+// Entity: BusinessReview | Table: resena_negocio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the business review record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Business record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const businessId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the review content body.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, spaces, and newline-equivalent whitespace,
+// supporting multi-language free-text reviews.
+// The content is optional but, when provided, must be
+// between 10 and 5000 characters long.
+export const content = /^[\p{L}\p{N}\p{P}\p{Z}\s]{10,5000}$/u;
+
+// Regex pattern to validate the numerical rating of the review.
+// The pattern ensures the rating is a single digit between 1 and 5,
+// matching the database SMALLINT constraint (min: 1, max: 5).
+export const rating = /^[1-5]$/;
+</file>
+
+<file path="src/utils/regEx/categoryRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORY — Regular Expression Patterns
+// Entity: Category | Table: categoria
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the category record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the category name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens, and ampersands,
+// supporting category labels written in any language.
+// The name must be unique per the database constraint and
+// between 2 and 100 characters long.
+export const name = /^[\p{L}\p{N}\s\-&]{2,100}$/u;
+
+// Regex pattern to validate the category description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces for rich free-text content.
+// The description is optional but, when provided, must be
+// at least 5 characters long with no upper-bound restriction
+// (stored as TEXT in the database).
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,}$/u;
+</file>
+
+<file path="src/utils/regEx/cityRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// CITY — Regular Expression Patterns
+// Entity: City | Table: ciudad
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the city record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Department record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const departmentId = /^\d{1,10}$/;
+
+// Regex pattern to validate the city name.
+// The pattern accepts Unicode letters (including accented characters),
+// spaces, hyphens, and dots — accommodating multi-word and compound city names
+// across different languages and writing systems.
+// The name must be between 2 and 100 characters long.
+export const name = /^[\p{L}\s\-.]{2,100}$/u;
+
+// Regex pattern to validate the city description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/countryRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// COUNTRY — Regular Expression Patterns
+// Entity: Country | Table: pais
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the country record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the country name.
+// The pattern accepts Unicode letters (supporting all scripts and accented
+// characters), spaces, hyphens, and dots — covering official country names
+// and multi-word designations in any language.
+// The name must be unique per the database constraint and
+// between 2 and 100 characters long.
+export const name = /^[\p{L}\s\-.]{2,100}$/u;
+
+// Regex pattern to validate the country description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/departmentRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// DEPARTMENT — Regular Expression Patterns
+// Entity: Department | Table: departamento
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the department record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Country record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const countryId = /^\d{1,10}$/;
+
+// Regex pattern to validate the department name.
+// The pattern accepts Unicode letters (including accented characters),
+// spaces, hyphens, and dots — covering official administrative division
+// names in any language or writing system.
+// The name must be between 2 and 100 characters long.
+export const name = /^[\p{L}\s\-.]{2,100}$/u;
+
+// Regex pattern to validate the department description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/documentTypeRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// DOCUMENT TYPE — Regular Expression Patterns
+// Entity: DocumentType | Table: tipo_documento
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the document type record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the document type name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens, and dots —
+// covering official identification document labels such as
+// "Cédula de Ciudadanía", "Passport", or "Driver's License".
+// The name must be unique per the database constraint and
+// between 2 and 100 characters long.
+export const name = /^[\p{L}\p{N}\s\-.]{2,100}$/u;
+</file>
+
+<file path="src/utils/regEx/favoriteUserServiceRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// FAVORITE USER SERVICE — Regular Expression Patterns
+// Entity: ServiceFavorite | Table: servicio_favoritos_usuarios
+// Junction table linking User ↔ Service for the favourites feature.
+// All validatable fields are foreign-key integers; no string fields exist.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the service-favorite record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Service record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const serviceId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/genderRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// GENDER — Regular Expression Patterns
+// Entity: Gender | Table: genero
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the gender record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the gender type label.
+// The pattern accepts Unicode letters, spaces, and hyphens,
+// supporting labels in any language or script
+// (e.g., "Male", "Female", "Non-binary", "No especificado").
+// The name must be unique per the database constraint and
+// between 2 and 50 characters long.
+export const name = /^[\p{L}\s\-]{2,50}$/u;
+</file>
+
+<file path="src/utils/regEx/locationRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCATION — Regular Expression Patterns
+// Entity: Location | Table: ubicacion
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the location record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a City record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const cityId = /^\d{1,10}$/;
+
+// Regex pattern to validate the location name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens, dots,
+// commas, and the hash symbol (#) — covering typical Colombian address
+// formats and named place references (e.g., "Calle 15 #3-20", "Local 4-B").
+// The name must be between 3 and 150 characters long.
+export const name = /^[\p{L}\p{N}\s\-.,#]{3,150}$/u;
+
+// Regex pattern to validate the location description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces for free-text address context.
+// The description is optional but, when provided, must be
+// at least 5 characters long (stored as TEXT in the database).
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,}$/u;
+
+// Regex pattern to validate the location postal or reference code.
+// The pattern accepts uppercase and lowercase alphanumeric characters,
+// spaces, and hyphens — supporting postal codes and internal reference
+// identifiers up to 50 characters long.
+export const code = /^[a-zA-Z0-9\s\-]{2,50}$/;
+</file>
+
+<file path="src/utils/regEx/messageRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE — Regular Expression Patterns
+// Entity: Message | Table: mensaje
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the message record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the message content body.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, spaces, and common symbols,
+// supporting free-text conversation messages in any language.
+// The content is required (allowNull: false) and must be
+// between 1 and 10,000 characters long.
+export const content = /^[\p{L}\p{N}\p{P}\p{Z}\p{S}\s]{1,10000}$/u;
+
+// Regex pattern to validate the foreign key referencing a MessageStatus record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const statusId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing the sender User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const senderUserId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing the receiver User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const receiverUserId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/messageStatusRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE STATUS — Regular Expression Patterns
+// Entity: MessageStatus | Table: estado_mensaje
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the message status record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the message status name.
+// The pattern accepts Unicode letters, spaces, and hyphens,
+// covering status labels such as "Sent", "Delivered", "Read",
+// or "No leído" in any language or script.
+// The name must be unique per the database constraint and
+// between 2 and 50 characters long.
+export const name = /^[\p{L}\s\-]{2,50}$/u;
+
+// Regex pattern to validate the message status description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/phoneRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// PHONE — Regular Expression Patterns
+// Entity: Phone | Table: telefono
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the phone record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate an international phone number.
+// The pattern accepts an optional leading '+' followed by digits, spaces,
+// hyphens, and parentheses — covering national and international formats
+// such as "+57 310 123 4567", "(601) 234-5678", or "3101234567".
+// The number must be between 7 and 20 characters long,
+// matching the database STRING(20) column constraint.
+export const phoneNumber = /^\+?[\d\s\-().]{7,20}$/;
+</file>
+
+<file path="src/utils/regEx/reservationDetailsRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION DETAIL — Regular Expression Patterns
+// Entity: ReservationDetail | Table: reserva_detalle
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the reservation detail record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Reservation record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const reservationId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the quantity of spots or items reserved.
+// The pattern ensures the value is a positive integer between 1 and 9999,
+// matching the database validate.min: 1 constraint and
+// a reasonable upper limit for a single reservation detail.
+export const quantity = /^(?:[1-9]\d{0,3})$/;
+
+// Regex pattern to validate the foreign key referencing a ReservationStatus record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const reservationStatusId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/reservationRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION — Regular Expression Patterns
+// Entity: Reservation | Table: reserva
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the reservation record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Service record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const serviceId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/reservationStatusRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// RESERVATION STATUS — Regular Expression Patterns
+// Entity: ReservationStatus | Table: estado_reserva
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the reservation status record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the reservation status name.
+// The pattern accepts Unicode letters, spaces, and hyphens,
+// covering lifecycle labels such as "Pending", "Confirmed",
+// "Cancelled", or "Completada" in any language.
+// The name must be unique per the database constraint and
+// between 2 and 50 characters long.
+export const name = /^[\p{L}\s\-]{2,50}$/u;
+
+// Regex pattern to validate the reservation status description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/roleRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// ROLE — Regular Expression Patterns
+// Entity: Role | Table: rol
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the role record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the role type label.
+// The pattern accepts Unicode letters, spaces, and underscores —
+// covering system role identifiers such as "Admin", "Business Owner",
+// "Client", or "Super_Admin" in any language.
+// The name must be unique per the database constraint and
+// between 2 and 50 characters long.
+export const name = /^[\p{L}\s_]{2,50}$/u;
+
+// Regex pattern to validate the role description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces for human-readable role definitions.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/serviceImageRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE IMAGE — Regular Expression Patterns
+// Entity: ServiceImage | Table: imagen_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the service image record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the service image URL.
+// The pattern ensures the URL starts with http:// or https://,
+// is followed by a valid domain name, and ends with a common image
+// file extension (.jpg, .jpeg, .png, .webp, .gif, .svg, .avif).
+// Query strings and paths are permitted before the extension.
+// The overall URL length must not exceed the TEXT column storage limit.
+export const imageUrl = /^https?:\/\/[\w.-]{2,}\.[a-zA-Z]{2,}(\/[\w\-./?%&=]*)?\.(?:jpe?g|png|webp|gif|svg|avif)$/i;
+
+// Regex pattern to validate the service image description (alt text).
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 3 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{3,255}$/u;
+
+// Regex pattern to validate the foreign key referencing a Service record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const serviceId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/serviceRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE — Regular Expression Patterns
+// Entity: Service | Table: servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the service record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the service name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens, dots,
+// ampersands, and parentheses — covering diverse service titles
+// in any language or script.
+// The name must be between 2 and 200 characters long.
+export const name = /^[\p{L}\p{N}\s\-&.()]{2,200}$/u;
+
+// Regex pattern to validate the service description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces for rich free-text content.
+// The description is optional but, when provided, must be
+// at least 10 characters long (stored as TEXT in the database).
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{10,}$/u;
+
+// Regex pattern to validate the service price.
+// The pattern ensures the value is a non-negative decimal number
+// with up to 10 integer digits and up to 2 decimal places,
+// matching the database DECIMAL(12, 2) column constraint.
+// Examples of valid values: "0", "1500", "29.99", "1000000.00".
+export const price = /^\d{1,10}(\.\d{1,2})?$/;
+
+// Regex pattern to validate the foreign key referencing a Category record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const categoryId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a ServiceStatus record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const statusId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing an AgeRestriction record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+// This field is optional (allowNull: true in the model).
+export const ageRestrictionId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Business record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const businessId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/serviceReviewRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE REVIEW — Regular Expression Patterns
+// Entity: ServiceReview | Table: resena_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the service review record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Service record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const serviceId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the service review content body.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, spaces, and newline-equivalent whitespace,
+// supporting multi-language free-text reviews.
+// The content is optional but, when provided, must be
+// between 10 and 5000 characters long.
+export const content = /^[\p{L}\p{N}\p{P}\p{Z}\s]{10,5000}$/u;
+
+// Regex pattern to validate the numerical rating of the review.
+// The pattern ensures the rating is a single digit between 1 and 5,
+// matching the database SMALLINT constraint (min: 1, max: 5).
+export const rating = /^[1-5]$/;
+</file>
+
+<file path="src/utils/regEx/serviceStatusRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE STATUS — Regular Expression Patterns
+// Entity: ServiceStatus | Table: estado_servicio
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the service status record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the service status name.
+// The pattern accepts Unicode letters, spaces, and hyphens,
+// covering lifecycle labels such as "Active", "Inactive",
+// "Suspended", or "Borrador" in any language.
+// The name must be unique per the database constraint and
+// between 2 and 50 characters long.
+export const name = /^[\p{L}\s\-]{2,50}$/u;
+
+// Regex pattern to validate the service status description.
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces.
+// The description is optional but, when provided, must be
+// between 5 and 255 characters long.
+export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{5,255}$/u;
+</file>
+
+<file path="src/utils/regEx/userImageRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER IMAGE — Regular Expression Patterns
+// Entity: UserImage | Table: imagen_usuario
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the user image record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the user profile image URL.
+// The pattern ensures the URL starts with http:// or https://,
+// is followed by a valid domain name, and ends with a common image
+// file extension (.jpg, .jpeg, .png, .webp, .gif, .svg, .avif).
+// The overall URL length must not exceed 500 characters,
+// matching the database STRING(500) column constraint.
+export const url = /^https?:\/\/[\w.-]{2,}\.[a-zA-Z]{2,}(\/[\w\-./?%&=]*)?\.(?:jpe?g|png|webp|gif|svg|avif)$/i;
+
+// Regex pattern to validate the image display name.
+// The pattern accepts Unicode letters, digits, spaces, hyphens, dots,
+// and underscores — covering typical image filenames and descriptive labels.
+// The name is optional but, when provided, must be
+// between 2 and 255 characters long.
+export const name = /^[\p{L}\p{N}\s\-._]{2,255}$/u;
+
+// Regex pattern to validate the image alternative text (alt attribute).
+// The pattern accepts any printable Unicode characters including letters,
+// digits, punctuation, and spaces — supporting descriptive accessibility text.
+// The alt text is optional but, when provided, must be
+// between 3 and 255 characters long.
+export const altText = /^[\p{L}\p{N}\p{P}\p{Z}\s]{3,255}$/u;
+</file>
+
+<file path="src/utils/regEx/userPhoneRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER PHONE — Regular Expression Patterns
+// Entity: UserPhone | Table: usuario_telefono
+// Junction table linking User ↔ Phone records.
+// All validatable fields are foreign-key integers; no string fields exist.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the user-phone junction record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a User record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const userId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Phone record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const phoneId = /^\d{1,10}$/;
+</file>
+
+<file path="src/utils/regEx/userRegEx.js">
+// ─────────────────────────────────────────────────────────────────────────────
+// USER — Regular Expression Patterns
+// Entity: User | Table: usuario
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Regex pattern to validate the user record identifier.
+// The pattern ensures the ID is a positive integer
+// between 1 and 10 digits long.
+export const ID = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Role record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+export const roleId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a Gender record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+// This field is optional (allowNull: true in the model).
+export const genderId = /^\d{1,10}$/;
+
+// Regex pattern to validate the foreign key referencing a DocumentType record.
+// The pattern ensures the value is a positive integer
+// between 1 and 10 digits long.
+// This field is optional (allowNull: true in the model).
+export const documentTypeId = /^\d{1,10}$/;
+
+// Regex pattern to validate the user first name.
+// The pattern ensures the first name contains only Unicode letters
+// (supporting accented characters and international scripts)
+// and is between 2 and 100 characters long.
+export const firstName = /^[\p{L}]{2,100}$/u;
+
+// Regex pattern to validate the user last name.
+// The pattern ensures the last name contains only Unicode letters
+// (supporting accented characters and international scripts)
+// and is between 2 and 100 characters long.
+export const lastName = /^[\p{L}]{2,100}$/u;
+
+// Regex pattern to validate the user birth date in ISO 8601 format (YYYY-MM-DD).
+// The pattern checks for a plausible calendar date:
+// years from 1900 to 2099, months 01–12, and days 01–31.
+// Note: further semantic validation (leap years, month lengths)
+// should be handled at the application or database layer.
+export const birthDate = /^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+
+// Regex pattern to validate the user document (ID) number.
+// The pattern accepts alphanumeric characters and hyphens,
+// supporting national identity documents, passports, and other formats
+// (e.g., "1234567890", "AB-1234567", "79543210").
+// The document number must be between 5 and 30 characters long,
+// matching the database STRING(30) column constraint.
+export const documentNumber = /^[a-zA-Z0-9\-]{5,30}$/;
+
+// Regex pattern to validate the user email address.
+// The pattern ensures the email contains only letters (both uppercase
+// and lowercase), digits, and special characters (._%+-),
+// followed by the domain format *@domain.tld.
+export const email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]{2,}\.[a-zA-Z]{2,}$/;
+
+// Regex pattern to validate the user username.
+// The pattern ensures the username contains only letters
+// (both uppercase and lowercase), digits (0–9),
+// and the special characters (. - _).
+// The username must be unique per the database constraint and
+// between 3 and 80 characters long, matching the STRING(80) column.
+export const username = /^[a-zA-Z0-9._-]{3,80}$/;
+
+// Regex pattern to validate the user password (plain text before hashing).
+// The pattern requires at least one letter and at least one digit,
+// allowing any combination of letters, digits, and common symbols.
+// The password must be between 8 and 30 characters long.
+export const password = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d@$!%*?&._\-#]{8,30}$/;
 </file>
 
 </files>
