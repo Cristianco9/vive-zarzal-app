@@ -1,47 +1,65 @@
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
- * Controller function to delete a service image.
+ * Controller function to delete an existing service image.
  *
- * This function handles the request to delete an existing service image by extracting
- * the service image ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * This function handles the request to delete a service image from the database,
+ * ensuring that the service image belongs to a service owned by the specified business.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service image ID.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service image ID in params and business ID in body.
+ * @param {Object} req.params - The route parameters.
+ * @param {string} req.params.serviceImageId - The ID of the service image to delete.
+ * @param {Object} req.body - The request body containing the business ID.
+ * @param {number} req.body.businessId - The ID of the business that should own the service.
+ * @param {Object} res - The response object to send the deletion status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the deletion status.
  */
-export const deleteOneServiceImage = async (req, res, next) => {
+export const deleteServiceImage = async (req, res, next) => {
 
-  // Extract the service image ID from the request body
-  const { id } = req.body;
+  // Extract the serviceImageId from the request parameters
+  const { serviceImageId } = req.params;
+  
+  // Extract the businessId from the request body
+  const { businessId } = req.body;
 
   // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to delete the service image by the provided ID
-    const response = await serviceImageManager.deleteOne(id);
-
-    // If the service image is deleted successfully, send a success response
-    if (response.status === 'DELETED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image deleted successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
+    // Validate that the serviceImageId parameter is provided and is a valid number
+    if (!serviceImageId || isNaN(parseInt(serviceImageId))) {
+      // If serviceImageId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing service image ID provided');
+      return next(boomError);
     }
+
+    // Validate that the businessId is provided and is a valid number
+    if (!businessId || isNaN(parseInt(businessId))) {
+      // If businessId is missing or invalid, return a Boom bad request error
+      const boomError = Boom.badRequest('Invalid or missing business ID provided');
+      return next(boomError);
+    }
+
+    // Attempt to delete the service image record from the database
+    const deleteResult = await serviceImageManager.deleteOne(
+      parseInt(serviceImageId), 
+      parseInt(businessId)
+    );
+
+    // Send a success response with the deletion status
+    return res.status(200).json({
+      success: true,
+      message: 'Service image deleted successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: deleteResult
+    });
 
   } catch (error) {
     // Handle errors during service image deletion by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to delete the service image from the database',
+      'Unable to delete service image from the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack

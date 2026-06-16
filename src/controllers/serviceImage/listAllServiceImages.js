@@ -1,8 +1,3 @@
-// Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all service images.
  *
@@ -25,16 +20,15 @@ export const listAllServiceImages = async (req, res, next) => {
     // Attempt to retrieve all service image records from the database
     const allRecords = await serviceImageManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service images retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceImages: allRecords
-      });
-    }
+    // Send a success response with the retrieved service images data
+    return res.status(200).json({
+      success: true,
+      message: 'Service images retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceImages: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service image retrieval by sending a Boom error response

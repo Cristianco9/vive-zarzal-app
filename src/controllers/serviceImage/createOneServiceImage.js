@@ -6,46 +6,42 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to create a new service image.
  *
- * This function handles the request to create a new service image by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * This function handles the request to create a new service image in the database,
+ * invoking the appropriate service method and returning a response with the creation status.
+ * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service image's data.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the service image data in body.
+ * @param {Object} req.body - The service image data to create.
+ * @param {Object} res - The response object to send the creation status.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {Promise<void>} - Returns a JSON response with the creation status.
  */
-export const createOneServiceImage = async (req, res, next) => {
+export const createServiceImage = async (req, res, next) => {
 
-  // Extract the new service image data from the request body
-  const newServiceImage = {
-    imageUrl: req.body.newServiceImageData.imageUrl,
-    description: req.body.newServiceImageData.description,
-    serviceId: req.body.newServiceImageData.serviceId,
-  };
+  // Extract the service image data from the request body
+  const serviceImageData = req.body;
 
   // Instantiate the ServiceImageServices class to manage the service image operations
   const serviceImageManager = new ServiceImageServices();
 
   try {
-    // Attempt to create a new service image using the provided data
-    const response = await serviceImageManager.createOne(newServiceImage);
+    // Attempt to create a new service image record in the database
+    const creationResult = await serviceImageManager.createOne(serviceImageData);
 
-    // If the service image is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'Service image created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
-      });
-    }
+    // Send a success response with the creation status
+    return res.status(201).json({
+      success: true,
+      message: 'Service image created successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      result: creationResult
+    });
 
   } catch (error) {
     // Handle errors during service image creation by sending a Boom error response
     const boomError = Boom.serverUnavailable(
-      'Unable to create the service image in the database',
+      'Unable to create service image in the database',
       error
     );
     // Pass the Boom error to the next middleware in the stack
