@@ -1,94 +1,132 @@
-// Import the Joi data types library
+// ─────────────────────────────────────────────────────────────────────────────
+// USER SCHEMA — Joi Validation
+// Entity: User | Table: usuario
+// ─────────────────────────────────────────────────────────────────────────────
+
 import Joi from 'joi';
 
-// Import authentication RegEx from their module
-import { userAuthToken } from '../utils/RegEx/authRegEx.js';
+// Import authentication RegEx
+import { userAuthToken } from '../utils/regEx/authRegEx.js';
 
-// Import user RegEx from their module
+// Import user RegEx
 import {
+  ID,
+  roleId,
+  genderId,
+  documentTypeId,
   firstName,
-  middleName,
-  firstLastName,
-  secondLastName,
+  lastName,
+  birthDate,
+  documentNumber,
+  email,
   username,
   password,
-  email,
-  ID
-} from '../utils/RegEx/usersRegEx.js';
+} from '../utils/regEx/userRegEx.js';
 
-// Define global authentication dataType
-const joiAuthentication = Joi.string().pattern(userAuthToken).message({
-  'string.pattern.base': 'token must be between 30 and 160 characters'
+// ── Primitive Joi types ───────────────────────────────────────────────────────
+
+const joiAuthentication = Joi.string().pattern(userAuthToken).messages({
+  'string.pattern.base': 'El token de autenticación no tiene un formato válido.',
 });
 
-// Define global ID dataType
-const joiId = Joi.number().min(1).max(1000).messages({
-  'number.base': 'ID must be a number',
-  'number.min': 'ID must be at least 1',
-  'number.max': 'ID must be at most 1000',
+const joiId = Joi.number().integer().positive().messages({
+  'number.base':     'El ID debe ser un número.',
+  'number.integer':  'El ID debe ser un número entero.',
+  'number.positive': 'El ID debe ser un número positivo.',
 });
 
-// Define global username dataType
+const joiRoleId = Joi.number().integer().positive().messages({
+  'number.base':     'El roleId debe ser un número.',
+  'number.integer':  'El roleId debe ser un número entero.',
+  'number.positive': 'El roleId debe ser un número positivo.',
+});
+
+const joiGenderId = Joi.number().integer().positive().messages({
+  'number.base':     'El genderId debe ser un número.',
+  'number.integer':  'El genderId debe ser un número entero.',
+  'number.positive': 'El genderId debe ser un número positivo.',
+});
+
+const joiDocumentTypeId = Joi.number().integer().positive().messages({
+  'number.base':     'El documentTypeId debe ser un número.',
+  'number.integer':  'El documentTypeId debe ser un número entero.',
+  'number.positive': 'El documentTypeId debe ser un número positivo.',
+});
+
+const joiFirstName = Joi.string().pattern(firstName).messages({
+  'string.pattern.base': 'El nombre debe contener solo letras y tener entre 2 y 100 caracteres.',
+});
+
+const joiLastName = Joi.string().pattern(lastName).messages({
+  'string.pattern.base': 'El apellido debe contener solo letras y tener entre 2 y 100 caracteres.',
+});
+
+const joiBirthDate = Joi.string().pattern(birthDate).messages({
+  'string.pattern.base': 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.',
+});
+
+const joiDocumentNumber = Joi.string().pattern(documentNumber).messages({
+  'string.pattern.base': 'El número de documento debe tener entre 5 y 30 caracteres alfanuméricos.',
+});
+
+const joiEmail = Joi.string().pattern(email).messages({
+  'string.pattern.base': 'El correo electrónico no tiene un formato válido.',
+});
+
 const joiUsername = Joi.string().pattern(username).messages({
-  'string.pattern.base': 'username must be between 2 and 20 letters only',
+  'string.pattern.base': 'El nombre de usuario debe tener entre 3 y 80 caracteres (letras, dígitos, . - _).',
 });
 
-// Define global password dataType
 const joiPassword = Joi.string().pattern(password).messages({
-  'string.pattern.base': 'password must be between 5 and 30 characters',
+  'string.pattern.base': 'La contraseña debe tener entre 8 y 30 caracteres, con al menos una letra y un dígito.',
 });
 
-// Validate the email of the user
-// Define global email dataType
-const JoiEmail = Joi.string().pattern(email).message({
-  'string.pattern.base': 'email contains characters must be followed by *@domain.*'
-});
+// ── Schema export ─────────────────────────────────────────────────────────────
 
-// Validate the first name of the user
-// Define global first name dataType
-const joiFirstName = Joi.string().pattern(firstName).message({
-  'string.pattern.base': 'firstName contains only letters between 3 to 20 characters'
-});
+export const userSchema = {
 
-// Validate the middle name of the user
-// Define global middle name dataType
-const joiMiddleName = Joi.string().pattern(middleName).allow('').message({
-  'string.pattern.base': 'middleName must be empty or contains only letters between 3 to 20 characters'
-});
+  // GET /users/:id — validate route param
+  getUserById: Joi.object({
+    id: joiId.required(),
+  }),
 
-// Validate the first last name of the user
-// Define global first last name dataType
-const joiFirstLastName = Joi.string().pattern(firstLastName).message({
-  'string.pattern.base': 'firstLastName contains only letters between 3 to 20 characters'
-});
+  // POST /users — create a new user
+  newUserData: Joi.object({
+    roleId:         joiRoleId.required(),
+    firstName:      joiFirstName.required(),
+    lastName:       joiLastName.required(),
+    email:          joiEmail.required(),
+    username:       joiUsername.required(),
+    password:       joiPassword.required(),
+    genderId:       joiGenderId.optional(),
+    documentTypeId: joiDocumentTypeId.optional(),
+    documentNumber: joiDocumentNumber.optional(),
+    birthDate:      joiBirthDate.optional(),
+  }),
 
-// Validate the second last name of the user
-// Define global second last name dataType
-const joiSecondLastName = Joi.string().pattern(secondLastName).message({
-  'string.pattern.base': 'secondLastName contains only letters between 3 to 20 characters'
-});
+  // PATCH /users/:id — update an existing user (all fields optional)
+  updateUserData: Joi.object({
+    roleId:         joiRoleId.optional(),
+    firstName:      joiFirstName.optional(),
+    lastName:       joiLastName.optional(),
+    email:          joiEmail.optional(),
+    username:       joiUsername.optional(),
+    password:       joiPassword.optional(),
+    genderId:       joiGenderId.optional(),
+    documentTypeId: joiDocumentTypeId.optional(),
+    documentNumber: joiDocumentNumber.optional(),
+    birthDate:      joiBirthDate.optional(),
+  }),
 
+  // DELETE /users/:id — validate route param
+  deleteUser: Joi.object({
+    id: joiId.required(),
+  }),
 
-// Define and export user dataType schema
-export const userSchema = Joi.object({
+  // POST /auth/login — login body
+  loginData: Joi.object({
+    username:       joiUsername.required(),
+    password:       joiPassword.required(),
+  }),
 
-    // Validate the JWT token of the user
-    authentication: joiAuthentication,
-    // Validate the user id
-    id: joiId,
-    // Validate the user credentials
-    credentials: {
-      username: joiUsername,
-      password: joiPassword
-    },
-    // Validate the object new user data
-    newUserData: {
-      username: joiUsername,
-      password: joiPassword,
-      email: JoiEmail,
-      firstName: joiFirstName,
-      middleName: joiMiddleName,
-      firstLastName: joiFirstLastName,
-      secondLastName: joiSecondLastName
-    }
-});
+};
