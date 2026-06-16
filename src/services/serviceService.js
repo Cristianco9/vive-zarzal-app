@@ -86,21 +86,39 @@ export class ServiceServices {
   }
 
   /**
-   * Updates an existing service by its identifier.
+   * Updates an existing service by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceId - Identifier of the service to update.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(serviceId, newData) {
+  async updateOne(serviceId, businessId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
+    if (!serviceId) {
+      throw Boom.badRequest('No service ID provided');
+    }
+
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
+      // First verify that the service exists and belongs to the specified business
+      const existingService = await Service.findOne({
+        where: { id: serviceId, businessId: businessId }
+      });
+
+      if (!existingService) {
+        throw Boom.notFound('Service not found or does not belong to the specified business');
+      }
+
       // validate any relation that is being changed
       if (newData.categoryId) {
         const parentCategory = await Category.findByPk(newData.categoryId);
@@ -142,13 +160,13 @@ export class ServiceServices {
           businessId: newData.businessId,
         },
         {
-          where: { id: serviceId }
+          where: { id: serviceId, businessId: businessId }
         }
       );
 
-      // if no rows were affected, the service does not exist
+      // if no rows were affected, the service does not exist or doesn't belong to the business
       if (!updatedRows) {
-        throw Boom.notFound('Service not found');
+        throw Boom.notFound('Service not found or does not belong to the specified business');
       }
 
       // return a success response
@@ -161,28 +179,42 @@ export class ServiceServices {
   }
 
   /**
-   * Deletes a service by its identifier.
+   * Deletes a service by its identifier, ensuring it belongs to the specified business.
    *
    * @param {number} serviceId - Identifier of the service to delete.
+   * @param {number} businessId - Identifier of the business that should own the service.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async deleteOne(serviceId) {
+  async deleteOne(serviceId, businessId) {
 
     if (!serviceId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No service ID provided');
     }
 
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
     try {
-      // destroy the record in the database
-      const deletedRows = await Service.destroy({
-        where: { id: serviceId }
+      // First verify that the service exists and belongs to the specified business
+      const existingService = await Service.findOne({
+        where: { id: serviceId, businessId: businessId }
       });
 
-      // if no rows were deleted, the service does not exist
+      if (!existingService) {
+        throw Boom.notFound('Service not found or does not belong to the specified business');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await Service.destroy({
+        where: { id: serviceId, businessId: businessId }
+      });
+
+      // if no rows were deleted, the service does not exist or doesn't belong to the business
       if (!deletedRows) {
-        throw Boom.notFound('Service not found');
+        throw Boom.notFound('Service not found or does not belong to the specified business');
       }
 
       // return a success response
@@ -254,6 +286,44 @@ export class ServiceServices {
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find services' });
+    }
+  }
+
+  /**
+   * Retrieves all services that belong to a specific business.
+   *
+   * @param {number} businessId - Identifier of the business.
+   * @returns {Promise<Object[]>} List of services belonging to the business.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async listByBusinessId(businessId) {
+    if (!businessId) {
+      throw Boom.badRequest('No business ID provided');
+    }
+
+    try {
+      // Verificar si el negocio existe
+      const business = await Business.findByPk(businessId);
+      if (!business) {
+        throw Boom.notFound('Business not found');
+      }
+
+      // Obtener todos los servicios asociados al negocio
+      const services = await Service.findAll({
+        where: { businessId },
+        order: [['id', 'ASC']],
+        include: [
+          { model: Category, as: 'category' },
+          { model: ServiceStatus, as: 'status' },
+          { model: AgeRestriction, as: 'ageRestriction' },
+          { model: Business, as: 'business' },
+        ],
+      });
+
+      return services.length ? services : [];
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find services for the business' });
     }
   }
 }
