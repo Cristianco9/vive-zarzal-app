@@ -1,8 +1,3 @@
-// Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
 /**
  * Controller function to list all service reviews.
  *
@@ -25,16 +20,15 @@ export const listAllServiceReviews = async (req, res, next) => {
     // Attempt to retrieve all service review records from the database
     const allRecords = await serviceReviewManager.listAll();
 
-    // If records are found, send a success response with the data
-    if (allRecords) {
-      return res.status(201).json({
-        success: true,
-        message: 'Service reviews retrieved successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken,
-        serviceReviews: allRecords
-      });
-    }
+    // Send a success response with the retrieved service reviews data
+    return res.status(200).json({
+      success: true,
+      message: 'Service reviews retrieved successfully',
+      // Include the new token in the response
+      authentication: res.locals.newUserToken,
+      serviceReviews: allRecords,
+      count: allRecords.length
+    });
 
   } catch (error) {
     // Handle errors during service review retrieval by sending a Boom error response
