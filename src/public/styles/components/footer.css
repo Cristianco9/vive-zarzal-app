@@ -1,0 +1,91 @@
+/* ==========================================================
+   footer.css — Vive Zarzal footer styles (full-width background)
+   Load this AFTER root.css so it can override token defaults
+   Comments in English
+   ========================================================== */
+
+/* Footer background color token — change here or in root.css if you prefer */
+:root {
+  --footer-bg: #4a4a4a; /* dark band color across full width */
+  --footer-box-bg: transparent; /* keep inner box transparent when background is full-width */
+}
+
+/* SITE FOOTER
+   The footer background spans the full viewport width (full-bleed dark band).
+   Content is centered and constrained inside .footer-inner.
+*/
+.site-footer {
+  width: 100%;
+  background: var(--footer-bg);
+  padding: var(--space-6) 0; /* vertical padding for the band */
+  color: var(--text-inverse);
+  font-family: var(--font-family-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* INNER: constrained content */
+.footer-inner {
+  width: min(var(--container-lg), 84%);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  display: flex;
+  justify-content: center;
+}
+
+/* BOX: optionally transparent to let .site-footer show as full-width band.
+   Keeps centering and vertical spacing for text.
+*/
+.footer-box {
+  background: var(--footer-box-bg);
+  width: 100%;
+  max-width: var(--container-md);
+  border-radius: 0; /* remove rounding so band looks flush; set to var(--radius-sm) if you want rounding */
+  padding: 0; /* we already provide vertical spacing on .site-footer */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+/* TYPOGRAPHY */
+.footer-copy {
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.footer-contact {
+  color: #e6e6e6;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.footer-contact-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Hover / focus states for accessibility */
+.footer-contact-link:hover,
+.footer-contact-link:focus {
+  color: var(--color-accent-hover);
+  text-decoration: none;
+  outline: none;
+  text-underline-offset: 3px;
+}
+
+/* RESPONSIVE: keep padding and readable font sizes on small screens */
+@media (max-width: 600px) {
+  .site-footer {
+    padding: var(--space-6) var(--space-4);
+  }
+  .footer-inner {
+    width: 92%;
+  }
+  .footer-copy,
+  .footer-contact {
+    font-size: var(--font-size-xs);
+  }
+}
