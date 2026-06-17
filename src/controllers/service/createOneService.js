@@ -1,5 +1,5 @@
 // Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
+import { ServiceServices } from '../../services/serviceService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

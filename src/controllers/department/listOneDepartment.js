@@ -1,5 +1,5 @@
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

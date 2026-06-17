@@ -1,5 +1,5 @@
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

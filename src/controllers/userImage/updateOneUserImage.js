@@ -1,5 +1,5 @@
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

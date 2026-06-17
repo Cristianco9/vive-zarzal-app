@@ -1,5 +1,5 @@
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

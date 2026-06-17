@@ -1,5 +1,5 @@
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

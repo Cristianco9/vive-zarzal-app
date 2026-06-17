@@ -1,5 +1,5 @@
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

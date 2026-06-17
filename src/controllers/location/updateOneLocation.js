@@ -1,5 +1,5 @@
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

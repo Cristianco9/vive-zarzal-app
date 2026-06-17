@@ -1,5 +1,5 @@
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

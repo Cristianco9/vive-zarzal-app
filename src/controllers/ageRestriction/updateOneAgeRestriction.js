@@ -1,5 +1,5 @@
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

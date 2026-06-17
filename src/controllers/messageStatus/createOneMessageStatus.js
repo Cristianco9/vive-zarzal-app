@@ -1,5 +1,5 @@
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

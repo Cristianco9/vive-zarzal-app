@@ -1,5 +1,5 @@
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

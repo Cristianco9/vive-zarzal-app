@@ -1,3 +1,7 @@
+// Import the ServiceImageServices class from the serviceImageServices module
+import { ServiceImageServices } from '../../services/serviceImageService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to delete an existing service image.
  *

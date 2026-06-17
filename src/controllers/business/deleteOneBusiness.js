@@ -1,5 +1,5 @@
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

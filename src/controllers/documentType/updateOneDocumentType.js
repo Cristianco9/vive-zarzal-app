@@ -1,5 +1,5 @@
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

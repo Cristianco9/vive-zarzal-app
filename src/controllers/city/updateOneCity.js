@@ -1,5 +1,5 @@
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 

@@ -1,5 +1,5 @@
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
