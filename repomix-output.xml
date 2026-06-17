@@ -238,6 +238,17 @@ src/db/models/serviceStatusModel.js
 src/db/models/userImageModel.js
 src/db/models/userModel.js
 src/db/models/userPhoneModel.js
+src/db/seeders/20260617023045-insert-country-colombia.cjs
+src/db/seeders/20260617023440-insert-departments-colombia.cjs
+src/db/seeders/20260617024224-insert-cities-colombia.cjs
+src/db/seeders/20260617024946-insert-restriccion-edad.cjs
+src/db/seeders/20260617025529-insert-categorias-servicios.cjs
+src/db/seeders/20260617030016-insert-document-type.cjs
+src/db/seeders/20260617030213-insert-genders-type.cjs
+src/db/seeders/20260617030358-insert-message-status.cjs
+src/db/seeders/20260617030541-insert-reservation-status.cjs
+src/db/seeders/20260617030830-insert-roles.cjs
+src/db/seeders/20260617031010-insert-service-status.cjs
 src/libraries/DBConnection.js
 src/libraries/netConfig.js
 src/middlewares/apiAuthHandler.js
@@ -1331,7 +1342,11 @@ SOFTWARE.
     "migrations:generate": "sequelize-cli migration:generate --name",
     "migrations:run": "sequelize-cli db:migrate",
     "migrations:revert": "sequelize-cli db:migrate:undo",
-    "migrations:delete": "sequelize-cli db:migrate:undo:all"
+    "migrations:delete": "sequelize-cli db:migrate:undo:all",
+    "seeds:generate": "sequelize-cli seed:generate --name",
+    "seeds:run": "sequelize-cli db:seed:all",
+    "seeds:revert": "sequelize-cli db:seed:undo",
+    "seeds:delete": "sequelize-cli db:seed:undo:all"
   },
   "devDependencies": {
     "eslint": "^10.5.0",
@@ -13706,6 +13721,888 @@ export const UserPhone = sequelize.define(USER_PHONE_TABLE, {
     },
   ],
 });
+</file>
+
+<file path="src/db/seeders/20260617023045-insert-country-colombia.cjs">
+// src/db/seeders/20260617-insert-country-colombia.cjs
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    // Inserta el país Colombia en la tabla 'pais'
+    return queryInterface.bulkInsert('pais', [
+      {
+        nombre_pais: 'Colombia',
+        descripcion_pais: 'República de Colombia'
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    // Elimina la fila insertada por la semilla
+    return queryInterface.bulkDelete('pais', { nombre_pais: 'Colombia' }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617023440-insert-departments-colombia.cjs">
+// src/db/seeders/20260617-insert-departments-colombia.cjs
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkInsert('departamento', [
+      { nombre_departamento: 'Amazonas', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Antioquia', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Arauca', id_pais: 1, descripcion_departamento: 'Departamento de la región Orinoquía' },
+      { nombre_departamento: 'Atlántico', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Bolívar', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Boyacá', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Caldas', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Caquetá', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Casanare', id_pais: 1, descripcion_departamento: 'Departamento de la región Orinoquía' },
+      { nombre_departamento: 'Cauca', id_pais: 1, descripcion_departamento: 'Departamento de la región Pacífica' },
+      { nombre_departamento: 'Cesar', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Chocó', id_pais: 1, descripcion_departamento: 'Departamento de la región Pacífica' },
+      { nombre_departamento: 'Córdoba', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Cundinamarca', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Guainía', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Guaviare', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Huila', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'La Guajira', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Magdalena', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Meta', id_pais: 1, descripcion_departamento: 'Departamento de la región Orinoquía' },
+      { nombre_departamento: 'Nariño', id_pais: 1, descripcion_departamento: 'Departamento de la región Pacífica' },
+      { nombre_departamento: 'Norte de Santander', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Putumayo', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Quindío', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Risaralda', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'San Andrés y Providencia', id_pais: 1, descripcion_departamento: 'Departamento de la región Insular' },
+      { nombre_departamento: 'Santander', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Sucre', id_pais: 1, descripcion_departamento: 'Departamento de la región Caribe' },
+      { nombre_departamento: 'Tolima', id_pais: 1, descripcion_departamento: 'Departamento de la región Andina' },
+      { nombre_departamento: 'Valle del Cauca', id_pais: 1, descripcion_departamento: 'Departamento de la región Pacífica' },
+      { nombre_departamento: 'Vaupés', id_pais: 1, descripcion_departamento: 'Departamento de la región Amazonía' },
+      { nombre_departamento: 'Vichada', id_pais: 1, descripcion_departamento: 'Departamento de la región Orinoquía' },
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('departamento', {
+      id_pais: 1
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617024224-insert-cities-colombia.cjs">
+// src/db/seeders/20260617-insert-cities-colombia.cjs
+
+'use strict';
+
+const departmentsMap = {
+  'Amazonas': null,
+  'Antioquia': null,
+  'Arauca': null,
+  'Atlántico': null,
+  'Bolívar': null,
+  'Boyacá': null,
+  'Caldas': null,
+  'Caquetá': null,
+  'Casanare': null,
+  'Cauca': null,
+  'Cesar': null,
+  'Chocó': null,
+  'Córdoba': null,
+  'Cundinamarca': null,
+  'Guainía': null,
+  'Guaviare': null,
+  'Huila': null,
+  'La Guajira': null,
+  'Magdalena': null,
+  'Meta': null,
+  'Nariño': null,
+  'Norte de Santander': null,
+  'Putumayo': null,
+  'Quindío': null,
+  'Risaralda': null,
+  'San Andrés y Providencia': null,
+  'Santander': null,
+  'Sucre': null,
+  'Tolima': null,
+  'Valle del Cauca': null,
+  'Vaupés': null,
+  'Vichada': null
+};
+
+const citiesByDepartment = {
+  'Amazonas': ['Leticia', 'Puerto Nariño'],
+  'Antioquia': ['Medellín', 'Abejorral', 'Abriaquí', 'Alejandría', 'Amagá', 'Amalfi', 'Andes', 'Angelópolis', 'Angostura', 'Anorí', 'Santa Fe de Antioquia', 'Anzá', 'Apartadó', 'Arboletes', 'Argelia', 'Armenia', 'Barbosa', 'Bello', 'Belmira', 'Betania', 'Betulia', 'Ciudad Bolívar', 'Briceño', 'Buriticá', 'Cáceres', 'Caicedo', 'Caldas', 'Campamento', 'Cañasgordas', 'Caracolí', 'Caramanta', 'Carepa', 'El Carmen de Viboral', 'Carolina', 'Caucasia', 'Chigorodó', 'Cisneros', 'Cocorná', 'Concepción', 'Concordia', 'Copacabana', 'Dabeiba', 'Donmatías', 'Ebéjico', 'El Bagre', 'Entrerríos', 'Envigado', 'Fredonia', 'Frontino', 'Giraldo', 'Girardota', 'Gómez Plata', 'Granada', 'Guadalupe', 'Guarne', 'Guatapé', 'Heliconia', 'Hispania', 'Itagüí', 'Ituango', 'Jardín', 'Jericó', 'La Ceja', 'La Estrella', 'La Pintada', 'La Unión', 'Liborina', 'Maceo', 'Marinilla', 'Montebello', 'Murindó', 'Mutatá', 'Nariño', 'Necoclí', 'Nejapa', 'Olaya', 'Peñol', 'Peque', 'Pueblorrico', 'Puerto Berrío', 'Puerto Nare', 'Puerto Triunfo', 'Remedios', 'Retiro', 'Rionegro', 'Sabanalarga', 'Sabaneta', 'Salgar', 'San Andrés de Cuerquía', 'San Carlos', 'San Francisco', 'San Jerónimo', 'San José de la Montaña', 'San Juan de Urabá', 'San Luis', 'San Pedro de los Milagros', 'San Pedro de Urabá', 'San Rafael', 'San Roque', 'San Vicente Ferrer', 'Santa Bárbara', 'Santa Rosa de Osos', 'Santo Domingo', 'El Santuario', 'Segovia', 'Sonsón', 'Sopetrán', 'Támesis', 'Tarazá', 'Tarso', 'Titiribí', 'Toledo', 'Turbo', 'Uramita', 'Urrao', 'Valdivia', 'Valparaíso', 'Vegachí', 'Venecia', 'Vigía del Fuerte', 'Yalí', 'Yarumal', 'Yolombó', 'Yondó', 'Zaragoza'],
+  'Arauca': ['Arauca', 'Arauquita', 'Cravo Norte', 'Fortul', 'Puerto Rondón', 'Saravena', 'Tame'],
+  'Atlántico': ['Barranquilla', 'Baranoa', 'Campo de la Cruz', 'Candelaria', 'Galapa', 'Juan de Acosta', 'Luruaco', 'Malambo', 'Manatí', 'Palmar de Varela', 'Piojó', 'Polonuevo', 'Ponedera', 'Puerto Colombia', 'Repelón', 'Sabanagrande', 'Sabanalarga', 'Santa Lucía', 'Santo Tomás', 'Soledad', 'Suan', 'Tubará', 'Usiacurí'],
+  'Bolívar': ['Cartagena', 'Achí', 'Altos del Rosario', 'Arenal', 'Arjona', 'Arroyohondo', 'Barranco de Loba', 'Calamar', 'Cantagallo', 'Cicuco', 'Córdoba', 'Clemencia', 'El Carmen de Bolívar', 'El Guamo', 'El Peñón', 'Hatillo de Loba', 'Magangué', 'Mahates', 'Margarita', 'María La Baja', 'Montecristo', 'Mompós', 'Morales', 'Norosí', 'Pinillos', 'Regidor', 'Río Viejo', 'San Cristóbal', 'San Estanislao', 'San Fernando', 'San Jacinto', 'San Jacinto del Caire', 'San Juan Nepomuceno', 'San Martín de Loba', 'San Pablo', 'Santa Catalina', 'Santa Rosa', 'Santa Rosa del Sur', 'Simití', 'Soplaviento', 'Talaigua Nuevo', 'Tiquisio', 'Turbaco', 'Turbaná', 'Villanueva', 'Zambrano'],
+  'Boyacá': ['Tunja', 'Almeida', 'Aquitania', 'Arcabuco', 'Belén', 'Berbeo', 'Beteitiva', 'Boavita', 'Boyacá', 'Briceño', 'Buenavista', 'Busbanzá', 'Caldas', 'Campohermoso', 'Cerinza', 'Chinavita', 'Chiquinquirá', 'Chiscas', 'Chita', 'Chitaraque', 'Chivatá', 'Ciénega', 'Cómbita', 'Coper', 'Corrales', 'Covarachía', 'Cubará', 'Cucaita', 'Cuítiva', 'Duitama', 'El Cocuy', 'El Espino', 'Firavitoba', 'Floresta', 'Gachantivá', 'Gámeza', 'Garagoa', 'Guacamayas', 'Guateque', 'Guayatá', 'Iza', 'Jenesano', 'Jericó', 'Labranzagrande', 'La Capilla', 'La Victoria', 'La Uvita', 'Villa de Leyva', 'Macanal', 'Maripí', 'Miraflores', 'Mongua', 'Monguí', 'Moniquirá', 'Motavita', 'Muzo', 'Nobsa', 'Nuevo Colón', 'Oicatá', 'Otanche', 'Pachavita', 'Páez', 'Paipa', 'Pajarito', 'Panqueba', 'Pauna', 'Paya', 'Paz de Río', 'Pesca', 'Pisba', 'Puerto Boyacá', 'Quípama', 'Ramiriquí', 'Ráquira', 'Rondón', 'Saboyá', 'Sáchica', 'Samacá', 'San Eduardo', 'San José de Pare', 'San Luis de Gaceno', 'San Mateo', 'San Miguel de Sema', 'San Pablo de Borbur', 'Santana', 'Santa María', 'Santa Rosa de Velez', 'Sativanorte', 'Sativasur', 'Siachoque', 'Soatá', 'Socotá', 'Socha', 'Sogamoso', 'Somondoco', 'Sora', 'Sotaquirá', 'Soracá', 'Susacón', 'Sutamarchán', 'Sutatenza', 'Tasco', 'Tenza', 'Tibaná', 'Tibasosa', 'Tinjacá', 'Tipacoque', 'Toca', 'Togüí', 'Tópaga', 'Tota', 'Tununguá', 'Turmequé', 'Tuta', 'Tutazá', 'Úmbita', 'Ventaquemada', 'Viracachá', 'Zetaquira'],
+  'Caldas': ['Manizales', 'Aguadas', 'Anserma', 'Aranzazu', 'Belalcázar', 'Chinchiná', 'Filadelfia', 'La Dorada', 'La Merced', 'Manzanares', 'Marmato', 'Marquetalia', 'Marulanda', 'Neira', 'Norcasia', 'Pácora', 'Palestina', 'Pensilvania', 'Riosucio', 'Risaralda', 'Salamina', 'Samaná', 'San José', 'Supía', 'Victoria', 'Villamaría', 'Viterbo'],
+  'Caquetá': ['Florencia', 'Albania', 'Belén de los Andaquíes', 'Cartagena del Chairá', 'Curillo', 'El Doncello', 'El Paujíl', 'La Montañita', 'Milán', 'Morelia', 'Puerto Rico', 'San José del Fragua', 'San Vicente del Cauca', 'Solano', 'Solita', 'Valparaíso'],
+  'Casanare': ['Yopal', 'Aguazul', 'Chámeza', 'Hato Corozal', 'La Salina', 'Maní', 'Monterrey', 'Nunchía', 'Orocué', 'Paz de Ariporo', 'Pore', 'Recetor', 'Sabanalarga', 'Sácama', 'San Luis de Palenque', 'Támara', 'Tauramena', 'Trinidad', 'Villanueva'],
+  'Cauca': ['Popayán', 'Almaguer', 'Argelia', 'Balboa', 'Bolívar', 'Buenos Aires', 'Cajibío', 'Caldono', 'Caloto', 'Corinto', 'El Tambo', 'Florencia', 'Guachené', 'Guapi', 'Inzá', 'Jambaló', 'La Sierra', 'La Vega', 'López de Micay', 'Mercaderes', 'Miranda', 'Morales', 'Padilla', 'Páez', 'Patía', 'Piendamó', 'Puerto Tejada', 'Puracé', 'Rosas', 'San Sebastián', 'Santander de Quilichao', 'Silvia', 'Sotará', 'Suárez', 'Sucre', 'Timbío', 'Timbiquí', 'Toribío', 'Totoró', 'Villa Rica'],
+  'Cesar': ['Valledupar', 'Aguachica', 'Agustín Codazzi', 'Astrea', 'Becerril', 'Bosconia', 'Chimichagua', 'Chiriguaná', 'El Copey', 'El Paso', 'Gamarra', 'González', 'La Gloria', 'La Jagua de Ibirico', 'Manaure Balcón del Cesar', 'Pailitas', 'Pelaya', 'Pueblo Bello', 'Río de Oro', 'San Alberto', 'San Diego', 'San Martín', 'Tamalameque'],
+  'Chocó': ['Quibdó', 'Acandí', 'Alto Baudó', 'Bagadó', 'Bahía Solano', 'Bajo Baudó', 'Bojayá', 'Cantón de San Pablo', 'Condoto', 'El Carmen de Atrato', 'El Litoral del San Juan', 'Istmina', 'Juradó', 'Lloró', 'Medio Atrato', 'Medio Baudó', 'Medio San Juan', 'Nóvita', 'Nuquí', 'Río Iró', 'Río Quito', 'Riosucio', 'San José del Palmar', 'Sipí', 'Tadó', 'Unguía', 'Unión Panamericana'],
+  'Córdoba': ['Montería', 'Ayapel', 'Buenavista', 'Canalete', 'Cereté', 'Chimá', 'Chinú', 'Ciénaga de Oro', 'Cotorra', 'La Apartada', 'Lorica', 'Los Córdobas', 'Momil', 'Montelíbano', 'Moñitos', 'Planeta Rica', 'Pueblo Nuevo', 'Puerto Escondido', 'Puerto Libertador', 'Purísima de la Concepción', 'Sahagún', 'San Andrés de Sotavento', 'San Antero', 'San Bernardo del Viento', 'San Carlos', 'San José de Uré', 'San Pelayo', 'Tierralta', 'Tuchín', 'Valencia'],
+  'Cundinamarca': ['Bogotá', 'Albán', 'Anapoima', 'Anolaima', 'Apulo', 'Arbeláez', 'Beltrán', 'Bituima', 'Bojacá', 'Cabrera', 'Cachipay', 'Cajicá', 'Caparrapí', 'Cáqueza', 'Carmen de Carupa', 'Chaguaní', 'Chía', 'Chipaque', 'Choachí', 'Chocontá', 'Cogua', 'Cota', 'Cucunubá', 'El Colegio', 'El Peñón', 'El Rosal', 'Facatativá', 'Fómeque', 'Fosca', 'Funza', 'Fúquene', 'Fusagasugá', 'Gachalá', 'Gachancipá', 'Gachetá', 'Gama', 'Girardot', 'Granada', 'Guachetá', 'Guaduas', 'Guasca', 'Guataquí', 'Guatavita', 'Guayabal de Síquima', 'Gutiérrez', 'Jerusalén', 'Junín', 'La Calera', 'La Mesa', 'La Palma', 'La Peña', 'La Vega', 'Lenguazaque', 'Machetá', 'Madrid', 'Manta', 'Medina', 'Mosquera', 'Nariño', 'Nemocón', 'Engativá', 'Suba', 'Fontibón', 'Funza', 'Fusagasugá', 'Gachancipá', 'Gachetá', 'Gama', 'Girardot', 'Granada', 'Guachetá', 'Guaduas', 'Guasca', 'Guataquí', 'Guatavita', 'Guayabal de Síquima', 'Gutiérrez', 'Jerusalén', 'Junín', 'La Calera', 'La Mesa', 'La Palma', 'La Peña', 'La Vega', 'Lenguazaque', 'Machetá', 'Madrid', 'Manta', 'Medina', 'Mosquera', 'Nariño', 'Nemocón', 'Nilo', 'Nimaima', 'Nocaima', 'Pacho', 'Paime', 'Pandi', 'Paratebueno', 'Pasca', 'Puerto Salgar', 'Pulí', 'Quebradanegra', 'Quetame', 'Quipile', 'Ricaurte', 'San Antonio del Tequendama', 'San Bernardo', 'San Cayetano', 'San Francisco', 'San Juan de Rioseco', 'Sasaima', 'Sesquilé', 'Sibaté', 'Silvania', 'Simijaca', 'Soacha', 'Sopó', 'Subachoque', 'Suesca', 'Supatá', 'Susa', 'Sutatausa', 'Tabio', 'Tausa', 'Tena', 'Tenjo', 'Tibacuy', 'Tibirita', 'Tocaima', 'Tocancipá', 'Topaipí', 'Ubalá', 'Ubaque', 'Une', 'Útica', 'Venecia', 'Vergara', 'Vianí', 'Villagómez', 'Villapinzón', 'Villeta', 'Viotá', 'Yacopí', 'Zipacón', 'Zipaquirá'],
+  'Guainía': ['Inírida'],
+  'Guaviare': ['San José del Guaviare', 'Calamar', 'El Retorno', 'Miraflores'],
+  'Huila': ['Neiva', 'Acevedo', 'Agrado', 'Aipe', 'Algeciras', 'Altamira', 'Baraya', 'Campoalegre', 'Colombia', 'Elías', 'Garzón', 'Gigante', 'Guadalupe', 'Hobo', 'Íquira', 'Isnos', 'La Argentina', 'La Plata', 'Nátaga', 'Oporapa', 'Paicol', 'Palermo', 'Palestina', 'Pital', 'Pitalito', 'Rivera', 'Saladoblanco', 'San Agustín', 'Santa María', 'Suaza', 'Tarqui', 'Tesalia', 'Tello', 'Teruel', 'Timaná', 'Villavieja', 'Yaguará'],
+  'La Guajira': ['Riohacha', 'Albania', 'Barrancas', 'Dibulla', 'Distracción', 'El Molino', 'Fonseca', 'Hatonuevo', 'La Jagua del Pilar', 'Maicao', 'Manaure', 'San Juan del Cesar', 'Uribia', 'Urumita', 'Villanueva'],
+  'Magdalena': ['Santa Marta', 'Algarrobo', 'Aracataca', 'Ariguaní', 'Cerro de San Antonio', 'Chibolo', 'Chibolo', 'Ciénaga', 'Concordia', 'El Banco', 'El Piñón', 'El Retén', 'Fundación', 'Guamal', 'Nueva Granada', 'Pedraza', 'Pijiño del Carmen', 'Pivijay', 'Plato', 'Pueblo Viejo', 'Remolino', 'Sabanas de San Ángel', 'Salamina', 'San Sebastián de Buenavista', 'San Zenón', 'Santa Ana', 'Santa Bárbara de Pinto', 'Sitionuevo', 'Tenerife', 'Zapayán', 'Zona Bananera'],
+  'Meta': ['Villavicencio', 'Acacías', 'Barranca de Upía', 'Cabuyaro', 'Castilla la Nueva', 'Cubarral', 'Cumaral', 'El Calvario', 'El Castillo', 'El Dorado', 'Fuente de Oro', 'Granada', 'Guamal', 'Mapiripán', 'Mesetas', 'La Macarena', 'Uribe', 'Lejanías', 'Puerto Concordia', 'Puerto Gaitán', 'Puerto López', 'Puerto Lleras', 'Puerto Rico', 'Restrepo', 'San Carlos de Guaroa', 'San Juan de Arama', 'San Juanito', 'San Martín', 'Vistahermosa'],
+  'Nariño': ['Pasto', 'Albán', 'Aldana', 'Ancuya', 'Arboleda', 'Barbacoas', 'Belén', 'Buesaco', 'Colón', 'Consacá', 'Contadero', 'Córdoba', 'Cuaspud', 'Cumbal', 'Cumbitara', 'Chachagüí', 'El Charco', 'El Peñol', 'El Rosario', 'El Tablón de Gómez', 'El Tambo', 'Funes', 'Guachucal', 'Guaitarilla', 'Gualmatán', 'Iles', 'Imués', 'Ipiales', 'La Cruz', 'La Florida', 'La Llanada', 'La Tola', 'La Unión', 'Leiva', 'Linares', 'Los Andes', 'Magüí', 'Mallama', 'Mosquera', 'Nariño', 'Olaya Herrera', 'Ospina', 'Francisco Pizarro', 'Policarpa', 'Potosí', 'Providencia', 'Puerres', 'Pupiales', 'Ricaurte', 'Roberto Payán', 'Samaniego', 'Sandoná', 'San Bernardo', 'San Lorenzo', 'San Pablo', 'San Pedro de Cartago', 'Santa Bárbara', 'Santacruz', 'Sapuyes', 'Taminango', 'Tangua', 'Túquerres', 'Yacuanquer'],
+  'Norte de Santander': ['Cúcuta', 'Ábrego', 'Arboledas', 'Bochalema', 'Bucarasica', 'Cácota', 'Cáchira', 'Chinácota', 'Chitagá', 'Convención', 'Cucutilla', 'Durania', 'El Carmen', 'El Tarra', 'El Zulia', 'Gramalote', 'Hacarí', 'Herrán', 'Labateca', 'La Esperanza', 'La Playa', 'Los Patios', 'Lourdes', 'Mutiscua', 'Ocaña', 'Pamplona', 'Pamplonita', 'Puerto Santander', 'Ragonvalia', 'Salazar', 'San Calixto', 'San Cayetano', 'Santiago', 'Sardinata', 'Silos', 'Teorama', 'Tibú', 'Toledo', 'Villa Caro', 'Villa del Rosario'],
+  'Putumayo': ['Mocoa', 'Colón', 'Orito', 'Puerto Asís', 'Puerto Caicedo', 'Puerto Guzmán', 'Puerto Leguízamo', 'San Francisco', 'San Miguel', 'Santiago', 'Sibundoy', 'Valle del Guamuez', 'Villagarzón'],
+  'Quindío': ['Armenia', 'Buenavista', 'Calarcá', 'Circasia', 'Córdoba', 'Filandia', 'Génova', 'La Tebaida', 'Montenegro', 'Pijao', 'Quimbaya', 'Salento'],
+  'Risaralda': ['Pereira', 'Apía', 'Balboa', 'Belén de Umbría', 'Dosquebradas', 'Guática', 'La Celia', 'La Virginia', 'Marsella', 'Mistrató', 'Pueblo Rico', 'Quinchía', 'Santa Rosa de Cabal', 'Santuario'],
+  'San Andrés y Providencia': ['San Andrés', 'Providencia'],
+  'Santander': ['Bucaramanga', 'Aguada', 'Albania', 'Aratoca', 'Barbosa', 'Barichara', 'Barrancabermeja', 'Betulia', 'Bolívar', 'Cabrera', 'California', 'Capitanejo', 'Carcasí', 'Cepitá', 'Cerrito', 'Charalá', 'Charta', 'Chima', 'Chipatá', 'Cimitarra', 'Concepción', 'Confines', 'Contratación', 'Coromoro', 'Curití', 'El Carmen de Chucurí', 'El Guacamayo', 'El Peñón', 'El Playón', 'Encino', 'Enciso', 'Florián', 'Floridablanca', 'Galán', 'Gámbita', 'Girón', 'Guaca', 'Guadalupe', 'Guapotá', 'Guavatá', 'Güepsa', 'Hato', 'Jesús María', 'Jordán', 'La Belleza', 'Landázuri', 'La Paz', 'Lebrija', 'Los Santos', 'Macaravita', 'Málaga', 'Matanza', 'Mogotes', 'Molagavita', 'Ocamonte', 'Oiba', 'Onzaga', 'Palmar', 'Palmas del Socorro', 'Páramo', 'Piedecuesta', 'Pinchote', 'Puente Nacional', 'Puerto Parra', 'Puerto Wilches', 'Rionegro', 'Sabana de Torres', 'San Andrés', 'San Benito', 'San Gil', 'San Joaquín', 'San José de Miranda', 'San Miguel', 'San Vicente de Chucurí', 'Santa Bárbara', 'Santa Helena del Opón', 'Simacota', 'Socorro', 'Suaita', 'Sucre', 'Suratá', 'Tona', 'Valle de San José', 'Vélez', 'Vetas', 'Villanueva', 'Zapatoca'],
+  'Sucre': ['Sincelejo', 'Buenavista', 'Caimito', 'Colosó', 'Corozal', 'Coveñas', 'Chalán', 'El Roble', 'Galeras', 'Guaranda', 'La Unión', 'Los Palmitos', 'Majagual', 'Morroa', 'Ovejas', 'Palmito', 'Sampués', 'San Benito Abad', 'San Juan de Betulia', 'San Marcos', 'San Onofre', 'San Pedro', 'Sincé', 'Sucre', 'Tolú', 'Toluviejo'],
+  'Tolima': ['Ibagué', 'Alpujarra', 'Alvarado', 'Ambalema', 'Anzoátegui', 'Armero', 'Ataco', 'Cajamarca', 'Carmen de Apicalá', 'Casabianca', 'Chaparral', 'Coello', 'Coyaima', 'Cunday', 'Dolores', 'Espinal', 'Falan', 'Flandes', 'Fresno', 'Guamo', 'Herveo', 'Honda', 'Icononzo', 'Lérida', 'Líbano', 'Mariquita', 'Melgar', 'Murillo', 'Natagaima', 'Ortega', 'Palocabildo', 'Piedras', 'Planadas', 'Prado', 'Purificación', 'Rioblanco', 'Roncesvalles', 'Rovira', 'Saldaña', 'San Antonio', 'San Luis', 'Santa Isabel', 'Suárez', 'Valle de San Juan', 'Venadillo', 'Villahermosa', 'Villarrica'],
+  'Valle del Cauca': ['Cali', 'Alcalá', 'Andalucía', 'Ansermanuevo', 'Argelia', 'Bolívar', 'Buenaventura', 'Guadalajara de Buga', 'Bugalagrande', 'Caicedonia', 'Calima', 'Candelaria', 'Cartago', 'Dagua', 'El Águila', 'El Cairo', 'El Cerrito', 'El Dovio', 'Florida', 'Ginebra', 'Guacarí', 'Jamundí', 'La Cumbre', 'La Unión', 'La Victoria', 'Obando', 'Palmira', 'Pradera', 'Restrepo', 'Riofrío', 'Roldanillo', 'San Pedro', 'Sevilla', 'Toro', 'Trujillo', 'Tuluá', 'Ulloa', 'Versalles', 'Vijes', 'Yotoco', 'Yumbo', 'Zarzal'],
+  'Vaupés': ['Mitú', 'Carurú', 'Pacoa', 'Taraira'],
+  'Vichada': ['Puerto Carreño', 'La Primavera', 'Santa Rosalía', 'Cumaribo']
+};
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const departments = await queryInterface.sequelize.query(
+      `SELECT id_departamento, nombre_departamento FROM departamento WHERE id_pais = 1`,
+      { type: queryInterface.sequelize.QueryTypes.SELECT }
+    );
+
+    const deptMap = {};
+    departments.forEach(dept => {
+      deptMap[dept.nombre_departamento] = dept.id_departamento;
+    });
+
+    const cities = [];
+    for (const [deptName, cityList] of Object.entries(citiesByDepartment)) {
+      const id_dept = deptMap[deptName];
+      if (!id_dept) {
+        console.warn(`⚠️ Departamento "${deptName}" no encontrado en la base de datos. Saltando sus ciudades.`);
+        continue;
+      }
+
+      cityList.forEach(cityName => {
+        cities.push({
+          nombre_ciudad: cityName,
+          id_departamento: id_dept,
+          descripcion_ciudad: `Municipio de ${cityName}, ${deptName}`
+        });
+      });
+    }
+
+    console.log(`📝 Insertando ${cities.length} ciudades...`);
+    return queryInterface.bulkInsert('ciudad', cities, {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    // Eliminar todas las ciudades donde id_departamento pertenezca a Colombia
+    return queryInterface.sequelize.query(`
+      DELETE FROM ciudad
+      WHERE id_departamento IN (
+        SELECT id_departamento FROM departamento WHERE id_pais = 1
+      )
+    `);
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617024946-insert-restriccion-edad.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('restriccion_edad', [
+      {
+        nombre_restriccion_edad: 'Todo Público',
+        descripcion_restriccion_edad: 'Acceso permitido a personas de todas las edades sin restricciones.',
+        fecha_creacion_restriccion_edad: now,
+        fecha_modificacion_restriccion_edad: now
+      },
+      {
+        nombre_restriccion_edad: 'Mayores de Edad',
+        descripcion_restriccion_edad: 'Solo personas mayores de 18 años pueden acceder.',
+        fecha_creacion_restriccion_edad: now,
+        fecha_modificacion_restriccion_edad: now
+      },
+      {
+        nombre_restriccion_edad: 'Menores con Acompañante',
+        descripcion_restriccion_edad: 'Personas menores de edad pueden ingresar únicamente acompañadas por un adulto responsable.',
+        fecha_creacion_restriccion_edad: now,
+        fecha_modificacion_restriccion_edad: now
+      },
+      {
+        nombre_restriccion_edad: 'Menores de Edad',
+        descripcion_restriccion_edad: 'Exclusivo para personas menores de 18 años.',
+        fecha_creacion_restriccion_edad: now,
+        fecha_modificacion_restriccion_edad: now
+      },
+      {
+        nombre_restriccion_edad: 'Niños y Adolescentes',
+        descripcion_restriccion_edad: 'Dirigido específicamente a niños y adolescentes entre 6 y 17 años.',
+        fecha_creacion_restriccion_edad: now,
+        fecha_modificacion_restriccion_edad: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('restriccion_edad', {
+      nombre_restriccion_edad: [
+        'Todo Público',
+        'Mayores de Edad',
+        'Menores con Acompañante',
+        'Menores de Edad',
+        'Niños y Adolescentes'
+      ]
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617025529-insert-categorias-servicios.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('categoria', [
+      // === ALIMENTACIÓN Y GASTRONOMÍA ===
+      {
+        nombre_categoria: 'Restaurantes Tradicionales',
+        descripcion_categoria: 'Ofrecen platos típicos regionales como bandeja paisa, sancocho, lechona, etc.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Comida Rápida Local',
+        descripcion_categoria: 'Establecimientos pequeños con opciones rápidas de comida tradicional.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Postres y Dulcerías',
+        descripcion_categoria: 'Negocios dedicados a la venta de postres caseros, dulces típicos y helados.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Productos Orgánicos',
+        descripcion_categoria: 'Venta de frutas, verduras y alimentos orgánicos producidos localmente.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Cafeterías Regionales',
+        descripcion_categoria: 'Espacios donde degustar café de origen colombiano con tostado local.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === ARTESANÍAS Y PRODUCTOS LOCALES ===
+      {
+        nombre_categoria: 'Artesanías Típicas',
+        descripcion_categoria: 'Objetos elaborados manualmente como sombreros vueltiaos, hamacas, bolsos Wayuu, etc.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Productos de Regalos',
+        descripcion_categoria: 'Artículos decorativos y souvenirs elaborados en Colombia.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Textiles y Bordados',
+        descripcion_categoria: 'Telas bordadas a mano, mantas, vestimenta tradicional y decorativa.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Muebles Hechos a Mano',
+        descripcion_categoria: 'Mueblería artesanal en madera tropical o bambú, piezas únicas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === TURISMO Y EXPERIENCIAS ÚNICAS ===
+      {
+        nombre_categoria: 'Excursiones Ecológicas',
+        descripcion_categoria: 'Viajes guiados por áreas naturales protegidas como parques nacionales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Turismo Arqueológico',
+        descripcion_categoria: 'Visitas a sitios históricos precolombinos y coloniales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Turismo Rural',
+        descripcion_categoria: 'Actividades en fincas cafetaleras, cultivos y comunidades campesinas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Fiestas Populares',
+        descripcion_categoria: 'Eventos culturales anuales como carnavales, ferias patronales, festivales folclóricos.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Aventura Extrema',
+        descripcion_categoria: 'Actividades como rafting, canopy, paracaidismo, escalada en roca.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Turismo Gastronómico',
+        descripcion_categoria: 'Rutas temáticas para descubrir platillos y bebidas típicas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Turismo Religioso',
+        descripcion_categoria: 'Visitas a santuarios, iglesias históricas y centros religiosos importantes.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === RECREACIÓN Y OCIO LOCAL ===
+      {
+        nombre_categoria: 'Centros Culturales',
+        descripcion_categoria: 'Espacios comunitarios con exposiciones, talleres culturales y eventos.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Parques Infantiles',
+        descripcion_categoria: 'Áreas recreativas para niños con juegos y actividades didácticas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Baños Termales',
+        descripcion_categoria: 'Sitios naturales con pozas termales ideales para relajación.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Camping Regional',
+        descripcion_categoria: 'Sitios adecuados para acampar en contacto con la naturaleza.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Juegos Tradicionales',
+        descripcion_categoria: 'Espacios públicos con juegos de mesa antiguos como rayuela, trompo, etc.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === COMERCIO Y NEGOCIOS LOCALES ===
+      {
+        nombre_categoria: 'Mercados Locales',
+        descripcion_categoria: 'Zonas comerciales donde se venden productos frescos y artesanos.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Tiendas de Barrio',
+        descripcion_categoria: 'Microempresas dedicadas a la venta de artículos básicos y útiles diarios.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Emprendimientos Digitales',
+        descripcion_categoria: 'Negocios que ofrecen productos/servicios a través de redes sociales y plataformas digitales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Delivery Local',
+        descripcion_categoria: 'Servicios informales o formales de entrega de productos locales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Ferias Artesanales',
+        descripcion_categoria: 'Eventos periódicos donde se exhiben y venden productos hechos por artesanos locales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === SERVICIOS DE APOYO AL TURISTA ===
+      {
+        nombre_categoria: 'Guías Turísticos',
+        descripcion_categoria: 'Profesionales expertos en historia, cultura y naturaleza local.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Traductores Turísticos',
+        descripcion_categoria: 'Intérpretes especializados en múltiples idiomas para facilitar la comunicación.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Hospedaje Alternativo',
+        descripcion_categoria: 'Cabañas, glampings, hostales familiares y alojamientos no hoteleros.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Transporte Turístico',
+        descripcion_categoria: 'Servicios especializados de transporte para visitantes extranjeros o nacionales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Agencias de Viaje',
+        descripcion_categoria: 'Empresas que organizan paquetes turísticos integrales.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === EDUCACIÓN Y CAPACITACIÓN LOCAL ===
+      {
+        nombre_categoria: 'Clases de Cocina Local',
+        descripcion_categoria: 'Talleres prácticos para preparar comidas típicas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Artesanía Popular',
+        descripcion_categoria: 'Cursos para aprender técnicas tradicionales de tejido, cerámica, tallado.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Historia y Mitología Local',
+        descripcion_categoria: 'Charlas o tours narrativos sobre leyendas y costumbres autóctonas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Lenguas Indígenas',
+        descripcion_categoria: 'Clases introductorias a lengua Wayuu, Embera, Zenú y otras.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === SERVICIOS DE EMERGENCIA Y SEGURIDAD ===
+      {
+        nombre_categoria: 'Guías de Seguridad',
+        descripcion_categoria: 'Personal capacitado para acompañar turistas en zonas potencialmente riesgosas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+
+      // === SERVICIOS DE BIENESTAR Y SALUD ===
+      {
+        nombre_categoria: 'Masajes Tradicionales',
+        descripcion_categoria: 'Terapias alternativas basadas en técnicas indígenas o campesinas.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      },
+      {
+        nombre_categoria: 'Hierbas Medicinales',
+        descripcion_categoria: 'Venta de remedios naturales usados tradicionalmente en la región.',
+        fecha_creacion_categoria: now,
+        fecha_modificacion_categoria: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('categoria', null, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617030016-insert-document-type.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('tipo_documento', [
+      {
+        nombre_tipo_documento: 'Cédula de ciudadanía',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Tarjeta de identidad',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Registro civil',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Cédula de extranjería',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Permiso Especial de Permanencia (PEP)',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Pasaporte',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Documento de identificación extranjero',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'NIT',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Documento Nacional de Identidad (DNI)',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Documento militar',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      },
+      {
+        nombre_tipo_documento: 'Cédula de ciudadanía - duplicado',
+        fecha_creacion_tipo_documento: now,
+        fecha_modificacion_tipo_documento: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('tipo_documento', {
+      nombre_tipo_documento: [
+        'Cédula de ciudadanía',
+        'Tarjeta de identidad',
+        'Registro civil',
+        'Cédula de extranjería',
+        'Permiso Especial de Permanencia (PEP)',
+        'Pasaporte',
+        'Documento de identificación extranjero',
+        'NIT',
+        'Documento Nacional de Identidad (DNI)',
+        'Documento militar',
+        'Cédula de ciudadanía - duplicado'
+      ]
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617030213-insert-genders-type.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('genero', [
+      {
+        tipo_genero: 'Masculino',
+        fecha_creacion_genero: now,
+        fecha_actualizacion_genero: now
+      },
+      {
+        tipo_genero: 'Femenino',
+        fecha_creacion_genero: now,
+        fecha_actualizacion_genero: now
+      },
+      {
+        tipo_genero: 'No binario',
+        fecha_creacion_genero: now,
+        fecha_actualizacion_genero: now
+      },
+      {
+        tipo_genero: 'Prefiero no decirlo',
+        fecha_creacion_genero: now,
+        fecha_actualizacion_genero: now
+      },
+      {
+        tipo_genero: 'Otro',
+        fecha_creacion_genero: now,
+        fecha_actualizacion_genero: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('genero', {
+      tipo_genero: [
+        'Masculino',
+        'Femenino',
+        'No binario',
+        'Prefiero no decirlo',
+        'Otro'
+      ]
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617030358-insert-message-status.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('estado_mensaje', [
+      {
+        nombre_estado_mensaje: 'Enviado',
+        descripcion_estado_mensaje: 'El mensaje ha sido enviado exitosamente.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Recibido',
+        descripcion_estado_mensaje: 'El mensaje fue recibido por el destinatario.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Leído',
+        descripcion_estado_mensaje: 'El destinatario ha leído el mensaje.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Pendiente',
+        descripcion_estado_mensaje: 'El mensaje está en espera de ser entregado.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Fallido',
+        descripcion_estado_mensaje: 'El mensaje no pudo ser entregado.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Cancelado',
+        descripcion_estado_mensaje: 'El envío del mensaje fue cancelado por el emisor.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      },
+      {
+        nombre_estado_mensaje: 'Rechazado',
+        descripcion_estado_mensaje: 'El sistema rechazó el mensaje debido a contenido no permitido.',
+        fecha_creacion_estado_mensaje: now,
+        fecha_modificacion_estado_mensaje: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('estado_mensaje', {
+      nombre_estado_mensaje: [
+        'Enviado',
+        'Recibido',
+        'Leído',
+        'Pendiente',
+        'Fallido',
+        'Cancelado',
+        'Rechazado'
+      ]
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617030541-insert-reservation-status.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('estado_reserva', [
+      {
+        nombre_estado_reserva: 'Pendiente',
+        descripcion_estado_reserva: 'La reserva ha sido creada pero aún no confirmada.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'Confirmada',
+        descripcion_estado_reserva: 'La reserva ha sido aceptada y confirmada por el proveedor.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'En Curso',
+        descripcion_estado_reserva: 'La reserva está activa en este momento.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'Finalizada',
+        descripcion_estado_reserva: 'La reserva se ha completado satisfactoriamente.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'Cancelada',
+        descripcion_estado_reserva: 'La reserva fue cancelada por el cliente o el proveedor.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'Rechazada',
+        descripcion_estado_reserva: 'La reserva fue rechazada por el proveedor.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'Expirada',
+        descripcion_estado_reserva: 'La reserva no fue confirmada a tiempo y ha caducado.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      },
+      {
+        nombre_estado_reserva: 'No Show',
+        descripcion_estado_reserva: 'El cliente no se presentó sin aviso previo.',
+        fecha_creacion_estado_reserva: now,
+        fecha_modificacion_estado_reserva: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('estado_reserva', {
+      nombre_estado_reserva: [
+        'Pendiente',
+        'Confirmada',
+        'En Curso',
+        'Finalizada',
+        'Cancelada',
+        'Rechazada',
+        'Expirada',
+        'No Show'
+      ]
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617030830-insert-roles.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('rol', [
+      {
+        tipo_rol: 'Administrador',
+        descripcion_rol: 'Usuario con acceso total al sistema, puede gestionar todos los recursos.',
+        fecha_creacion_rol: now,
+        fecha_actualizacion_rol: now
+      },
+      {
+        tipo_rol: 'Anunciante',
+        descripcion_rol: 'Proveedor o entidad que publica servicios, productos o eventos en la plataforma.',
+        fecha_creacion_rol: now,
+        fecha_actualizacion_rol: now
+      },
+      {
+        tipo_rol: 'Cliente',
+        descripcion_rol: 'Usuario final que consume los servicios, realiza reservas o interactúa con anunciantes.',
+        fecha_creacion_rol: now,
+        fecha_actualizacion_rol: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('rol', {
+      tipo_rol: ['Administrador', 'Anunciante', 'Cliente']
+    }, {});
+  }
+};
+</file>
+
+<file path="src/db/seeders/20260617031010-insert-service-status.cjs">
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    const now = new Date();
+
+    return queryInterface.bulkInsert('estado_servicio', [
+      {
+        nombre_estado_servicio: 'Disponible',
+        descripcion_estado_servicio: 'El servicio está listo para ser solicitado o consumido inmediatamente.',
+        fecha_creacion_estado_servicio: now,
+        fecha_modificacion_estado_servicio: now
+      },
+      {
+        nombre_estado_servicio: 'Bajo Pedido',
+        descripcion_estado_servicio: 'El servicio se presta únicamente tras una solicitud específica del cliente.',
+        fecha_creacion_estado_servicio: now,
+        fecha_modificacion_estado_servicio: now
+      },
+      {
+        nombre_estado_servicio: 'Requiere Reserva',
+        descripcion_estado_servicio: 'El servicio debe ser reservado con anticipación para asegurar su disponibilidad.',
+        fecha_creacion_estado_servicio: now,
+        fecha_modificacion_estado_servicio: now
+      },
+      {
+        nombre_estado_servicio: 'Agotado',
+        descripcion_estado_servicio: 'El servicio no está disponible temporalmente.',
+        fecha_creacion_estado_servicio: now,
+        fecha_modificacion_estado_servicio: now
+      },
+      {
+        nombre_estado_servicio: 'Entrega Inmediata',
+        descripcion_estado_servicio: 'El servicio se entrega sin demoras ni necesidad de reserva previa.',
+        fecha_creacion_estado_servicio: now,
+        fecha_modificacion_estado_servicio: now
+      }
+    ], {});
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    return queryInterface.bulkDelete('estado_servicio', {
+      nombre_estado_servicio: [
+        'Disponible',
+        'Bajo Pedido',
+        'Requiere Reserva',
+        'Agotado',
+        'Entrega Inmediata'
+      ]
+    }, {});
+  }
+};
 </file>
 
 <file path="src/libraries/DBConnection.js">
