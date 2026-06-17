@@ -93,7 +93,7 @@
           { 
             id: userRecord.id, 
             role: userRecord.role.name,
-            fullName = `${userRecord.firstName} ${userRecord.lastName}`
+            fullName: `${userRecord.firstName} ${userRecord.lastName}`
           },
           config.authAppJwtKey,
           '1h'
