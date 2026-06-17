@@ -1,0 +1,261 @@
+/* ==================================================
+   DASHBOARD
+   ================================================== */
+
+.dashboard-hero {
+  padding: var(--space-16) 0;
+  background: var(--gradient-primary);
+  color: var(--color-white);
+}
+
+.dashboard-badge {
+  display: inline-block;
+
+  padding: var(--space-2) var(--space-4);
+
+  background: rgba(255, 255, 255, 0.2);
+
+  border-radius: var(--radius-pill);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  margin-bottom: var(--space-4);
+}
+
+.dashboard-hero h1 {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--space-4);
+}
+
+.dashboard-hero p {
+  max-width: 700px;
+  font-size: var(--font-size-lg);
+  opacity: 0.95;
+}
+
+/* ==================================================
+   CATEGORIES
+   ================================================== */
+
+.dashboard-categories {
+  padding: var(--space-16) 0;
+}
+
+.categories-grid {
+  margin-top: var(--space-8);
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: var(--space-6);
+}
+
+.category-card {
+  background: var(--bg-card);
+
+  border-radius: var(--radius-xl);
+
+  box-shadow: var(--shadow-sm);
+
+  padding: var(--space-8);
+
+  text-decoration: none;
+
+  color: var(--text-primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-3);
+
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.category-card span:first-child {
+  font-size: 3rem;
+}
+
+.category-card span:last-child {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ==================================================
+   DESTINOS DESTACADOS
+   ================================================== */
+
+.featured-destinations {
+  padding-bottom: var(--space-16);
+}
+
+.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: var(--space-8);
+
+  margin-top: var(--space-8);
+}
+
+.destination-card {
+  overflow: hidden;
+}
+
+.destination-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+.destination-content {
+  padding: var(--space-6);
+}
+
+.destination-content h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+}
+
+.destination-content p {
+  color: var(--text-secondary);
+}
+
+/* ==================================================
+   EVENTOS PROXIMOS
+   ================================================== */
+
+.upcoming-events {
+  background: var(--bg-section);
+
+  padding: var(--space-16) 0;
+}
+
+.events-grid {
+  margin-top: var(--space-8);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: var(--space-6);
+}
+
+.event-card {
+  background: var(--bg-card);
+
+  border-radius: var(--radius-lg);
+
+  padding: var(--space-6);
+
+  box-shadow: var(--shadow-sm);
+
+  transition: all var(--transition-normal);
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-date {
+  color: var(--color-primary);
+
+  font-weight: var(--font-weight-bold);
+
+  margin-bottom: var(--space-2);
+}
+
+.event-title {
+  margin-bottom: var(--space-3);
+}
+
+.event-description {
+  color: var(--text-secondary);
+}
+
+/* ==================================================
+   QUICK STATS
+   ================================================== */
+
+.quick-stats {
+  padding: var(--space-16) 0;
+}
+
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: var(--space-6);
+}
+
+.stat-card {
+  background: var(--bg-card);
+
+  border-radius: var(--radius-lg);
+
+  padding: var(--space-8);
+
+  text-align: center;
+
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-number {
+  color: var(--color-primary);
+
+  font-size: var(--font-size-3xl);
+
+  font-weight: var(--font-weight-bold);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+
+  margin-top: var(--space-2);
+}
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 1200px) {
+
+  .categories-grid,
+  .quick-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 992px) {
+
+  .destinations-grid,
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .dashboard-hero h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .categories-grid,
+  .destinations-grid,
+  .events-grid,
+  .quick-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

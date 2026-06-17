@@ -15,6 +15,7 @@ import Boom from '@hapi/boom';
  */
 export const landingPage = async (req, res, next) => {
   try {
+    // delete older cookie and render the landing page
     res.clearCookie('authentication').render('landingPage');
   } catch (err) {
     const boomError = Boom.notImplemented(

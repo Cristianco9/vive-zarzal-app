@@ -9,6 +9,7 @@ import { checkApiKey } from '../middlewares/apiAuthHandler.js';
 import { validatorHandler  } from '../middlewares/validatorHandler.js';
 // Import the controllers functions to manage user interfaces templates
 import { landingPage } from "../controllers/UI/landingPage.js";
+import { dashboard } from "../controllers/UI/dashboard.js";
 
 // Create a new Router instance
 export const UIRouter = Router();
@@ -19,4 +20,12 @@ UIRouter.get(
   '/',
   // Controller function to render the landing page
   landingPage
+);
+
+// Define a GET route for login view
+UIRouter.get(
+  // Route path display the landing page
+  '/dashboard',
+  // Controller function to render the landing page
+  dashboard
 );
