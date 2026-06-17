@@ -1,0 +1,103 @@
+:root{
+  --primary:#f6bf2f;
+  --accent:#1a73e8;
+  --muted:#666;
+  --card-bg:#fff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.12);
+  --max-width:1200px;
+  --gap:20px;
+  --border:#e6e6e6;
+}
+
+/* Contenedor general */
+.vz-main{ padding:30px 16px 60px; max-width:var(--max-width); margin:0 auto; font-family: "Helvetica Neue", Arial, sans-serif; color:#222; }
+
+/* Hero / título centrado */
+.vz-title{ text-align:center; color:var(--primary); font-size:30px; margin-bottom:18px; font-weight:700; }
+
+/* Search: entrada + botón al estilo de la imagen */
+.vz-search{ display:flex; justify-content:center; gap:0; margin-bottom:36px; }
+.vz-search input{
+  width:520px; max-width:72%;
+  padding:12px 14px; border-radius:6px 0 0 6px; border:1px solid var(--border); border-right:0;
+  font-size:15px; color:#333;
+  box-shadow: none;
+}
+.vz-search button.vz-btn--primary{
+  padding:12px 18px; border-radius:0 6px 6px 0; border:1px solid var(--border);
+  background:var(--primary); color:#000; font-weight:700; cursor:pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+
+/* GRID: por defecto muestra la matriz */
+.vz-grid-section{ padding:0 12px; }
+.vz-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; align-items:start; }
+
+/* Tarjeta */
+.vz-card{
+  background:var(--card-bg);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+  border:1px solid #dcdcdc;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:330px;
+}
+
+/* Imagen con proporción (usar aspect-ratio si soportado) */
+.vz-card__img{
+  position:relative;
+  width:100%;
+  aspect-ratio: 16/10;
+  background:#ddd center/cover no-repeat;
+}
+
+/* Corazón overlay */
+.vz-card__fav{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.95);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  cursor:pointer;
+  transition: transform .12s ease;
+}
+.vz-card__fav:hover{ transform: scale(1.05); }
+.vz-card__fav i{ color:#ccc; font-size:16px; }
+.vz-card__fav.liked{ background:#ffeded; }
+.vz-card__fav.liked i{ color:#e53e3e; }
+
+/* Body */
+.vz-card__body{ padding:12px 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.vz-card__title{ color:var(--accent); font-weight:700; text-decoration:none; font-size:16px; }
+.vz-card__desc{ color:var(--muted); font-size:13px; line-height:1.3; flex:1; margin-top:4px; }
+
+/* Meta inferior: ubicación, rating y precio */
+.vz-card__meta{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:8px; border-top:4px solid #f1f1f1; margin-top:8px; }
+.vz-card__meta-left{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+.vz-card__location{ display:flex; align-items:center; gap:6px; color:#b33; font-size:13px; }
+.vz-card__rating{ background:#ffd27a; color:#6b3b00; padding:4px 8px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; box-shadow: 0 1px 0 rgba(0,0,0,0.05); }
+.vz-price{ color:#1a9b3a; font-weight:800; font-size:15px; }
+
+/* Empty message */
+.vz-empty{ font-size:16px; }
+
+/* Responsive: adaptar 3->2->1 columnas */
+@media (max-width:1100px){
+  .vz-grid{ grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width:700px){
+  .vz-search input{ width:100%; max-width:100%; }
+  .vz-grid{ grid-template-columns: 1fr; }
+  .vz-card{ min-height:400px; }
+}
+
+/* Footer */
+.vz-footer{ background:#444; color:#fff; padding:20px 0; margin-top:40px; }
+.vz-footer__inner{ max-width:var(--max-width); margin:0 auto; padding:0 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+.vz-footer a{ color:#87e0ff; }

@@ -10,6 +10,7 @@ import { validatorHandler  } from '../middlewares/validatorHandler.js';
 // Import the controllers functions to manage user interfaces templates
 import { landingPage } from "../controllers/UI/landingPage.js";
 import { dashboard } from "../controllers/UI/dashboard.js";
+import { services } from "../controllers/UI/services.js";
 import { login } from "../controllers/UI/login.js";
 import { selectRole } from "../controllers/UI/selectRole.js";
 import { registerAdvertiserForm } from "../controllers/UI/registerAdvertiserForm.js";
@@ -26,13 +27,22 @@ UIRouter.get(
   landingPage
 );
 
-// Define a GET route for login view
+// Define a GET route for dashboard view
 UIRouter.get(
   // Route path display the dashboard page
   '/dashboard',
   // Controller function to render the dashboard page
   dashboard
 );
+
+// Define a GET route for services view
+UIRouter.get(
+  // Route path display the services page
+  '/services',
+  // Controller function to render the services page
+  services
+);
+
 
 // Define a GET route for login view
 UIRouter.get(

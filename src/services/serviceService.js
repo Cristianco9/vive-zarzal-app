@@ -5,6 +5,8 @@ import { Category } from '../db/models/categoryModel.js';
 import { ServiceStatus } from '../db/models/serviceStatusModel.js';
 import { AgeRestriction } from '../db/models/ageRestrictionModel.js';
 import { Business } from '../db/models/businessModel.js';
+// import the service image services
+import { ServiceImage } from '../db/models/serviceImageModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -263,7 +265,7 @@ export class ServiceServices {
   }
 
   /**
-   * Retrieves every service ordered by id ascending.
+   * Retrieves every service ordered by id ascending, including service images.
    *
    * @returns {Promise<Object[]>} List of services (empty array if none).
    * @throws {Boom} Internal error if the query fails.
@@ -278,11 +280,22 @@ export class ServiceServices {
           { model: ServiceStatus, as: 'status' },
           { model: AgeRestriction, as: 'ageRestriction' },
           { model: Business, as: 'business' },
+          // incluimos ServiceImage; asumimos la asociación Service.hasMany(ServiceImage, { as: 'images' })
+          { model: ServiceImage, as: 'images' }
         ],
       });
 
-      // always return an array, even when there are no records
-      return allServices.length ? allServices : [];
+      // siempre retornar array (puede estar vacío)
+      const servicesArray = allServices.length ? allServices : [];
+
+      // Mapear a plain objects y añadir imageUrl = primera imagen si existe
+      const result = servicesArray.map(s => {
+        const obj = (typeof s.toJSON === 'function') ? s.toJSON() : s;
+        obj.imageUrl = (obj.images && obj.images.length) ? obj.images[0].imageUrl : null;
+        return obj;
+      });
+
+      return result;
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find services' });

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicios | Vive Zarzal</title>
+
+  <!-- Estilos (ajusta rutas si usas /css en lugar de /styles) -->
+  <link rel="stylesheet" href="/styles/root.css">
+  <link rel="stylesheet" href="/styles/components/header.css">
+  <link rel="stylesheet" href="/styles/components/footer.css">
+  <link rel="stylesheet" href="/styles/services.css">
+
+  <!-- Iconos (opcional). Si no quieres CDN, elimina esta línea y usa SVG inline) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <%- include('partials/header') %>
+
+  <main class="vz-main">
+    <!-- HERO / BÚSQUEDA -->
+    <section class="vz-hero" aria-labelledby="services-title">
+      <h1 id="services-title" class="vz-title">Productos y Servicios</h1>
+
+      <div class="vz-search" role="search" aria-label="Buscar servicios">
+        <input id="vz-search-input" type="search" placeholder="Buscar actividades, lugares, servicios..." aria-label="Buscar" />
+        <button id="vz-search-btn" class="vz-btn vz-btn--primary" aria-label="Buscar">Buscar</button>
+      </div>
+    </section>
+
+    <!-- GRID por defecto: matriz de cajas (3 columnas en desktop) -->
+    <section class="vz-grid-section" aria-roledescription="lista de servicios">
+      <div id="vz-grid" class="vz-grid" aria-live="polite">
+        <!-- tarjetas serán insertadas por JS -->
+      </div>
+
+      <!-- mensaje cuando no hay resultados -->
+      <div id="vz-empty" class="vz-empty" style="display:none; text-align:center; padding:28px; color:#666;">
+        No se encontraron servicios.
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script src="/js/services.js" defer></script>
+</body>
+
+</html>

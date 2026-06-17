@@ -170,6 +170,9 @@ src/controllers/serviceStatus/updateOneServiceStatus.js
 src/controllers/UI/dashboard.js
 src/controllers/UI/landingPage.js
 src/controllers/UI/login.js
+src/controllers/UI/registerAdvertiserForm.js
+src/controllers/UI/registerCustomerForm.js
+src/controllers/UI/selectRole.js
 src/controllers/user/createOneUser.js
 src/controllers/user/deleteOneUser.js
 src/controllers/user/deleteOwnAccount.js
@@ -259,15 +262,22 @@ src/middlewares/checkRoleHandler.js
 src/middlewares/errorHandler.js
 src/middlewares/setCurrentPath.js
 src/middlewares/tokenHandlers/authAppTokenHandler.js
+src/middlewares/validateCreateUser.js
 src/middlewares/validatorHandler.js
 src/public/js/login.js
 src/public/js/redirectView.js
+src/public/js/registerAdvertiserForm.js
+src/public/js/registerCustomerForm.js
+src/public/js/selectRole.js
 src/public/styles/components/footer.css
 src/public/styles/components/header.css
 src/public/styles/dashboard.css
 src/public/styles/landingPage.css
 src/public/styles/login.css
+src/public/styles/registerAdvertiserForm.css
+src/public/styles/registerCustomerForm.css
 src/public/styles/root.css
+src/public/styles/selectRole.css
 src/router/ageRestrictionRouter.js
 src/router/BusinessReviewRouter.js
 src/router/businessRouter.js
@@ -381,6 +391,9 @@ src/views/landingPage.ejs
 src/views/login.ejs
 src/views/partials/footer.ejs
 src/views/partials/header.ejs
+src/views/registerAdvertiserForm.ejs
+src/views/registerCustomerForm.ejs
+src/views/selectRole.ejs
 </directory_structure>
 
 <files>
@@ -8163,66 +8176,172 @@ export const login = async (req, res, next) => {
 };
 </file>
 
-<file path="src/controllers/user/createOneUser.js">
-// Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userService.js';
+<file path="src/controllers/UI/registerAdvertiserForm.js">
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to create a new user.
+ * Controller function to render the register advertiser form page template.
  *
- * This function handles the request to create a new user by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * This function handles the request to display a register advertiser form page view to have access to
+ * the application. Returning a response rendering a HTML template
  *
- * @param {Object} req - The request object containing the user's data.
- * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @returns {html} - Return rendering a HTML template
  */
-export const createOneUser = async (req, res, next) => {
-
-  // Extract the new user data from the request body
-  const newUser = {
-    roleId: req.body.newUserData.roleId,
-    genderId: req.body.newUserData.genderId,
-    documentTypeId: req.body.newUserData.documentTypeId,
-    firstName: req.body.newUserData.firstName,
-    lastName: req.body.newUserData.lastName,
-    birthDate: req.body.newUserData.birthDate,
-    documentNumber: req.body.newUserData.documentNumber,
-    email: req.body.newUserData.email,
-    username: req.body.newUserData.username,
-    password: req.body.newUserData.password,
-  };
-
-  // Instantiate the UserServices class to manage the user operations
-  const userManager = new UserServices();
-
+export const registerAdvertiserForm = async (req, res, next) => {
   try {
-    // Attempt to create a new user using the provided data
-    const response = await userManager.createOne(newUser);
+    // Extract the user full name that the middleware saved in req.user
+    const userFullname = req.user?.fullName || 'Invitado';
 
-    // If the user is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'User created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
+    // Pass an isAuthenticated flag so the view can render login/logout appropriately
+    const isAuthenticated = Boolean(req.user);
+
+    // delete older cookie and render the register advertiser form page
+    res.clearCookie('authentication').render('registerAdvertiserForm', {
+      userFullname: userFullname,
+      isAuthenticated: isAuthenticated
+    });
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de página de registro de anunciante',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/UI/registerCustomerForm.js">
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the register customer form page template.
+ *
+ * This function handles the request to display a register customer form page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const registerCustomerForm = async (req, res, next) => {
+  try {
+    // Extract the user full name that the middleware saved in req.user
+    const userFullname = req.user?.fullName || 'Invitado';
+
+    // Pass an isAuthenticated flag so the view can render login/logout appropriately
+    const isAuthenticated = Boolean(req.user);
+
+    // delete older cookie and render the register customer form page
+    res.clearCookie('authentication').render('registerCustomerForm', {
+      userFullname: userFullname,
+      isAuthenticated: isAuthenticated
+    });
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de página de registro de cliente',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/UI/selectRole.js">
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the type user page template.
+ *
+ * This function handles the request to display a type user page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const selectRole = async (req, res, next) => {
+  try {
+    // delete older cookie and render the type user page
+    res.clearCookie('authentication').render('selectRole');
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de página de selección de tipo de usuario',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/user/createOneUser.js">
+// controller snippet — update your existing createOneUser
+import Boom from '@hapi/boom';
+// Import the UserServices class from the userServices module
+import { UserServices } from '../../services/userService.js'; 
+import Sequelize from 'sequelize';
+
+export const createOneUser = async (req, res, next) => {
+  try {
+    // Log the incoming body so we can see exact shape
+    console.log('CREATE USER BODY:', JSON.stringify(req.body));
+
+    const userManager = new UserServices();
+    const body = req.body || {};
+
+    // Support both shapes: { newUserData: {...}, business: {...} } or flat {...}
+    const newUserData = body.newUserData && typeof body.newUserData === 'object'
+      ? body.newUserData
+      : body;
+
+    const business = body.business && typeof body.business === 'object'
+      ? body.business
+      : null;
+
+    let result;
+    if (business) {
+      // If you have a service method that creates user + business in transaction
+      result = await userManager.createOneWithBusiness({ newUserData, business });
+    } else {
+      result = await userManager.createOne(newUserData);
+    }
+
+    return res.status(201).json(result);
+  } catch (error) {
+    // Log full error and stack
+    console.error('createOneUser ERROR:', error && (error.stack || error));
+
+    // Handle common Sequelize DB errors with friendly responses
+    if (error && error.name === 'SequelizeUniqueConstraintError') {
+      const fields = Object.keys(error.fields || {}).join(', ');
+      return res.status(409).json({
+        statusCode: 409,
+        error: 'Conflict',
+        message: `Duplicate value for fields: ${fields}`,
+        details: error.errors?.map(e => e.message) || []
       });
     }
 
-  } catch (error) {
-    // Handle errors during user creation by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to create the user in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    if (error && error.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Foreign key constraint error (related resource not found)'
+      });
+    }
+
+    // If it's already a Boom error, forward it
+    if (Boom.isBoom && Boom.isBoom(error)) return next(error);
+
+    // Fallback: wrap and forward
+    return next(Boom.boomify(error, { message: 'Unable to create user' }));
   }
 };
 </file>
@@ -15038,6 +15157,53 @@ export const authAppVerifyToken = (req, res, next) => {
 };
 </file>
 
+<file path="src/middlewares/validateCreateUser.js">
+import { flatNewUserDataSchema, businessSchema } from '../schemas/userSchema.js';
+
+/**
+ * Middleware to validate payloads for creating users (regular and advertiser).
+ * - If req.body.newUserData exists: validate req.body.newUserData and (optionally) req.body.business
+ * - Otherwise: validate req.body as flat new user object
+ */
+export default function validateCreateUser(req, res, next) {
+  try {
+    const body = req.body || {};
+
+    // Case: wrapped advertiser payload
+    if (body && typeof body === 'object' && body.newUserData) {
+      const { error: userErr } = flatNewUserDataSchema.validate(body.newUserData, { abortEarly: false });
+      if (userErr) {
+        const messages = userErr.details.map(d => d.message);
+        return res.status(400).json({ statusCode: 400, error: 'Bad Request', message: messages.join(', ') });
+      }
+
+      if (body.business) {
+        const { error: businessErr } = businessSchema.validate(body.business, { abortEarly: false });
+        if (businessErr) {
+          const messages = businessErr.details.map(d => d.message);
+          return res.status(400).json({ statusCode: 400, error: 'Bad Request', message: messages.join(', ') });
+        }
+      }
+
+      // Validated wrapped payload -> proceed
+      return next();
+    }
+
+    // Case: flat user object in root
+    const { error } = flatNewUserDataSchema.validate(body, { abortEarly: false });
+    if (error) {
+      const messages = error.details.map(d => d.message);
+      return res.status(400).json({ statusCode: 400, error: 'Bad Request', message: messages.join(', ') });
+    }
+
+    return next();
+  } catch (err) {
+    console.error('validateCreateUser middleware error:', err);
+    return res.status(500).json({ statusCode: 500, error: 'Internal Server Error', message: 'Validation middleware failed' });
+  }
+}
+</file>
+
 <file path="src/middlewares/validatorHandler.js">
 // Import the Boom library for HTTP-friendly error objects
 import Boom from '@hapi/boom';
@@ -15303,6 +15469,706 @@ export const validatorHandler = (schema, property) => {
   // window.setActiveMenuFromLocation() after route change.
   window.setActiveMenuFromLocation = setActiveMenuFromLocation;
 })();
+</file>
+
+<file path="src/public/js/registerAdvertiserForm.js">
+// src/public/js/registerAdvertiser.js
+// Carga selects de género y tipo de documento desde API y valida el formulario
+// Endpoints usados (ajusta si tu API tiene una sola slash):
+const GENDERS_API = '/app/v1/genders/list-all';
+const DOC_TYPES_API = '/app/v1/document-types/list-all';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('registerAdvertiserForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const acceptTerms = document.getElementById('acceptTerms');
+  const password = document.getElementById('password');
+  const passwordConfirm = document.getElementById('passwordConfirm');
+  const formError = document.getElementById('formError');
+
+  const genderSelect = document.getElementById('gender');
+  const docTypeSelect = document.getElementById('docType');
+
+  function showError(msg) {
+    if (!formError) return;
+    formError.textContent = msg;
+    formError.style.display = msg ? 'block' : 'none';
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !acceptTerms.checked;
+  }
+
+  acceptTerms.addEventListener('change', updateSubmitState);
+  updateSubmitState();
+
+  // Utilities (mismos helpers que en la versión cliente)
+  function extractArrayFromResponse(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.roles)) return data.roles;
+    if (Array.isArray(data.data)) return data.data;
+    if (Array.isArray(data.items)) return data.items;
+    for (const k of Object.keys(data || {})) {
+      if (Array.isArray(data[k])) return data[k];
+    }
+    return [];
+  }
+
+  function optionTextAndValue(item, fallbacks = []) {
+    if (item == null) return { text: String(item), value: String(item) };
+    if (typeof item === 'string') return { text: item, value: item };
+
+    const textCandidates = ['name','nombre','label','title','descripcion','description','display'];
+    const valueCandidates = ['id','slug','code','value','key'];
+
+    let text = null;
+    for (const p of textCandidates) {
+      if (p in item && item[p]) { text = item[p]; break; }
+    }
+    if (!text) {
+      for (const k of Object.keys(item)) {
+        if (typeof item[k] === 'string' && item[k].trim()) { text = item[k]; break; }
+      }
+    }
+    if (!text && fallbacks.length) text = fallbacks[0];
+
+    let value = null;
+    for (const p of valueCandidates) {
+      if (p in item && (item[p] !== undefined && item[p] !== null)) { value = item[p]; break; }
+    }
+    if (value === null) value = (text !== null && text !== undefined) ? text : JSON.stringify(item);
+
+    return { text: String(text).trim(), value: String(value) };
+  }
+
+  function populateSelect(selectEl, items, placeholderText) {
+    if (!selectEl) return;
+    selectEl.innerHTML = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.disabled = true;
+    ph.selected = true;
+    ph.textContent = placeholderText || 'Selecciona una opción';
+    selectEl.appendChild(ph);
+
+    (items || []).forEach(item => {
+      const { text, value } = optionTextAndValue(item, [placeholderText]);
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = text;
+      selectEl.appendChild(opt);
+    });
+
+    selectEl.disabled = false;
+  }
+
+  const GENDERS_FALLBACK = [
+    { name: 'Femenino', value: 'female' },
+    { name: 'Masculino', value: 'male' },
+    { name: 'Otro', value: 'other' },
+    { name: 'Prefiero no decir', value: 'no_answer' }
+  ];
+  const DOC_TYPES_FALLBACK = [
+    { name: 'Cédula de ciudadanía', value: 'cc' },
+    { name: 'Cédula de extranjería', value: 'ce' },
+    { name: 'Pasaporte', value: 'passport' },
+    { name: 'Otro', value: 'other' }
+  ];
+
+  function setLoading(selectEl, isLoading) {
+    if (!selectEl) return;
+    selectEl.disabled = isLoading;
+    if (isLoading) {
+      selectEl.innerHTML = '';
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.disabled = true;
+      ph.selected = true;
+      ph.textContent = 'Cargando...';
+      selectEl.appendChild(ph);
+    }
+  }
+
+  function loadLists() {
+    setLoading(genderSelect, true);
+    setLoading(docTypeSelect, true);
+
+    const fetchGender = fetch(GENDERS_API, { credentials: 'same-origin' })
+      .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+      .then(json => extractArrayFromResponse(json))
+      .catch(() => null);
+
+    const fetchDocTypes = fetch(DOC_TYPES_API, { credentials: 'same-origin' })
+      .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+      .then(json => extractArrayFromResponse(json))
+      .catch(() => null);
+
+    Promise.all([fetchGender, fetchDocTypes])
+      .then(([gendersArray, docsArray]) => {
+        if (Array.isArray(gendersArray) && gendersArray.length) {
+          populateSelect(genderSelect, gendersArray, 'Selecciona una opción');
+        } else {
+          populateSelect(genderSelect, GENDERS_FALLBACK.map(g => ({ name: g.name, value: g.value })), 'Selecciona una opción');
+        }
+
+        if (Array.isArray(docsArray) && docsArray.length) {
+          populateSelect(docTypeSelect, docsArray, 'Selecciona una opción');
+        } else {
+          populateSelect(docTypeSelect, DOC_TYPES_FALLBACK.map(d => ({ name: d.name, value: d.value })), 'Selecciona una opción');
+        }
+      })
+      .finally(() => {
+        setLoading(genderSelect, false);
+        setLoading(docTypeSelect, false);
+      });
+  }
+
+  loadLists();
+
+  // Validación en submit
+  form.addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  showError('');
+
+  // Validaciones básicas de campos obligatorios (manténlas)
+  const requiredFields = [
+    'firstName','lastName','dob','docNumber','email','username','password','passwordConfirm','businessName'
+  ];
+  for (const id of requiredFields) {
+    const el = document.getElementById(id);
+    if (el && !el.value) {
+      showError('Por favor completa todos los campos obligatorios.');
+      el.focus();
+      return false;
+    }
+  }
+
+  if (genderSelect && !genderSelect.value) {
+    showError('Por favor selecciona tu género.');
+    genderSelect.focus();
+    return false;
+  }
+
+  if (docTypeSelect && !docTypeSelect.value) {
+    showError('Por favor selecciona el tipo de documento.');
+    docTypeSelect.focus();
+    return false;
+  }
+
+  if (password && passwordConfirm) {
+    if (password.value !== passwordConfirm.value) {
+      showError('Las contraseñas no coinciden.');
+      password.focus();
+      return false;
+    }
+    if (password.value.length < 8) {
+      showError('La contraseña debe tener al menos 8 caracteres.');
+      password.focus();
+      return false;
+    }
+  }
+
+  if (!acceptTerms.checked) {
+    showError('Debes aceptar los términos y condiciones para continuar.');
+    return false;
+  }
+
+  // --- Construir payload compatible con userSchema ---
+  // ADVERTISER ROLE ID — ajusta si en tu BD es otro
+  const ADVERTISER_ROLE_ID = 2;
+
+  const payload = {
+    // enviar newUserData para evitar que el validador Joi rechace claves extra en root
+    newUserData: {
+      roleId: ADVERTISER_ROLE_ID,
+      firstName: (document.getElementById('firstName') || {}).value || '',
+      lastName: (document.getElementById('lastName') || {}).value || '',
+      email: (document.getElementById('email') || {}).value || '',
+      username: (document.getElementById('username') || {}).value || '',
+      password: (document.getElementById('password') || {}).value || '',
+      // mapear selects a los nombres esperados por el schema
+      genderId: genderSelect && genderSelect.value ? Number(genderSelect.value) : undefined,
+      documentTypeId: docTypeSelect && docTypeSelect.value ? Number(docTypeSelect.value) : undefined,
+      documentNumber: (document.getElementById('docNumber') || {}).value || '',
+      birthDate: (document.getElementById('dob') || {}).value || '' // YYYY-MM-DD
+    },
+
+    // datos del negocio dentro de "business" (no en root)
+    business: {
+      name: (document.getElementById('businessName') || {}).value || '',
+      description: (document.getElementById('businessDescription') || {}).value || '',
+      website: (document.getElementById('website') || {}).value || '',
+      facebook: (document.getElementById('facebook') || {}).value || '',
+      instagram: (document.getElementById('instagram') || {}).value || '',
+      tiktok: (document.getElementById('tiktok') || {}).value || '',
+      // locationId si lo usas: parseInt(...) o null
+      // locationId: parseInt((document.getElementById('locationId')||{}).value) || undefined
+    }
+  };
+
+  // Opcional: quitar claves undefined para un body más limpio
+  if (!payload.newUserData.genderId) delete payload.newUserData.genderId;
+  if (!payload.newUserData.documentTypeId) delete payload.newUserData.documentTypeId;
+  if (!payload.newUserData.documentNumber) delete payload.newUserData.documentNumber;
+  if (!payload.newUserData.birthDate) delete payload.newUserData.birthDate;
+
+  // Si no quieres enviar business vacío, valida mínimo name
+  if (!payload.business.name) {
+    showError('El nombre del negocio es requerido para registrarse como anunciante.');
+    document.getElementById('businessName').focus();
+    return false;
+  }
+
+  // Deshabilitar botón mientras se procesa
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Registrando...';
+
+  try {
+    const CREATE_API = '/app/v1/users/create';
+    const res = await fetch(CREATE_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(payload)
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      // mostrar mensaje claro (si Joi devuelve detalles, úsalos)
+      const msg = json.message || json.error || 'Error al crear el anunciante';
+      showError(typeof msg === 'string' ? msg : JSON.stringify(msg));
+      return false;
+    }
+
+    // Éxito: redirigir o mostrar mensaje según tu flujo
+    // Si tu API devuelve user y business, puedes redirigir a login o panel
+    window.location.href = '/auth/success'; // ajustar a la ruta deseada
+
+  } catch (err) {
+    showError('Error de red al contactar al servidor. Intenta de nuevo.');
+    console.error(err);
+    return false;
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Registrarse';
+  }
+});
+});
+</file>
+
+<file path="src/public/js/registerCustomerForm.js">
+// src/public/js/registerClient.js
+// Carga géneros y tipos de documento y envía el payload en la forma
+// que espera el endpoint (/app/v1/users/create) — campos en el cuerpo raíz.
+
+document.addEventListener('DOMContentLoaded', () => {
+  const GENDERS_API = '/app/v1/genders/list-all';
+  const DOC_TYPES_API = '/app/v1/document-types/list-all';
+  const REGISTER_API = '/app/v1/users/create';
+
+  // En tu BD: 1 = Administrador, 2 = Anunciante, 3 = Cliente
+  const CLIENTE_ROLE_ID = 3;
+
+  const form = document.getElementById('registerClientForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const acceptTerms = document.getElementById('acceptTerms');
+  const password = document.getElementById('password');
+  const passwordConfirm = document.getElementById('passwordConfirm');
+  const formError = document.getElementById('formError');
+
+  const genderSelect = document.getElementById('gender');
+  const docTypeSelect = document.getElementById('docType');
+
+  let gendersArray = [];
+  let docTypesArray = [];
+
+  function showError(msg) {
+    if (!formError) return;
+    formError.textContent = msg || '';
+    formError.style.display = msg ? 'block' : 'none';
+  }
+
+  function updateSubmitState() {
+    if (!submitBtn) return;
+    submitBtn.disabled = !(acceptTerms && acceptTerms.checked);
+  }
+  if (acceptTerms) {
+    acceptTerms.addEventListener('change', updateSubmitState);
+    updateSubmitState();
+  }
+
+  // Helpers
+  function extractArrayFromResponse(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.roles)) return data.roles;
+    if (Array.isArray(data.data)) return data.data;
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.result)) return data.result;
+    for (const k of Object.keys(data || {})) {
+      if (Array.isArray(data[k])) return data[k];
+    }
+    return [];
+  }
+
+  function optionTextAndValue(item) {
+    if (item == null) return { text: String(item), value: String(item) };
+    if (typeof item === 'string') return { text: item, value: item };
+
+    const textProps = ['name', 'nombre', 'label', 'title', 'descripcion', 'description', 'display', 'tipo'];
+    const valueProps = ['id', 'slug', 'code', 'value', 'key'];
+
+    let text = null;
+    for (const p of textProps) if (p in item && item[p]) { text = item[p]; break; }
+    if (!text) {
+      for (const k of Object.keys(item)) {
+        if (typeof item[k] === 'string' && item[k].trim()) { text = item[k]; break; }
+      }
+    }
+
+    let value = null;
+    for (const p of valueProps) if (p in item && (item[p] !== undefined && item[p] !== null)) { value = item[p]; break; }
+
+    if (value === null) value = text !== null && text !== undefined ? text : JSON.stringify(item);
+    return { text: String(text || value), value: String(value) };
+  }
+
+  function populateSelect(selectEl, items, placeholderText) {
+    if (!selectEl) return;
+    selectEl.innerHTML = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.disabled = true;
+    ph.selected = true;
+    ph.textContent = placeholderText || 'Selecciona una opción';
+    selectEl.appendChild(ph);
+
+    (items || []).forEach(item => {
+      const { text, value } = optionTextAndValue(item);
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = text;
+      selectEl.appendChild(opt);
+    });
+
+    selectEl.disabled = false;
+  }
+
+  function setLoading(selectEl, isLoading) {
+    if (!selectEl) return;
+    selectEl.disabled = isLoading;
+    if (isLoading) {
+      selectEl.innerHTML = '';
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.disabled = true;
+      ph.selected = true;
+      ph.textContent = 'Cargando...';
+      selectEl.appendChild(ph);
+    }
+  }
+
+  // Load genders and document types
+  function loadLists() {
+    setLoading(genderSelect, true);
+    setLoading(docTypeSelect, true);
+
+    const pGenders = fetch(GENDERS_API, { credentials: 'same-origin' })
+      .then(r => { if (!r.ok) throw new Error('Genders fetch failed'); return r.json(); })
+      .then(json => extractArrayFromResponse(json))
+      .catch(() => null);
+
+    const pDocTypes = fetch(DOC_TYPES_API, { credentials: 'same-origin' })
+      .then(r => { if (!r.ok) throw new Error('Doc types fetch failed'); return r.json(); })
+      .then(json => extractArrayFromResponse(json))
+      .catch(() => null);
+
+    Promise.all([pGenders, pDocTypes])
+      .then(([gendersRes, docsRes]) => {
+        gendersArray = Array.isArray(gendersRes) ? gendersRes : [];
+        docTypesArray = Array.isArray(docsRes) ? docsRes : [];
+
+        if (gendersArray.length) {
+          populateSelect(genderSelect, gendersArray, 'Selecciona una opción');
+        } else {
+          populateSelect(genderSelect, [
+            { name: 'Femenino', id: 'female' },
+            { name: 'Masculino', id: 'male' },
+            { name: 'Otro', id: 'other' },
+            { name: 'Prefiero no decir', id: 'no_answer' }
+          ], 'Selecciona una opción');
+        }
+
+        if (docTypesArray.length) {
+          populateSelect(docTypeSelect, docTypesArray, 'Selecciona una opción');
+        } else {
+          populateSelect(docTypeSelect, [
+            { name: 'Cédula de ciudadanía', id: 'cc' },
+            { name: 'Cédula de extranjería', id: 'ce' },
+            { name: 'Pasaporte', id: 'passport' },
+            { name: 'Otro', id: 'other' }
+          ], 'Selecciona una opción');
+        }
+      })
+      .finally(() => {
+        setLoading(genderSelect, false);
+        setLoading(docTypeSelect, false);
+      });
+  }
+
+  loadLists();
+
+  // Resolve numeric id from select value or from previously loaded arrays
+  function resolveIdFromSelectValue(selectEl, arrayLookup) {
+    if (!selectEl || !selectEl.value) return undefined;
+    const raw = selectEl.value;
+
+    // If numeric string, return number
+    if (/^\d+$/.test(raw)) return Number(raw);
+
+    // Try to find by matching text/name in lookup array
+    if (Array.isArray(arrayLookup) && arrayLookup.length) {
+      const found = arrayLookup.find(item => {
+        const text = (item.name || item.nombre || item.label || item.title || item.descripcion || item.description || '').toString().toLowerCase();
+        return text === raw.toString().toLowerCase() || String(item.id) === String(raw) || String(item.value) === String(raw);
+      });
+      if (found && (found.id || found.value || found.key)) return Number(found.id || found.value || found.key);
+    }
+
+    // If it is a non-numeric code, return undefined (server will ignore optional)
+    return undefined;
+  }
+
+  // Form submit
+  if (!form) {
+    console.warn('registerClientForm not found in DOM.');
+    return;
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    showError('');
+
+    // Client-side mandatory fields check
+    const firstName = (form.firstName && form.firstName.value || '').trim();
+    const lastName = (form.lastName && form.lastName.value || '').trim();
+    const email = (form.email && form.email.value || '').trim();
+    const username = (form.username && form.username.value || '').trim();
+
+    if (!firstName || !lastName || !email || !username) {
+      showError('Completa los campos obligatorios: Nombre, Apellido, Correo y Nombre de usuario.');
+      return;
+    }
+
+    if (!password || !passwordConfirm) {
+      showError('Campos de contraseña no encontrados.');
+      return;
+    }
+
+    if (!password.value || !passwordConfirm.value) {
+      showError('Ingresa contraseña y confirma.');
+      return;
+    }
+
+    if (password.value.length < 8) {
+      showError('La contraseña debe tener al menos 8 caracteres.');
+      password.focus();
+      return;
+    }
+
+    if (password.value !== passwordConfirm.value) {
+      showError('Las contraseñas no coinciden.');
+      password.focus();
+      return;
+    }
+
+    if (acceptTerms && !acceptTerms.checked) {
+      showError('Debes aceptar los términos y condiciones.');
+      return;
+    }
+
+    // Resolve optional ids
+    const genderId = resolveIdFromSelectValue(genderSelect, gendersArray);
+    const documentTypeId = resolveIdFromSelectValue(docTypeSelect, docTypesArray);
+
+    // Build payload plano (no wrapper) para que Joi acepte
+    const payload = {
+      roleId: Number(CLIENTE_ROLE_ID),
+      firstName,
+      lastName,
+      email,
+      username,
+      password: password.value
+    };
+
+    if (genderId) payload.genderId = genderId;
+    if (documentTypeId) payload.documentTypeId = documentTypeId;
+    if (form.dob && form.dob.value) payload.birthDate = form.dob.value; // expected YYYY-MM-DD
+    if (form.docNumber && form.docNumber.value) payload.documentNumber = form.docNumber.value.trim();
+
+    // Send request
+    try {
+      if (submitBtn) submitBtn.disabled = true;
+      const res = await fetch(REGISTER_API, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload) // << payload plano, no wrapper
+      });
+
+      const json = await res.json().catch(() => null);
+
+      if (res.ok) {
+        // success: redirect (ajusta la ruta según tu flujo)
+        window.location.href = '/app/v1/auth/login';
+        return;
+      }
+
+      // Parse and display server error (Joi/Boom)
+      if (json) {
+        const boomMsg = json.message || (json.output && json.output.payload && json.output.payload.message);
+        if (boomMsg) {
+          showError(boomMsg);
+        } else if (json.error) {
+          showError(json.error);
+        } else {
+          showError(JSON.stringify(json));
+        }
+      } else {
+        showError('Error al registrar el usuario. Intenta nuevamente.');
+      }
+    } catch (err) {
+      console.error(err);
+      showError('Error de red al intentar registrar el usuario.');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  });
+});
+</file>
+
+<file path="src/public/js/selectRole.js">
+// src/public/js/selectRole.js
+// Pobla el select con roles y redirige según la selección:
+// - "anunciante" -> /app/v1/auth/register/advertiser
+// - "cliente"    -> /app/v1/auth/register/customer
+
+document.addEventListener('DOMContentLoaded', () => {
+  const API = '/app/v1/roles/list-all'; // ajustar si tu endpoint real difiere
+  const select = document.getElementById('roleSelect');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function enableNextIfSelected() {
+    nextBtn.disabled = !select.value;
+  }
+
+  function mapRoleToPath(roleTextOrValue) {
+    const v = String(roleTextOrValue || '').toLowerCase();
+    if (v.includes('anunciante') || v.includes('advertiser')) {
+      return '/app/v1/auth/register/advertiser';
+    }
+    if (v.includes('cliente') || v.includes('client') || v.includes('customer')) {
+      return '/app/v1/auth/register/customer';
+    }
+    // Fallback: pasar el role como query param (si no coincide)
+    return '/app/v1/auth/register?role=' + encodeURIComponent(roleTextOrValue);
+  }
+
+  function populateOptions(roles) {
+    // roles: array de objetos; intentamos leer .name, .tipo_rol o fallback a string
+    const filtered = (roles || []).filter(r => {
+      const name = (r && (r.name || r.tipo_rol || r.role || r)) || '';
+      return /anunciante|cliente|advertiser|customer/i.test(String(name));
+    });
+
+    // Si no encontramos nada, ponemos fallback manual
+    if (!filtered.length) {
+      const fallback = [
+        { name: 'Anunciante' },
+        { name: 'Cliente' }
+      ];
+      populateOptions(fallback);
+      return;
+    }
+
+    // Limpiar el select (dejando la opción placeholder)
+    // Mantener primero la opción disabled/placeholder si existe
+    const placeholderOption = select.querySelector('option[disabled]') || null;
+    select.innerHTML = '';
+    if (placeholderOption) {
+      placeholderOption.selected = true;
+      select.appendChild(placeholderOption);
+    } else {
+      const ph = document.createElement('option');
+      ph.value = '';
+      ph.disabled = true;
+      ph.selected = true;
+      ph.textContent = 'Selecciona una opción';
+      select.appendChild(ph);
+    }
+
+    filtered.forEach(r => {
+      const name = r && (r.name || r.tipo_rol || r.role || String(r));
+      const opt = document.createElement('option');
+      opt.value = String(name).trim();
+      opt.textContent = String(name).trim();
+      select.appendChild(opt);
+    });
+
+    enableNextIfSelected();
+  }
+
+  // Fetch roles desde el API
+  fetch(API, { credentials: 'same-origin' })
+    .then(res => {
+      if (!res.ok) throw new Error('Error al obtener roles');
+      return res.json();
+    })
+    .then(data => {
+      // Normalizar: la API puede devolver { roles: [...] } o [...] o { data: [...] }
+      let rolesArray = [];
+      if (Array.isArray(data)) rolesArray = data;
+      else if (Array.isArray(data.roles)) rolesArray = data.roles;
+      else if (Array.isArray(data.data)) rolesArray = data.data;
+      else if (data && typeof data === 'object') {
+        // Buscar la primera propiedad que sea array
+        for (const k of Object.keys(data)) {
+          if (Array.isArray(data[k])) {
+            rolesArray = data[k];
+            break;
+          }
+        }
+      }
+
+      populateOptions(rolesArray);
+    })
+    .catch(() => {
+      // Fallback si falla la llamada: agregar manualmente Anunciante y Cliente
+      populateOptions([{ name: 'Anunciante' }, { name: 'Cliente' }]);
+    });
+
+  // Events
+  select.addEventListener('change', enableNextIfSelected);
+
+  nextBtn.addEventListener('click', () => {
+    const selectedValue = select.value || (select.selectedOptions[0] && select.selectedOptions[0].textContent);
+    if (!selectedValue) return;
+
+    const target = mapRoleToPath(selectedValue);
+    // Redirigir
+    window.location.href = target;
+  });
+
+  // Permitir submit con Enter cuando el select tenga focus (opcional)
+  select.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' && select.value) {
+      ev.preventDefault();
+      nextBtn.click();
+    }
+  });
+});
 </file>
 
 <file path="src/public/styles/components/footer.css">
@@ -16020,6 +16886,335 @@ export const validatorHandler = (schema, property) => {
 }
 </file>
 
+<file path="src/public/styles/registerAdvertiserForm.css">
+/* src/public/styles/registerAdvertiser.css
+   Estilos para la vista "Registro - Anunciante"
+   Basado en root.css tokens. Reemplaza el archivo anterior.
+*/
+
+.register-main {
+  background: var(--bg-body, #ffffff);
+  min-height: calc(100vh - var(--navbar-height, 64px) - var(--footer-height, 80px));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-12, 48px) 0;
+}
+
+.register-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card contenedor */
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-section, #efefef);
+  border-radius: 40px;
+  padding: var(--space-8, 32px);
+  box-shadow: var(--shadow-sm, 0 8px 30px rgba(16,24,40,0.06));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+  align-items: stretch;
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+/* Título */
+.register-title {
+  color: var(--color-brand-blue, #0b5cff);
+  text-align: center;
+  font-size: var(--font-size-lg, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0 0 var(--space-4, 16px);
+}
+
+/* Formulario */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+/* Labels e inputs: reutiliza si existe login.css; si no, estos son los básicos */
+.label {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 6px;
+  display: block;
+  font-size: var(--font-size-sm, 13px);
+}
+
+/* Inputs y selects uniformes */
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d1d5db);
+  font-size: var(--font-size-md, 15px);
+  background: var(--color-white, #fff);
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-fast, 120ms), border-color var(--transition-fast, 120ms);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Selects: mantener flecha, padding extra a la derecha */
+select.input {
+  padding-right: 2.4rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text, #111827) 50%),
+                    linear-gradient(135deg, var(--color-text, #111827) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1rem + 2px), calc(100% - 12px) calc(1rem + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Focus state */
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent, #17a2b8);
+  box-shadow: 0 4px 14px rgba(23,162,184,0.06);
+}
+
+/* Aumentar espacio vertical entre campos para mejor lectura */
+.register-form > * {
+  margin-bottom: 0;
+}
+
+/* Campos específicos multilinea (si usas textarea para descripción) */
+textarea.input {
+  min-height: 88px;
+  resize: vertical;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+/* Helper elements */
+.terms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-2, 8px);
+}
+
+.terms-label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--text-secondary, #6b7280);
+}
+
+.terms-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Mensajes de error */
+.form-error {
+  color: #d9534f;
+  font-size: var(--font-size-sm, 13px);
+  margin-top: var(--space-2, 8px);
+  display: none;
+  text-align: left;
+}
+
+/* Acciones / submit */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4, 16px);
+}
+
+.btn-register {
+  background: var(--color-primary-light, #f3c24b);
+  color: var(--color-black, #111);
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: transform var(--transition-fast, 120ms), opacity var(--transition-fast, 120ms);
+}
+
+.btn-register:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ajustes visuales para inputs de URL y campos sociales (mantener consistencia) */
+.input[type="url"] {
+  direction: ltr;
+}
+
+/* Asegurar que el ancho no se rompa en móviles */
+.register-card .input,
+.register-card select.input {
+  max-width: 100%;
+}
+
+/* Pequeños ajustes de alineación del checkbox dentro de terms-label */
+.terms-label input[type="checkbox"] {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+/* Bordes y radio más suaves en tamaños pequeños */
+@media (max-width: 600px) {
+  .register-card {
+    padding: var(--space-6, 20px);
+    border-radius: 24px;
+    margin: 0 16px;
+  }
+  .register-title {
+    font-size: var(--font-size-md, 18px);
+  }
+  .input {
+    font-size: 14px;
+  }
+  .btn-register {
+    padding: 0.55rem 1.2rem;
+    border-radius: 10px;
+  }
+}
+</file>
+
+<file path="src/public/styles/registerCustomerForm.css">
+.register-main {
+  background: var(--bg-body, #ffffff);
+  min-height: calc(100vh - var(--navbar-height, 64px) - var(--footer-height, 80px));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-12, 48px) 0;
+}
+
+.register-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-section, #efefef);
+  border-radius: 40px;
+  padding: var(--space-8, 32px);
+  box-shadow: var(--shadow-sm, 0 8px 30px rgba(16,24,40,0.06));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+  align-items: stretch;
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+.register-title {
+  color: var(--color-brand-blue, #0b5cff);
+  text-align: center;
+  font-size: var(--font-size-lg, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0 0 var(--space-4, 16px);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+/* Reutiliza estilos .label y .input si existe login.css; si no, definimos básicos */
+.label {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 4px;
+  display: block;
+  font-size: var(--font-size-sm, 13px);
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d1d5db);
+  font-size: var(--font-size-md, 15px);
+  background: var(--color-white, #fff);
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-fast, 120ms), border-color var(--transition-fast, 120ms);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent, #17a2b8);
+  box-shadow: 0 4px 14px rgba(23,162,184,0.06);
+}
+
+/* Helper elements */
+.terms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-2, 8px);
+}
+
+.terms-label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--text-secondary, #6b7280);
+}
+
+.terms-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Error message */
+.form-error {
+  color: #d9534f;
+  font-size: var(--font-size-sm, 13px);
+  margin-top: var(--space-2, 8px);
+  display: none;
+}
+
+/* Actions / submit */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4, 16px);
+}
+
+.btn-register {
+  background: var(--color-primary-light, #f3c24b);
+  color: var(--color-black, #111);
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: transform var(--transition-fast, 120ms), opacity var(--transition-fast, 120ms);
+}
+
+.btn-register:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .register-card {
+    padding: var(--space-6, 20px);
+    border-radius: 24px;
+    margin: 0 16px;
+  }
+  .register-title { font-size: var(--font-size-md, 18px); }
+}
+</file>
+
 <file path="src/public/styles/root.css">
 /* ==========================================================
    VIVE ZARZAL - DESIGN TOKENS
@@ -16278,6 +17473,224 @@ body {
 
 .shadow-brand {
   box-shadow: var(--shadow-md);
+}
+</file>
+
+<file path="src/public/styles/selectRole.css">
+header.site-header.select-role-header {
+  background: var(--bg-page, #fff);
+  padding: calc(var(--space-4, 16px)) calc(var(--space-6, 24px));
+  box-shadow: 0 1px 8px rgba(16, 24, 40, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  backdrop-filter: blur(6px);
+}
+
+.select-role-header .header-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 16px);
+}
+
+/* Brand */
+.select-role-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.select-role-header .brand-logo {
+  display: block;
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+/* Si quieres texto al lado del logo */
+.select-role-header .brand .brand-text {
+  font-size: var(--font-size-md, 16px);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-title, #0f172a);
+}
+
+/* Nav / acciones */
+.select-role-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+}
+
+.select-role-header .btn-text {
+  color: var(--color-primary, #0b5cff);
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+
+/* Variante botón primario si quieres */
+.select-role-header .btn-primary {
+  background: var(--color-primary, #0b5cff);
+  color: var(--color-white, #fff);
+  border-color: transparent;
+}
+
+.select-role-header .btn-text:hover,
+.select-role-header .btn-text:focus {
+  background: rgba(11, 92, 255, 0.06);
+  outline: none;
+  box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+}
+
+/* Accessibility focus */
+.select-role-header a:focus,
+.select-role-header button:focus {
+  box-shadow: 0 0 0 3px rgba(11,92,255,0.12);
+  border-radius: 8px;
+}
+
+/* --------------------------
+   Layout principal y tarjeta
+   -------------------------- */
+.select-role-main {
+  padding: var(--space-12, 48px) 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 80px);
+  background: var(--bg-page, #fff);
+}
+
+.select-card {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: var(--space-8, 32px);
+  border-radius: 28px;
+  background: var(--bg-section, #fff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6, 20px);
+  box-shadow: 0 8px 30px rgba(16,24,40,0.06);
+  border: 1px solid rgba(15, 23, 42, 0.03);
+}
+
+.select-title {
+  font-size: var(--font-size-lg, 20px);
+  color: var(--color-title, #0f172a);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0;
+  text-align: center;
+}
+
+/* Campo / select */
+.field {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+  align-items: stretch;
+}
+
+select.input {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color-white, #fff);
+  border: 1px solid var(--gray-300, #d1d5db);
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  font-size: var(--font-size-md, 16px);
+  cursor: pointer;
+  color: var(--color-body, #0f172a);
+  transition: border-color 120ms var(--ease);
+}
+
+select.input:focus {
+  border-color: var(--color-primary, #0b5cff);
+  box-shadow: 0 4px 14px rgba(11,92,255,0.06);
+  outline: none;
+}
+
+/* Arrow indicator (pure CSS) */
+select.input {
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text, #111827) 50%),
+                    linear-gradient(135deg, var(--color-text, #111827) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1rem + 2px), calc(100% - 12px) calc(1rem + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+}
+
+/* Helper text and actions */
+.helper {
+  color: var(--text-secondary, #6b7280);
+  font-size: var(--font-size-sm, 13px);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-4, 16px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--space-4, 16px);
+}
+
+.btn-next {
+  background: var(--color-primary, #0b5cff);
+  color: var(--color-white, #fff);
+  padding: 0.58rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  transition: transform 120ms var(--ease), opacity 120ms var(--ease);
+}
+
+.btn-next:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --------------------------
+   Responsive
+   -------------------------- */
+@media (max-width: 760px) {
+  .select-card {
+    padding: var(--space-6, 20px);
+    border-radius: 16px;
+    margin: 0 20px;
+  }
+  .select-role-header .header-inner {
+    padding: 0;
+  }
+  .select-role-header .brand-logo {
+    height: 34px;
+  }
+  select.input {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 420px) {
+  .select-role-header .brand-logo { height: 30px; }
+  .select-role-header .btn-text { padding: 6px 8px; font-size: 14px; }
+  .select-card { padding: 16px; }
 }
 </file>
 
@@ -17348,11 +18761,7 @@ documentTypeRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 documentTypeRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllDocumentTypes
 );
 
@@ -17631,11 +19040,7 @@ genderRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 genderRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllGenders
 );
 
@@ -18692,9 +20097,7 @@ roleRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 roleRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllRoles
 );
 
@@ -19188,11 +20591,7 @@ serviceRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 serviceRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllServices
 );
 
@@ -19202,13 +20601,9 @@ serviceRouter.get(
 // ─────────────────────────────────────────────────────────────────────────────
 serviceRouter.get(
   '/list-one/:id',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: validate that a valid ID was provided
+  // Step 1: validate that a valid ID was provided
   validatorHandler(serviceSchema.getServiceById, 'params'),
-  // Step 4: delegate to the controller
+  // Step 2: delegate to the controller
   getServiceById
 );
 
@@ -19440,6 +20835,9 @@ import { validatorHandler  } from '../middlewares/validatorHandler.js';
 import { landingPage } from "../controllers/UI/landingPage.js";
 import { dashboard } from "../controllers/UI/dashboard.js";
 import { login } from "../controllers/UI/login.js";
+import { selectRole } from "../controllers/UI/selectRole.js";
+import { registerAdvertiserForm } from "../controllers/UI/registerAdvertiserForm.js";
+import { registerCustomerForm } from "../controllers/UI/registerCustomerForm.js";
 
 // Create a new Router instance
 export const UIRouter = Router();
@@ -19456,7 +20854,7 @@ UIRouter.get(
 UIRouter.get(
   // Route path display the dashboard page
   '/dashboard',
-  // Controller function to render the landing page
+  // Controller function to render the dashboard page
   dashboard
 );
 
@@ -19464,7 +20862,7 @@ UIRouter.get(
 UIRouter.get(
   // Route path display the login page
   '/auth/login',
-  // Controller function to render the landing page
+  // Controller function to render the login page
   login
 );
 
@@ -19472,8 +20870,32 @@ UIRouter.get(
 UIRouter.get(
   // Route path display the landing page
   '/auth/logout',
-  // Controller function to render the landing page
+  // Controller function to render the logout page
   landingPage
+);
+
+// Define a GET route for type user view
+UIRouter.get(
+  // Route path display the type user page
+  '/auth/select-role',
+  // Controller function to render the landing page
+  selectRole
+);
+
+// Define a GET route for register customer form
+UIRouter.get(
+  // Route path display the register customer form
+  '/auth/register/customer',
+  // Controller function to render the register customer form
+  registerCustomerForm
+);
+
+// Define a GET route for register advertiser form
+UIRouter.get(
+  // Route path display the register advertiser form
+  '/auth/register/advertiser',
+  // Controller function to render the register advertiser form
+  registerAdvertiserForm
 );
 </file>
 
@@ -19718,6 +21140,8 @@ import { checkRole } from '../middlewares/checkRoleHandler.js';
 // Middleware factory that validates a request property against a Joi schema
 import { validatorHandler } from '../middlewares/validatorHandler.js';
 
+import validateCreateUser from '../middlewares/validateCreateUser.js';
+
 // ── Validation schema ───────────────────────────────────────────────────────
 
 // Joi schema collection for the user entity
@@ -19755,7 +21179,7 @@ export const userRouter = Router();
 userRouter.post(
   '/create',
   // Step 1: validate the creation payload
-  validatorHandler(userSchema.newUserData, 'body'),
+  validateCreateUser,
   // Step 2: delegate to the controller
   createOneUser
 );
@@ -21625,17 +23049,11 @@ export const userPhoneSchema = {
 </file>
 
 <file path="src/schemas/userSchema.js">
-// ─────────────────────────────────────────────────────────────────────────────
-// USER SCHEMA — Joi Validation
-// Entity: User | Table: usuario
-// ─────────────────────────────────────────────────────────────────────────────
-
+// src/schemas/userSchema.js
 import Joi from 'joi';
 
-// Import authentication RegEx
+// Import your regex constants (ajusta las rutas si es necesario)
 import { userAuthToken } from '../utils/regEx/authRegEx.js';
-
-// Import user RegEx
 import {
   ID,
   roleId,
@@ -21649,89 +23067,120 @@ import {
   username,
   password,
 } from '../utils/regEx/userRegEx.js';
+import {
+  name,
+  description,
+  facebook,
+  instagram,
+  tiktok,
+  website,
+} from '../utils/regEx/businessRegEx.js';
 
-// ── Primitive Joi types ───────────────────────────────────────────────────────
-
-const joiAuthentication = Joi.string().pattern(userAuthToken).messages({
-  'string.pattern.base': 'El token de autenticación no tiene un formato válido.',
-});
-
+// Primitive Joi types and messages (como antes)
 const joiId = Joi.number().integer().positive().messages({
-  'number.base':     'El ID debe ser un número.',
-  'number.integer':  'El ID debe ser un número entero.',
+  'number.base': 'El ID debe ser un número.',
+  'number.integer': 'El ID debe ser un número entero.',
   'number.positive': 'El ID debe ser un número positivo.',
 });
-
 const joiRoleId = Joi.number().integer().positive().messages({
-  'number.base':     'El roleId debe ser un número.',
-  'number.integer':  'El roleId debe ser un número entero.',
+  'number.base': 'El roleId debe ser un número.',
+  'number.integer': 'El roleId debe ser un número entero.',
   'number.positive': 'El roleId debe ser un número positivo.',
 });
-
 const joiGenderId = Joi.number().integer().positive().messages({
-  'number.base':     'El genderId debe ser un número.',
-  'number.integer':  'El genderId debe ser un número entero.',
+  'number.base': 'El genderId debe ser un número.',
+  'number.integer': 'El genderId debe ser un número entero.',
   'number.positive': 'El genderId debe ser un número positivo.',
 });
-
 const joiDocumentTypeId = Joi.number().integer().positive().messages({
-  'number.base':     'El documentTypeId debe ser un número.',
-  'number.integer':  'El documentTypeId debe ser un número entero.',
+  'number.base': 'El documentTypeId debe ser un número.',
+  'number.integer': 'El documentTypeId debe ser un número entero.',
   'number.positive': 'El documentTypeId debe ser un número positivo.',
 });
 
 const joiFirstName = Joi.string().pattern(firstName).messages({
   'string.pattern.base': 'El nombre debe contener solo letras y tener entre 2 y 100 caracteres.',
 });
-
 const joiLastName = Joi.string().pattern(lastName).messages({
   'string.pattern.base': 'El apellido debe contener solo letras y tener entre 2 y 100 caracteres.',
 });
-
 const joiBirthDate = Joi.string().pattern(birthDate).messages({
   'string.pattern.base': 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.',
 });
-
 const joiDocumentNumber = Joi.string().pattern(documentNumber).messages({
   'string.pattern.base': 'El número de documento debe tener entre 5 y 30 caracteres alfanuméricos.',
 });
-
 const joiEmail = Joi.string().pattern(email).messages({
   'string.pattern.base': 'El correo electrónico no tiene un formato válido.',
 });
-
 const joiUsername = Joi.string().pattern(username).messages({
   'string.pattern.base': 'El nombre de usuario debe tener entre 3 y 80 caracteres (letras, dígitos, . - _).',
 });
-
 const joiPassword = Joi.string().pattern(password).messages({
   'string.pattern.base': 'La contraseña debe tener entre 8 y 30 caracteres, con al menos una letra y un dígito.',
 });
 
-// ── Schema export ─────────────────────────────────────────────────────────────
+const joiName = Joi.string().pattern(name).messages({
+  'string.pattern.base': 'El nombre del negocio debe tener entre 2 y 150 caracteres.',
+});
+const joiDescription = Joi.string().pattern(description).messages({
+  'string.pattern.base': 'La descripción del negocio debe tener al menos 10 caracteres.',
+});
+const joiFacebook = Joi.string().pattern(facebook).messages({
+  'string.pattern.base': 'La URL o usuario de Facebook no es válida.',
+});
+const joiInstagram = Joi.string().pattern(instagram).messages({
+  'string.pattern.base': 'La URL o usuario de Instagram no es válida.',
+});
+const joiTiktok = Joi.string().pattern(tiktok).messages({
+  'string.pattern.base': 'La URL o usuario de TikTok no es válida.',
+});
+const joiWebsite = Joi.string().pattern(website).messages({
+  'string.pattern.base': 'La URL del sitio web debe comenzar con http:// o https:// y ser válida.',
+});
 
+// --- Reusable sub-schemas ---
+// 1) esquema plano del usuario (permitimos claves extra para tolerancia del frontend)
+export const flatNewUserDataSchema = Joi.object({
+  roleId:         joiRoleId.required(),
+  firstName:      joiFirstName.required(),
+  lastName:       joiLastName.required(),
+  email:          joiEmail.required(),
+  username:       joiUsername.required(),
+  password:       joiPassword.required(),
+  genderId:       joiGenderId.optional(),
+  documentTypeId: joiDocumentTypeId.optional(),
+  documentNumber: joiDocumentNumber.optional(),
+  birthDate:      joiBirthDate.optional(),
+}).unknown(true); // <-- allow extra keys like passwordConfirm, dob, phone, etc.
+
+// 2) esquema de business (para el wrapper)
+export const businessSchema = Joi.object({
+  name:        joiName.required(),
+  locationId:  Joi.number().integer().positive().optional(),
+  description: joiDescription.optional(),
+  facebook:    joiFacebook.optional(),
+  instagram:   joiInstagram.optional(),
+  tiktok:      joiTiktok.optional(),
+  website:     joiWebsite.optional(),
+}).unknown(true); // <-- permitir claves extra si frontend envía otras
+
+// 3) esquema envuelto para anunciantes: { newUserData: {...}, business: {...} }
+export const advertiserWrappedSchema = Joi.object({
+  newUserData: flatNewUserDataSchema.required(),
+  business: businessSchema.required(),
+}).unknown(true);
+
+// --- Export principal (los endpoints usan estas referencias) ---
 export const userSchema = {
+  getUserById: Joi.object({ id: joiId.required() }),
 
-  // GET /users/:id — validate route param
-  getUserById: Joi.object({
-    id: joiId.required(),
-  }),
+  // POST /users — soporta formulario plano o wrapper anunciante
+  newUserData: Joi.alternatives().try(
+    flatNewUserDataSchema,
+    advertiserWrappedSchema
+  ).required(),
 
-  // POST /users — create a new user
-  newUserData: Joi.object({
-    roleId:         joiRoleId.required(),
-    firstName:      joiFirstName.required(),
-    lastName:       joiLastName.required(),
-    email:          joiEmail.required(),
-    username:       joiUsername.required(),
-    password:       joiPassword.required(),
-    genderId:       joiGenderId.optional(),
-    documentTypeId: joiDocumentTypeId.optional(),
-    documentNumber: joiDocumentNumber.optional(),
-    birthDate:      joiBirthDate.optional(),
-  }),
-
-  // PATCH /users/:id — update an existing user (all fields optional)
   updateUserData: Joi.object({
     roleId:         joiRoleId.optional(),
     firstName:      joiFirstName.optional(),
@@ -21743,20 +23192,17 @@ export const userSchema = {
     documentTypeId: joiDocumentTypeId.optional(),
     documentNumber: joiDocumentNumber.optional(),
     birthDate:      joiBirthDate.optional(),
-  }),
+  }).unknown(true),
 
-  // DELETE /users/:id — validate route param
-  deleteUser: Joi.object({
-    id: joiId.required(),
-  }),
+  deleteUser: Joi.object({ id: joiId.required() }),
 
-  // POST /auth/login — login body
   loginData: Joi.object({
-    username:       joiUsername.required(),
-    password:       joiPassword.required(),
-  }),
-
+    username: joiUsername.required(),
+    password: joiPassword.required(),
+  }).unknown(true),
 };
+
+export default userSchema;
 </file>
 
 <file path="src/services/ageRestrictionService.js">
@@ -26793,463 +28239,503 @@ export class UserImageServices {
 
 <file path="src/services/userService.js">
 // import the user data model
-  import { User } from '../db/models/userModel.js';
-  // import related catalog models to validate foreign key relations
-  import { Role } from '../db/models/roleModel.js';
-  import { Gender } from '../db/models/genderModel.js';
-  import { DocumentType } from '../db/models/documentTypeModel.js';
-  // import the user image model to expose the profile image relation
-  import { UserImage } from '../db/models/userImageModel.js';
-  // import the promise to encrypt the user's password
-  import { hashPassword } from '../utils/auth/passwordHash.js';
-  // import the module to sign a JWT
-  import { signUserToken } from '../utils/auth/tokenSign.js';
-  // bcrypt takes care of comparing the user's password
-  import bcrypt from 'bcryptjs';
-  // boom allows managing possible errors in a standardized way
-  import Boom from '@hapi/boom';
-  // import the configuration module
-  import { config } from '../config/config.js';
+import { User } from '../db/models/userModel.js';
+import { Business } from '../db/models/businessModel.js';
+// import related catalog models to validate foreign key relations
+import { Role } from '../db/models/roleModel.js';
+import { Gender } from '../db/models/genderModel.js';
+import { DocumentType } from '../db/models/documentTypeModel.js';
+// import the user image model to expose the profile image relation
+import { UserImage } from '../db/models/userImageModel.js';
+// import the promise to encrypt the user's password
+import { hashPassword } from '../utils/auth/passwordHash.js';
+// import the module to sign a JWT
+import { signUserToken } from '../utils/auth/tokenSign.js';
+// bcrypt takes care of comparing the user's password
+import bcrypt from 'bcryptjs';
+// boom allows managing possible errors in a standardized way
+import Boom from '@hapi/boom';
+// import the configuration module
+import { config } from '../config/config.js';
+
+/**
+ * Service layer for the "User" entity.
+ *
+ * A user belongs to a role ("roleId", required) and optionally to a gender
+ * ("genderId") and a document type ("documentTypeId"). Email, username and
+ * document number are unique. Passwords are always hashed before being
+ * persisted and are excluded from every read response. Foreign keys are
+ * validated on every write operation to preserve referential integrity.
+ *
+ * Association aliases (defined in setupAssociations):
+ *   - role         -> User.belongsTo(Role)
+ *   - gender       -> User.belongsTo(Gender)
+ *   - documentType -> User.belongsTo(DocumentType)
+ *   - profileImage -> User.hasMany(UserImage)
+ */
+export class UserServices {
 
   /**
-   * Service layer for the "User" entity.
+   * Builds the default include used to expose a user with its relations.
+   * The password attribute is always excluded for security reasons.
    *
-   * A user belongs to a role ("roleId", required) and optionally to a gender
-   * ("genderId") and a document type ("documentTypeId"). Email, username and
-   * document number are unique. Passwords are always hashed before being
-   * persisted and are excluded from every read response. Foreign keys are
-   * validated on every write operation to preserve referential integrity.
-   *
-   * Association aliases (defined in setupAssociations):
-   *   - role         -> User.belongsTo(Role)
-   *   - gender       -> User.belongsTo(Gender)
-   *   - documentType -> User.belongsTo(DocumentType)
-   *   - profileImage -> User.hasMany(UserImage)
+   * @returns {Object} Sequelize query options (attributes + include).
    */
-  export class UserServices {
+  #publicQueryOptions() {
+    return {
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: Role, as: 'role' },
+        { model: Gender, as: 'gender' },
+        { model: DocumentType, as: 'documentType' },
+        { model: UserImage, as: 'profileImage' },
+      ],
+    };
+  }
 
-    /**
-     * Builds the default include used to expose a user with its relations.
-     * The password attribute is always excluded for security reasons.
-     *
-     * @returns {Object} Sequelize query options (attributes + include).
-     */
-    #publicQueryOptions() {
-      return {
-        attributes: { exclude: ['password'] },
-        include: [
-          { model: Role, as: 'role' },
-          { model: Gender, as: 'gender' },
-          { model: DocumentType, as: 'documentType' },
-          { model: UserImage, as: 'profileImage' },
-        ],
-      };
-    }
+  /**
+   * Authenticates a user by username and password.
+   *
+   * The issued JWT carries the user's role name (e.g. 'cliente',
+   * 'anunciante', 'administrador') alongside their id, so that downstream
+   * middlewares (checkRole) can authorize requests by role without an
+   * extra database lookup on every request.
+   *
+   * @param {string} username - Username of the account.
+   * @param {string} password - Plain-text password to verify.
+   * @returns {Promise<Object>} Status object, including a JWT token on success.
+   * @throws {Boom} Internal error if the verification fails unexpectedly.
+   */
+  async login(username, password) {
 
-    /**
-     * Authenticates a user by username and password.
-     *
-     * The issued JWT carries the user's role name (e.g. 'cliente',
-     * 'anunciante', 'administrador') alongside their id, so that downstream
-     * middlewares (checkRole) can authorize requests by role without an
-     * extra database lookup on every request.
-     *
-     * @param {string} username - Username of the account.
-     * @param {string} password - Plain-text password to verify.
-     * @returns {Promise<Object>} Status object, including a JWT token on success.
-     * @throws {Boom} Internal error if the verification fails unexpectedly.
-     */
-    async login(username, password) {
+    try {
+      // Find the user by their username in the database, including
+      // their role so it can be embedded in the JWT payload
+      const userRecord = await User.findOne({
+        where: { username },
+        include: [{ model: Role, as: 'role' }],
+      });
 
-      try {
-        // Find the user by their username in the database, including
-        // their role so it can be embedded in the JWT payload
-        const userRecord = await User.findOne({
-          where: { username },
-          include: [{ model: Role, as: 'role' }],
-        });
-
-        // if not found a user in the database
-        if (!userRecord) {
-          return { status: 'user not found' };
-        }
-
-        // Compare the provided password with the stored password hash
-        const validPassword = await bcrypt.compare(password, userRecord.password);
-
-        // If the password is not valid, reject the promise
-        if (!validPassword) {
-          return { status: 'wrong password' };
-        }
-
-        // Generate JWT token with user data, including the role name
-        const userToken = signUserToken(
-          { 
-            id: userRecord.id, 
-            role: userRecord.role.name,
-            fullName: `${userRecord.firstName} ${userRecord.lastName}`
-          },
-          config.authAppJwtKey,
-          '1h'
-        );
-
-        // Resolves the promise with the JWT token
-        return { status: 'logged', token: userToken };
-
-      } catch (error) {
-        // Return a Boom error if there's an exception
-        throw Boom.boomify(error, { message: 'Unable to verify user credentials' });
+      // if not found a user in the database
+      if (!userRecord) {
+        return { status: 'user not found' };
       }
+
+      // Compare the provided password with the stored password hash
+      const validPassword = await bcrypt.compare(password, userRecord.password);
+
+      // If the password is not valid, reject the promise
+      if (!validPassword) {
+        return { status: 'wrong password' };
+      }
+
+      // Generate JWT token with user data, including the role name
+      const userToken = signUserToken(
+        {
+          id: userRecord.id,
+          role: userRecord.role.name,
+          fullName: `${userRecord.firstName} ${userRecord.lastName}`
+        },
+        config.authAppJwtKey,
+        '1h'
+      );
+
+      // Resolves the promise with the JWT token
+      return { status: 'logged', token: userToken };
+
+    } catch (error) {
+      // Return a Boom error if there's an exception
+      throw Boom.boomify(error, { message: 'Unable to verify user credentials' });
+    }
+  }
+
+  /**
+     * Creates a new user and returns the created instance (without password).
+     * This method performs validation of relations and uniqueness.
+     * Returns: { status: 'CREATED SUCCESSFULLY', user: <plain user object> }
+     */
+  async createOne(newUser, options = {}) {
+    const t = options.transaction || null;
+    try {
+      // ensure the required role exists
+      const userRole = await Role.findByPk(newUser.roleId, { transaction: t });
+      if (!userRole) {
+        throw Boom.notFound('Role not found');
+      }
+
+      // validate optional relations
+      if (newUser.genderId) {
+        const userGender = await Gender.findByPk(newUser.genderId, { transaction: t });
+        if (!userGender) throw Boom.notFound('Gender not found');
+      }
+
+      if (newUser.documentTypeId) {
+        const userDocumentType = await DocumentType.findByPk(newUser.documentTypeId, { transaction: t });
+        if (!userDocumentType) throw Boom.notFound('Document type not found');
+      }
+
+      // uniqueness checks
+      const existingEmail = await User.findOne({ where: { email: newUser.email }, transaction: t });
+      if (existingEmail) throw Boom.conflict('Email already registered');
+
+      const existingUsername = await User.findOne({ where: { username: newUser.username }, transaction: t });
+      if (existingUsername) throw Boom.conflict('Username already taken');
+
+      if (newUser.documentNumber) {
+        const existingDocument = await User.findOne({ where: { documentNumber: newUser.documentNumber }, transaction: t });
+        if (existingDocument) throw Boom.conflict('Document number already registered');
+      }
+
+      // hash password
+      const hash = await hashPassword(newUser.password);
+
+      // create user
+      const created = await User.create({
+        roleId: newUser.roleId,
+        genderId: newUser.genderId,
+        documentTypeId: newUser.documentTypeId,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        birthDate: newUser.birthDate,
+        documentNumber: newUser.documentNumber,
+        email: newUser.email,
+        username: newUser.username,
+        password: hash,
+      }, { transaction: t });
+
+      // return created user (plain object) but remove password
+      const createdPlain = created.get({ plain: true });
+      delete createdPlain.password;
+
+      return { status: 'CREATED SUCCESSFULLY', user: createdPlain };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to create new user' });
+    }
+  }
+
+  /**
+ * Creates a new user and a business (negocio) for that user inside a DB transaction.
+ * newUser: user data (as in createOne)
+ * businessData: { name, description?, facebook?, instagram?, tiktok?, website?, locationId? }
+ *
+ * Returns: { status: 'CREATED SUCCESSFULLY', user: <plain>, business: <plain> }
+ */
+  async createOneWithBusiness({ newUserData, business }) {
+  // Ensure models are available in this scope:
+  // import { User } from '../models/user.js';
+  // import { Business } from '../models/business.js';
+  // import Boom from '@hapi/boom';
+
+  // Use the sequelize instance attached to the User model for transactions
+  const transaction = await User.sequelize.transaction();
+
+  try {
+    // Create user within transaction
+    const createdUser = await User.create(newUserData, { transaction });
+
+    // Prepare business payload and link to the created user.
+    // IMPORTANT: change `userId` below to the actual FK field your Business model expects
+    const businessPayload = {
+      ...business,
+      userId: createdUser.id, // <-- adjust this key if your FK is different (e.g. usuarioId, id_usuario)
+    };
+
+    // Create business within the same transaction
+    const createdBusiness = await Business.create(businessPayload, { transaction });
+
+    // Commit transaction
+    await transaction.commit();
+
+    // Return plain objects
+    return {
+      status: 'CREATED SUCCESSFULLY',
+      user: createdUser.get ? createdUser.get({ plain: true }) : createdUser,
+      business: createdBusiness.get ? createdBusiness.get({ plain: true }) : createdBusiness,
+    };
+  } catch (error) {
+    // Rollback in case of any error
+    try { await transaction.rollback(); } catch (rbErr) {
+      console.error('Transaction rollback failed:', rbErr);
     }
 
-    /**
-     * Creates a new user after validating relations, uniqueness and hashing
-     * its password.
-     *
-     * @param {Object} newUser - User data.
-     * @param {number} newUser.roleId - Role identifier (required).
-     * @param {number} [newUser.genderId] - Optional gender identifier.
-     * @param {number} [newUser.documentTypeId] - Optional document type identifier.
-     * @param {string} newUser.firstName - User first name.
-     * @param {string} newUser.lastName - User last name.
-     * @param {string} [newUser.birthDate] - Optional birth date (YYYY-MM-DD).
-     * @param {string} [newUser.documentNumber] - Optional unique document number.
-     * @param {string} newUser.email - Unique email.
-     * @param {string} newUser.username - Unique username.
-     * @param {string} newUser.password - Plain-text password to be hashed.
-     * @returns {Promise<Object>} Status object confirming the creation.
-     * @throws {Boom} NotFound for missing relations, Conflict for duplicates.
-     */
-    async createOne(newUser) {
+    // Log full error for debugging
+    console.error('createOneWithBusiness ERROR:', error && (error.stack || error));
 
-      try {
-        // ensure the required role exists
-        const userRole = await Role.findByPk(newUser.roleId);
+    // Handle common Sequelize errors with friendly responses (rethrow so caller/controller can respond)
+    if (error && error.name === 'SequelizeUniqueConstraintError') {
+      const fields = Object.keys(error.fields || {}).join(', ') || 'unknown';
+      throw Boom.conflict(`Duplicate value for fields: ${fields}`, { details: error.errors?.map(e => e.message) });
+    }
+
+    if (error && error.name === 'SequelizeForeignKeyConstraintError') {
+      throw Boom.badRequest('Foreign key constraint error (related resource not found)');
+    }
+
+    // If it's already a Boom error, rethrow it
+    if (Boom.isBoom && Boom.isBoom(error)) throw error;
+
+    // Wrap other errors
+    throw Boom.boomify(error, { message: 'Unable to create new user with business' });
+  }
+}
+  /**
+   * Updates an existing user by its identifier. If a new password is
+   * provided it is re-hashed before being persisted.
+   *
+   * @param {number} userId - Identifier of the user to update.
+   * @param {Object} newData - New values to persist.
+   * @returns {Promise<Object>} Status object confirming the update.
+   * @throws {Boom} BadRequest, NotFound, Conflict or internal error.
+   */
+  async updateOne(userId, newData) {
+
+    if (!newData) {
+      // reject the request when there is no payload to apply
+      throw Boom.badRequest('No data provided');
+    }
+
+    try {
+      // validate the role relation only when it is being changed
+      if (newData.roleId) {
+        const userRole = await Role.findByPk(newData.roleId);
         if (!userRole) {
           throw Boom.notFound('Role not found');
         }
-
-        // validate the optional gender only when provided
-        if (newUser.genderId) {
-          const userGender = await Gender.findByPk(newUser.genderId);
-          if (!userGender) {
-            throw Boom.notFound('Gender not found');
-          }
-        }
-
-        // validate the optional document type only when provided
-        if (newUser.documentTypeId) {
-          const userDocumentType = await DocumentType.findByPk(newUser.documentTypeId);
-          if (!userDocumentType) {
-            throw Boom.notFound('Document type not found');
-          }
-        }
-
-        // ensure the email is not already registered
-        const existingEmail = await User.findOne({ where: { email: newUser.email } });
-        if (existingEmail) {
-          throw Boom.conflict('Email already registered');
-        }
-
-        // ensure the username is not already taken
-        const existingUsername = await User.findOne({ where: { username: newUser.username } });
-        if (existingUsername) {
-          throw Boom.conflict('Username already taken');
-        }
-
-        // ensure the document number, when provided, is unique
-        if (newUser.documentNumber) {
-          const existingDocument = await User.findOne({
-            where: { documentNumber: newUser.documentNumber }
-          });
-          if (existingDocument) {
-            throw Boom.conflict('Document number already registered');
-          }
-        }
-
-        // hash the password before storing it
-        const hash = await hashPassword(newUser.password);
-
-        // create a new record in the database
-        await User.create({
-          roleId: newUser.roleId,
-          genderId: newUser.genderId,
-          documentTypeId: newUser.documentTypeId,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          birthDate: newUser.birthDate,
-          documentNumber: newUser.documentNumber,
-          email: newUser.email,
-          username: newUser.username,
-          password: hash,
-        });
-
-        // return a success response
-        return { status: 'CREATED SUCCESSFULLY' };
-
-      } catch (error) {
-        // preserve Boom errors, wrap any unexpected one
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to create new user' });
       }
+
+      // validate the gender relation only when it is being changed
+      if (newData.genderId) {
+        const userGender = await Gender.findByPk(newData.genderId);
+        if (!userGender) {
+          throw Boom.notFound('Gender not found');
+        }
+      }
+
+      // validate the document type relation only when it is being changed
+      if (newData.documentTypeId) {
+        const userDocumentType = await DocumentType.findByPk(newData.documentTypeId);
+        if (!userDocumentType) {
+          throw Boom.notFound('Document type not found');
+        }
+      }
+
+      // hash the new password if one was supplied
+      const dataToUpdate = { ...newData };
+      if (newData.password) {
+        dataToUpdate.password = await hashPassword(newData.password);
+      }
+
+      // update the record in the database
+      const [updatedRows] = await User.update(dataToUpdate, {
+        where: { id: userId }
+      });
+
+      // if no rows were affected, the user does not exist
+      if (!updatedRows) {
+        throw Boom.notFound('User not found');
+      }
+
+      // return a success response
+      return { status: 'UPDATED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to update user' });
+    }
+  }
+
+  /**
+   * Deletes a user by its identifier.
+   *
+   * @param {number} userId - Identifier of the user to delete.
+   * @returns {Promise<Object>} Status object confirming the deletion.
+   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
+   */
+  async deleteOne(userId) {
+
+    if (!userId) {
+      // an identifier is mandatory to perform a deletion
+      throw Boom.badRequest('No user ID provided');
     }
 
-    /**
-     * Updates an existing user by its identifier. If a new password is
-     * provided it is re-hashed before being persisted.
-     *
-     * @param {number} userId - Identifier of the user to update.
-     * @param {Object} newData - New values to persist.
-     * @returns {Promise<Object>} Status object confirming the update.
-     * @throws {Boom} BadRequest, NotFound, Conflict or internal error.
-     */
-    async updateOne(userId, newData) {
+    try {
+      // destroy the record in the database
+      const deletedRows = await User.destroy({
+        where: { id: userId }
+      });
 
-      if (!newData) {
-        // reject the request when there is no payload to apply
-        throw Boom.badRequest('No data provided');
+      // if no rows were deleted, the user does not exist
+      if (!deletedRows) {
+        throw Boom.notFound('User not found');
       }
 
-      try {
-        // validate the role relation only when it is being changed
-        if (newData.roleId) {
-          const userRole = await Role.findByPk(newData.roleId);
-          if (!userRole) {
-            throw Boom.notFound('Role not found');
-          }
-        }
+      // return a success response
+      return { status: 'DELETED SUCCESSFULLY' };
 
-        // validate the gender relation only when it is being changed
-        if (newData.genderId) {
-          const userGender = await Gender.findByPk(newData.genderId);
-          if (!userGender) {
-            throw Boom.notFound('Gender not found');
-          }
-        }
-
-        // validate the document type relation only when it is being changed
-        if (newData.documentTypeId) {
-          const userDocumentType = await DocumentType.findByPk(newData.documentTypeId);
-          if (!userDocumentType) {
-            throw Boom.notFound('Document type not found');
-          }
-        }
-
-        // hash the new password if one was supplied
-        const dataToUpdate = { ...newData };
-        if (newData.password) {
-          dataToUpdate.password = await hashPassword(newData.password);
-        }
-
-        // update the record in the database
-        const [updatedRows] = await User.update(dataToUpdate, {
-          where: { id: userId }
-        });
-
-        // if no rows were affected, the user does not exist
-        if (!updatedRows) {
-          throw Boom.notFound('User not found');
-        }
-
-        // return a success response
-        return { status: 'UPDATED SUCCESSFULLY' };
-
-      } catch (error) {
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to update user' });
-      }
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to delete user' });
     }
+  }
 
-    /**
-     * Deletes a user by its identifier.
+  /**
+     * Allows a user to delete their own account by verifying their user ID.
      *
-     * @param {number} userId - Identifier of the user to delete.
+     * @param {number} userId - Identifier of the authenticated user.
      * @returns {Promise<Object>} Status object confirming the deletion.
      * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
      */
-    async deleteOne(userId) {
+  async deleteOwnAccount(userId) {
 
-      if (!userId) {
-        // an identifier is mandatory to perform a deletion
-        throw Boom.badRequest('No user ID provided');
-      }
-
-      try {
-        // destroy the record in the database
-        const deletedRows = await User.destroy({
-          where: { id: userId }
-        });
-
-        // if no rows were deleted, the user does not exist
-        if (!deletedRows) {
-          throw Boom.notFound('User not found');
-        }
-
-        // return a success response
-        return { status: 'DELETED SUCCESSFULLY' };
-
-      } catch (error) {
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to delete user' });
-      }
+    if (!userId) {
+      // an identifier is mandatory to perform a deletion
+      throw Boom.badRequest('No user ID provided');
     }
 
-    /**
-       * Allows a user to delete their own account by verifying their user ID.
-       *
-       * @param {number} userId - Identifier of the authenticated user.
-       * @returns {Promise<Object>} Status object confirming the deletion.
-       * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
-       */
-    async deleteOwnAccount(userId) {
+    try {
+      // destroy the record in the database for the authenticated user
+      const deletedRows = await User.destroy({
+        where: { id: userId }
+      });
 
-      if (!userId) {
-        // an identifier is mandatory to perform a deletion
-        throw Boom.badRequest('No user ID provided');
+      // if no rows were deleted, the user does not exist
+      if (!deletedRows) {
+        throw Boom.notFound('User not found');
       }
 
-      try {
-        // destroy the record in the database for the authenticated user
-        const deletedRows = await User.destroy({
-          where: { id: userId }
-        });
+      // return a success response
+      return { status: 'ACCOUNT DELETED SUCCESSFULLY' };
 
-        // if no rows were deleted, the user does not exist
-        if (!deletedRows) {
-          throw Boom.notFound('User not found');
-        }
-
-        // return a success response
-        return { status: 'ACCOUNT DELETED SUCCESSFULLY' };
-
-      } catch (error) {
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to delete your account' });
-      }
-    }
-
-    /**
-     * Retrieves a single user (without the password) and its relations.
-     *
-     * @param {number} userId - Identifier of the user.
-     * @returns {Promise<Object>} The user record with its relations.
-     * @throws {Boom} BadRequest, NotFound or internal error.
-     */
-    async listOne(userId) {
-
-      if (!userId) {
-        throw Boom.badRequest('No user ID provided');
-      }
-
-      try {
-        const theUser = await User.findOne({
-          where: { id: userId },
-          ...this.#publicQueryOptions(),
-        });
-
-        if (!theUser) {
-          throw Boom.notFound('User not found');
-        }
-
-        return theUser;
-
-      } catch (error) {
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to find user' });
-      }
-    }
-
-    /**
-     * Retrieves every user (without passwords) ordered by id ascending.
-     *
-     * @returns {Promise<Object[]>} List of users (empty array if none).
-     * @throws {Boom} Internal error if the query fails.
-     */
-    async listAll() {
-
-      try {
-        const allUsers = await User.findAll({
-          order: [['id', 'ASC']],
-          ...this.#publicQueryOptions(),
-        });
-
-        // always return an array, even when there are no records
-        return allUsers.length ? allUsers : [];
-
-      } catch (error) {
-        throw Boom.boomify(error, { message: 'Unable to find users' });
-      }
-    }
-
-    /**
-     * Recovers (resets) a user's password identified by email.
-     *
-     * Locates the user by email, hashes the new password and persists it.
-     *
-     * @param {string} email - Email of the account to recover.
-     * @param {string} newPassword - New plain-text password to be hashed.
-     * @returns {Promise<Object>} Status object confirming the password change.
-     * @throws {Boom} BadRequest, NotFound or internal error.
-     */
-    async recoverPassword(email, newPassword) {
-
-      if (!email || !newPassword) {
-        throw Boom.badRequest('Email and new password are required');
-      }
-
-      try {
-        // find the user by their email
-        const userRecord = await User.findOne({ where: { email } });
-
-        // if no user was found
-        if (!userRecord) {
-          throw Boom.notFound('User not found');
-        }
-
-        // hash the new password before storing it
-        const hash = await hashPassword(newPassword);
-
-        // persist the new password
-        await User.update(
-          { password: hash },
-          { where: { id: userRecord.id } }
-        );
-
-        // return a success response
-        return { status: 'PASSWORD UPDATED SUCCESSFULLY' };
-
-      } catch (error) {
-        if (Boom.isBoom(error)) throw error;
-        throw Boom.boomify(error, { message: 'Unable to recover password' });
-      }
-    }
-
-    /**
-     * Finds a user by email INCLUDING the password hash. Intended for the
-     * authentication layer only, never to be exposed through the API.
-     *
-     * @param {string} email - Email to search for.
-     * @returns {Promise<Object|null>} The user with its password, or null.
-     * @throws {Boom} BadRequest if no email is provided, internal error otherwise.
-     */
-    async findByEmailForAuth(email) {
-
-      if (!email) {
-        throw Boom.badRequest('No email provided');
-      }
-
-      try {
-        // password is intentionally included here for credential verification
-        return await User.findOne({
-          where: { email },
-          include: [{ model: Role, as: 'role' }],
-        });
-
-      } catch (error) {
-        throw Boom.boomify(error, { message: 'Unable to find user by email' });
-      }
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to delete your account' });
     }
   }
+
+  /**
+   * Retrieves a single user (without the password) and its relations.
+   *
+   * @param {number} userId - Identifier of the user.
+   * @returns {Promise<Object>} The user record with its relations.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async listOne(userId) {
+
+    if (!userId) {
+      throw Boom.badRequest('No user ID provided');
+    }
+
+    try {
+      const theUser = await User.findOne({
+        where: { id: userId },
+        ...this.#publicQueryOptions(),
+      });
+
+      if (!theUser) {
+        throw Boom.notFound('User not found');
+      }
+
+      return theUser;
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find user' });
+    }
+  }
+
+  /**
+   * Retrieves every user (without passwords) ordered by id ascending.
+   *
+   * @returns {Promise<Object[]>} List of users (empty array if none).
+   * @throws {Boom} Internal error if the query fails.
+   */
+  async listAll() {
+
+    try {
+      const allUsers = await User.findAll({
+        order: [['id', 'ASC']],
+        ...this.#publicQueryOptions(),
+      });
+
+      // always return an array, even when there are no records
+      return allUsers.length ? allUsers : [];
+
+    } catch (error) {
+      throw Boom.boomify(error, { message: 'Unable to find users' });
+    }
+  }
+
+  /**
+   * Recovers (resets) a user's password identified by email.
+   *
+   * Locates the user by email, hashes the new password and persists it.
+   *
+   * @param {string} email - Email of the account to recover.
+   * @param {string} newPassword - New plain-text password to be hashed.
+   * @returns {Promise<Object>} Status object confirming the password change.
+   * @throws {Boom} BadRequest, NotFound or internal error.
+   */
+  async recoverPassword(email, newPassword) {
+
+    if (!email || !newPassword) {
+      throw Boom.badRequest('Email and new password are required');
+    }
+
+    try {
+      // find the user by their email
+      const userRecord = await User.findOne({ where: { email } });
+
+      // if no user was found
+      if (!userRecord) {
+        throw Boom.notFound('User not found');
+      }
+
+      // hash the new password before storing it
+      const hash = await hashPassword(newPassword);
+
+      // persist the new password
+      await User.update(
+        { password: hash },
+        { where: { id: userRecord.id } }
+      );
+
+      // return a success response
+      return { status: 'PASSWORD UPDATED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to recover password' });
+    }
+  }
+
+  /**
+   * Finds a user by email INCLUDING the password hash. Intended for the
+   * authentication layer only, never to be exposed through the API.
+   *
+   * @param {string} email - Email to search for.
+   * @returns {Promise<Object|null>} The user with its password, or null.
+   * @throws {Boom} BadRequest if no email is provided, internal error otherwise.
+   */
+  async findByEmailForAuth(email) {
+
+    if (!email) {
+      throw Boom.badRequest('No email provided');
+    }
+
+    try {
+      // password is intentionally included here for credential verification
+      return await User.findOne({
+        where: { email },
+        include: [{ model: Role, as: 'role' }],
+      });
+
+    } catch (error) {
+      throw Boom.boomify(error, { message: 'Unable to find user by email' });
+    }
+  }
+}
 </file>
 
 <file path="src/utils/auth/authApp/strategies/jwt.strategy.js">
@@ -27498,26 +28984,35 @@ export const name = /^[\p{L}\p{N}\s\-&.]{2,150}$/u;
 // at least 10 characters long.
 export const description = /^[\p{L}\p{N}\p{P}\p{Z}\s]{10,}$/u;
 
-// Regex pattern to validate the business Facebook page URL or handle.
-// The pattern accepts a full HTTPS URL pointing to facebook.com
-// or a plain alphanumeric username/handle (3–100 characters).
-export const facebook = /^(https:\/\/(www\.)?facebook\.com\/[\w.%-]{1,100}|[\w.%-]{3,100})$/;
+/**
+ * Validates only the Facebook username/handle (no protocol or domain).
+ * Allowed: letters, digits, dots, underscores, and hyphens.
+ * Length: 3–100 characters.
+ */
+export const facebook = /^[A-Za-z0-9._-]{3,100}$/;
 
-// Regex pattern to validate the business Instagram profile URL or handle.
-// The pattern accepts a full HTTPS URL pointing to instagram.com
-// or a plain alphanumeric username preceded by an optional '@' (1–30 chars).
-export const instagram = /^(https:\/\/(www\.)?instagram\.com\/[\w.%-]{1,100}|@?[\w.]{1,30})$/;
+/**
+ * Validates only the Instagram username (no protocol or domain).
+ * Allows an optional '@' at the beginning.
+ * Allowed: letters, digits, dots, and underscores.
+ * Length: 1–30 characters.
+ */
+export const instagram = /^@?[A-Za-z0-9._]{1,30}$/;
 
-// Regex pattern to validate the business TikTok profile URL or handle.
-// The pattern accepts a full HTTPS URL pointing to tiktok.com
-// or a plain handle preceded by an optional '@' (2–24 chars).
-export const tiktok = /^(https:\/\/(www\.)?tiktok\.com\/@[\w.%-]{2,24}|@?[\w.]{2,24})$/;
+/**
+ * Validates only the TikTok username (no protocol or domain).
+ * Allows an optional '@' at the beginning.
+ * Allowed: letters, digits, dots, and underscores.
+ * Length: 2–24 characters.
+ */
+export const tiktok = /^@?[A-Za-z0-9._]{2,24}$/;
 
-// Regex pattern to validate the business website URL.
-// The pattern ensures the URL starts with http:// or https://,
-// followed by a valid domain name and an optional path/query string,
-// with an overall length between 10 and 255 characters.
-export const website = /^https?:\/\/[\w.-]{2,}\.[a-zA-Z]{2,}(\/[\w\-./?%&=]*)?$/;
+/**
+ * Validates domain names without the protocol (no http/https required).
+ * Supports optional "www." prefix, subdomains, and an optional path.
+ * Examples: "www.example.com", "my-site.co", "domain.org/profile"
+ */
+export const website = /^(?:www\.)?(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}(?:\/[^\s]*)?$/;
 </file>
 
 <file path="src/utils/regEx/businessReviewRegEx.js">
@@ -28697,7 +30192,7 @@ export const password = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d@$!%*?&._\-#]{8,30}$/;
 
           <div class="form-actions">
             <button type="submit" class="btn-login">Ingresar</button>
-            <a data-path="/app/v1/auth/register" onclick="redirect(this)" class="btn-register">Registrarse</a>
+            <a data-path="/app/v1/auth/select-role" onclick="redirect(this)" class="btn-register">Registrarse</a>
           </div>
         </form>
       </div>
@@ -28786,6 +30281,315 @@ export const password = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d@$!%*?&._\-#]{8,30}$/;
 </nav>
 
 <script type="application/javascript" src="/js/redirectView.js"></script>
+</file>
+
+<file path="src/views/registerAdvertiserForm.ejs">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro - Anunciante | Vive Zarzal</title>
+
+  <!-- Tokens y estilos base -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+
+  <!-- Estilos compartidos (login.css) -->
+  <link rel="stylesheet" href="/styles/login.css" />
+
+  <!-- Estilos específicos -->
+  <link rel="stylesheet" href="/styles/registerAdvertiserForm.css" />
+</head>
+<body class="page-register-advertiser">
+
+  <!-- Reutiliza header partial -->
+  <%- include('./partials/header') %>
+
+  <main class="register-main" role="main">
+    <div class="register-wrapper">
+      <div class="register-card" role="region" aria-labelledby="register-title">
+        <h2 id="register-title" class="register-title">Registro - Anunciante</h2>
+
+        <form id="registerAdvertiserForm" class="register-form" action="/app/v1/users/create" method="post" novalidate>
+          <!-- CSRF si aplica -->
+          <!-- <input type="hidden" name="_csrf" value="<​%= csrfToken %>"> -->
+
+          <label for="firstName" class="label">Nombre</label>
+          <input id="firstName" name="firstName" type="text" class="input" required />
+
+          <label for="lastName" class="label">Apellido</label>
+          <input id="lastName" name="lastName" type="text" class="input" required />
+
+          <label for="gender" class="label">Género</label>
+          <select id="gender" name="gender" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+
+          <label for="dob" class="label">Fecha de nacimiento</label>
+          <input id="dob" name="dob" type="date" class="input" required />
+
+          <label for="docType" class="label">Tipo de documento</label>
+          <select id="docType" name="docType" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+          </select>
+
+          <label for="docNumber" class="label">Número de documento</label>
+          <input id="docNumber" name="docNumber" type="text" class="input" required />
+
+          <label for="phone" class="label">Teléfono</label>
+          <input id="phone" name="phone" type="tel" class="input" />
+
+          <label for="email" class="label">Correo</label>
+          <input id="email" name="email" type="email" class="input" required />
+
+          <label for="username" class="label">Nombre de usuario</label>
+          <input id="username" name="username" type="text" class="input" required />
+
+          <label for="password" class="label">Contraseña</label>
+          <input id="password" name="password" type="password" class="input" required minlength="8" />
+
+          <label for="passwordConfirm" class="label">Repita Contraseña</label>
+          <input id="passwordConfirm" name="passwordConfirm" type="password" class="input" required minlength="8" />
+
+          <!-- Campos específicos para anunciante -->
+          <label for="businessName" class="label">Nombre del negocio</label>
+          <input id="businessName" name="businessName" type="text" class="input" required />
+
+          <label for="businessAddress" class="label">Dirección del negocio</label>
+          <input id="businessAddress" name="businessAddress" type="text" class="input" />
+
+          <label for="businessDescription" class="label">Descripción del negocio</label>
+          <input id="businessDescription" name="businessDescription" type="text" class="input" />
+
+          <label for="website" class="label">Página web</label>
+          <input id="website" name="website" type="url" class="input" />
+
+          <label for="facebook" class="label">Facebook</label>
+          <input id="facebook" name="facebook" type="url" class="input" />
+
+          <label for="instagram" class="label">Instagram</label>
+          <input id="instagram" name="instagram" type="url" class="input" />
+
+          <label for="tiktok" class="label">Tiktok</label>
+          <input id="tiktok" name="tiktok" type="url" class="input" />
+
+          <div class="terms-row">
+            <label class="terms-label">
+              <input id="acceptTerms" name="acceptTerms" type="checkbox" />
+              <span>Acepto <a href="/terms" target="_blank" rel="noopener">términos y condiciones</a></span>
+            </label>
+          </div>
+
+          <div id="formError" class="form-error" role="alert" aria-live="polite" style="display:none;"></div>
+
+          <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-register" disabled>Ingresar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Reutiliza footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/js/redirectView.js" defer></script>
+  <script src="/js/registerAdvertiserForm.js" defer></script>
+</body>
+</html>
+</file>
+
+<file path="src/views/registerCustomerForm.ejs">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro - Cliente | Vive Zarzal</title>
+
+  <!-- Tokens y estilos base -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+
+  <!-- Estilos compartidos tipo login (si ya existe) -->
+  <link rel="stylesheet" href="/styles/login.css" />
+
+  <!-- Estilos específicos de esta vista -->
+  <link rel="stylesheet" href="/styles/registerCustomerForm.css" />
+</head>
+<body class="page-register-client">
+
+  <!-- Reutiliza header partial (asegúrate que exista: src/views/partials/header.ejs) -->
+  <%- include('./partials/header') %>
+
+  <main class="register-main" role="main">
+    <div class="register-wrapper">
+      <div class="register-card" role="region" aria-labelledby="register-title">
+        <h2 id="register-title" class="register-title">Registro - Cliente</h2>
+
+        <form id="registerClientForm" class="register-form" action="/app/v1/users/create" method="post" novalidate>
+          <!-- Si usas CSRF, agrega aquí el token -->
+          <!-- <input type="hidden" name="_csrf" value="<​%= csrfToken %>"> -->
+
+          <label for="firstName" class="label">Nombre</label>
+          <input id="firstName" name="firstName" type="text" class="input" required />
+
+          <label for="lastName" class="label">Apellido</label>
+          <input id="lastName" name="lastName" type="text" class="input" required />
+
+          <label for="gender" class="label">Género</label>
+          <select id="gender" name="gender" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="female">Femenino</option>
+            <option value="male">Masculino</option>
+            <option value="other">Otro</option>
+            <option value="no_answer">Prefiero no decir</option>
+          </select>
+
+          <label for="dob" class="label">Fecha de nacimiento</label>
+          <input id="dob" name="dob" type="date" class="input" required />
+
+          <label for="docType" class="label">Tipo de documento</label>
+          <select id="docType" name="docType" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="cc">Cédula de ciudadanía</option>
+            <option value="ce">Cédula de extranjería</option>
+            <option value="passport">Pasaporte</option>
+            <option value="other">Otro</option>
+          </select>
+
+          <label for="docNumber" class="label">Número de documento</label>
+          <input id="docNumber" name="docNumber" type="text" class="input" required />
+
+          <label for="phone" class="label">Teléfono</label>
+          <input id="phone" name="phone" type="tel" class="input" />
+
+          <label for="email" class="label">Correo</label>
+          <input id="email" name="email" type="email" class="input" required />
+
+          <label for="username" class="label">Nombre de usuario</label>
+          <input id="username" name="username" type="text" class="input" required />
+
+          <label for="password" class="label">Contraseña</label>
+          <input id="password" name="password" type="password" class="input" required minlength="8" />
+
+          <label for="passwordConfirm" class="label">Repita Contraseña</label>
+          <input id="passwordConfirm" name="passwordConfirm" type="password" class="input" required minlength="8" />
+
+          <label for="address" class="label">Dirección</label>
+          <input id="address" name="address" type="text" class="input" />
+
+          <label for="nationality" class="label">Nacionalidad</label>
+          <input id="nationality" name="nationality" type="text" class="input" />
+
+          <div class="terms-row">
+            <label class="terms-label">
+              <input id="acceptTerms" name="acceptTerms" type="checkbox" />
+              <span>Acepto <a href="/terms" target="_blank" rel="noopener">términos y condiciones</a></span>
+            </label>
+          </div>
+
+          <div id="formError" class="form-error" role="alert" aria-live="polite" style="display:none;"></div>
+
+          <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-register" disabled>Ingresar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Reutiliza footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/js/redirectView.js" defer></script>
+  <script src="/js/registerCustomerForm.js" defer></script>
+</body>
+</html>
+</file>
+
+<file path="src/views/selectRole.ejs">
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro — Seleccionar tipo de usuario | Vive Zarzal</title>
+
+  <!-- Design tokens and component styles (root.css debe cargarse antes) -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+  <link rel="stylesheet" href="/styles/login.css" />
+  <!-- Estilos específicos de esta vista -->
+  <link rel="stylesheet" href="/styles/selectRole.css" />
+</head>
+
+<body>
+
+  <!-- Header igual que en login (inline aquí, no partial) -->
+  <nav class="site-header" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+
+      <!-- center menu (kept minimal as in login) -->
+      <ul class="nav-menu" role="menubar" aria-label="Main menu">
+        <li role="none"><a role="menuitem" data-path="/app/v1/services" onclick="redirect(this)">Servicios</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/experiences" onclick="redirect(this)">Experiencias</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/advertiser" onclick="redirect(this)">Anunciantes</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- small placeholder user icon -->
+        <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
+          </svg>
+        </button>
+
+        <span class="user-label">Invitado</span>
+
+        <!-- "Regresar" button (blue) on the right as in the mock -->
+        <a data-path="/app/v1/auth/login" onclick="redirect(this)" class="btn-back" role="button">Regresar</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SELECT ROLE MAIN CONTENT -->
+  <main class="select-role-main" role="main">
+    <section class="select-card" aria-labelledby="select-role-title" role="region">
+      <h2 id="select-role-title" class="select-title">Registro de usuario</h2>
+
+      <div class="field" role="group" aria-labelledby="tipo-label">
+        <label id="tipo-label" class="helper" for="roleSelect">Tipo de usuario</label>
+        <select id="roleSelect" class="input" aria-describedby="roleHelp" aria-required="true">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <!-- Opciones pobladas por /js/selectRole.js -->
+        </select>
+        <div id="roleHelp" class="helper">Elige si te registras como Cliente o Anunciante</div>
+      </div>
+
+      <div class="actions" role="presentation">
+        <button id="nextBtn" class="btn-next" disabled type="button">Siguiente</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/js/redirectView.js" defer></script>
+  <script src="/js/selectRole.js" defer></script>
+</body>
+
+</html>
 </file>
 
 </files>
