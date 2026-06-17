@@ -6,6 +6,11 @@ import jwt from 'jsonwebtoken';
  * Middleware to verify JWT tokens for the application.
  * Regenerates a new token if the old one is valid.
  *
+ * The decoded payload (id + role) is carried forward into the refreshed
+ * token and attached to req.user, so that downstream middlewares such as
+ * checkRole can authorize the request without needing a separate token
+ * or an extra database lookup.
+ *
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  * @param {Function} next - The next middleware function.
@@ -38,19 +43,21 @@ export const authAppVerifyToken = (req, res, next) => {
       }
     }
 
-    // Extract user data from the decoded token
+    // Extract user data from the decoded token, including the role so it
+    // survives the token refresh below and is available to checkRole
     const userData = {
       id: decoded.id,
+      role: decoded.role,
     };
 
-    // Regenerate a new token for the user
+    // Regenerate a new token for the user, carrying the role forward
     const newUserToken = signUserToken(userData, config.authAppJwtKey, '1h');
 
     // Send the new token in a cookie to the client
     res.cookie('authentication', newUserToken, { httpOnly: true });
 
-    // Attach user data to the request object for later use
-    req.user = decoded;
+    // Attach user data (id + role) to the request object for later use
+    req.user = userData;
 
     // Proceed to the next middleware or controller
     next();
