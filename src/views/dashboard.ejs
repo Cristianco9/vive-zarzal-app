@@ -2,25 +2,39 @@
 <html lang="es">
 
 <head>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Dashboard | Vive Zarzal</title>
 
   <link rel="stylesheet" href="/styles/root.css">
-
   <link rel="stylesheet" href="/styles/components/header.css">
-
   <link rel="stylesheet" href="/styles/components/footer.css">
-
   <link rel="stylesheet" href="/styles/dashboard.css">
-
 </head>
 
 <body>
 
   <%- include('./partials/header') %>
+
+  <main class="dashboard-content" role="main">
+    <div class="message-container">
+      <!-- Main Greeting -->
+      <h1 class="welcome-title">Bienvenido a Vive Zarzal</h1>
+
+      <div class="content-body">
+        <!-- Main Description -->
+        <p class="description-primary">
+          Descubre los servicios, experiencias y comercios turísticos que ofrece el municipio de Zarzal.
+        </p>
+
+        <!-- Instructions -->
+        <p class="description-secondary">
+          Utiliza el menú superior para comenzar a explorar la plataforma.
+        </p>
+      </div>
+    </div>
+  </main>
 
   <%- include('./partials/footer') %>
 
