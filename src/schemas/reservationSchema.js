@@ -13,14 +13,14 @@ import {
 // ── Primitive Joi types ───────────────────────────────────────────────────────
 
 const joiId = Joi.number().integer().positive().messages({
-  'number.base':     'El ID debe ser un número.',
-  'number.integer':  'El ID debe ser un número entero.',
+  'number.base': 'El ID debe ser un número.',
+  'number.integer': 'El ID debe ser un número entero.',
   'number.positive': 'El ID debe ser un número positivo.',
 });
 
 const joiServiceId = Joi.number().integer().positive().messages({
-  'number.base':     'El serviceId debe ser un número.',
-  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.base': 'El serviceId debe ser un número.',
+  'number.integer': 'El serviceId debe ser un número entero.',
   'number.positive': 'El serviceId debe ser un número positivo.',
 });
 
@@ -41,6 +41,11 @@ export const reservationSchema = {
   // DELETE /reservations/:id
   deleteReservation: Joi.object({
     id: joiId.required(),
+  }),
+
+  newReservationData: Joi.object({
+    serviceId: joiServiceId.required(),
+    quantity: joiQuantity.required(),   // ← agregar esta línea
   }),
 
 };
