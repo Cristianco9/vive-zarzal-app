@@ -44,19 +44,19 @@ import { serviceImageSchema } from '../schemas/serviceImageSchema.js';
 
 // Controller to create a single service image
 import { createServiceImage } from
-  '../controllers/serviceImage/createServiceImage.js';
+  '../controllers/serviceImage/createOneServiceImage.js';
 // Controller to retrieve every service image
 import { listAllServiceImages } from
   '../controllers/serviceImage/listAllServiceImages.js';
 // Controller to retrieve a single service image by its ID
 import { getServiceImageById } from
-  '../controllers/serviceImage/getServiceImageById.js';
+  '../controllers/serviceImage/listOneServiceImage.js';
 // Controller to update a single service image by its ID
 import { updateServiceImage } from
-  '../controllers/serviceImage/updateServiceImage.js';
+  '../controllers/serviceImage/updateOneServiceImage.js';
 // Controller to delete a single service image by its ID
 import { deleteServiceImage } from
-  '../controllers/serviceImage/deleteServiceImage.js';
+  '../controllers/serviceImage/deleteOneServiceImage.js';
 
 // Create a new Router instance dedicated to the service image resource
 export const serviceImageRouter = Router();

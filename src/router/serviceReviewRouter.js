@@ -46,19 +46,19 @@ import { serviceReviewSchema } from '../schemas/serviceReviewSchema.js';
 
 // Controller to create a single service review
 import { createServiceReview } from
-  '../controllers/serviceReview/createServiceReview.js';
+  '../controllers/serviceReview/createOneServiceReview.js';
 // Controller to retrieve every service review
 import { listAllServiceReviews } from
   '../controllers/serviceReview/listAllServiceReviews.js';
 // Controller to retrieve a single service review by its ID
 import { getServiceReviewById } from
-  '../controllers/serviceReview/getServiceReviewById.js';
+  '../controllers/serviceReview/listOneServiceReview.js';
 // Controller to update a single service review by its ID
 import { updateServiceReview } from
-  '../controllers/serviceReview/updateServiceReview.js';
+  '../controllers/serviceReview/updateOneServiceReview.js';
 // Controller to delete a single service review by its ID
 import { deleteServiceReview } from
-  '../controllers/serviceReview/deleteServiceReview.js';
+  '../controllers/serviceReview/deleteOneServiceReview.js';
 // Controller to list service reviews by user ID
 import { listServiceReviewsByUser } from
   '../controllers/serviceReview/listServiceReviewsByUser.js';

@@ -50,7 +50,7 @@ import { createOneUserImage } from '../controllers/userImage/createOneUserImage.
 // Controller to delete a user image (owned by user)
 import { deleteOneUserImage } from '../controllers/userImage/deleteOneUserImage.js';
 // Controller to delete a user image (admin only)
-import { deleteOneUserImageAdmin } from '../controllers/userImage/deleteOneUserImage.js';
+import { deleteOneUserImageAdmin } from '../controllers/userImage/deleteOneUserImageAdmin.js';
 // Controller to retrieve every user image
 import { listAllUserImages } from '../controllers/userImage/listAllUserImages.js';
 // Controller to retrieve every image belonging to a specific user
@@ -60,7 +60,7 @@ import { listOneUserImage } from '../controllers/userImage/listOneUserImage.js';
 // Controller to update a user image (owned by user)
 import { updateOneUserImage } from '../controllers/userImage/updateOneUserImage.js';
 // Controller to update a user image (admin only)
-import { updateOneUserImageAdmin } from '../controllers/userImage/updateOneUserImage.js';
+import { updateOneUserImageAdmin } from '../controllers/userImage/updateOneUserImageAdmin.js';
 
 // Create a new Router instance dedicated to the user image resource
 export const userImageRouter = Router();

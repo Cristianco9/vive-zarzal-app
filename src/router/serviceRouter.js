@@ -45,22 +45,22 @@ import { serviceSchema } from '../schemas/serviceSchema.js';
 
 // Controller to create a single service
 import { createService } from
-  '../controllers/service/createService.js';
+  '../controllers/service/createOneService.js';
 // Controller to retrieve every service
 import { listAllServices } from
   '../controllers/service/listAllServices.js';
 // Controller to retrieve a single service by its ID
 import { getServiceById } from
-  '../controllers/service/getServiceById.js';
+  '../controllers/service/listOneService.js';
 // Controller to update a single service by its ID
-import { updateService } from
-  '../controllers/service/updateService.js';
+import { updateOneService } from
+  '../controllers/service/updateOneService.js';
 // Controller to delete a single service by its ID
 import { deleteService } from
-  '../controllers/service/deleteService.js';
+  '../controllers/service/deleteOneService.js';
 // Controller to list services by business ID
 import { listServicesByBusiness } from
-  '../controllers/service/listServicesByBusiness.js';
+  '../controllers/service/listByBusinessId.js';
 
 // Create a new Router instance dedicated to the service resource
 export const serviceRouter = Router();
@@ -126,7 +126,7 @@ serviceRouter.patch(
   // Step 3: validate the update payload
   validatorHandler(serviceSchema.updateServiceData, 'body'),
   // Step 4: delegate to the controller
-  updateService
+  updateOneService
 );
 
 // ─────────────────────────────────────────────────────────────────────────────

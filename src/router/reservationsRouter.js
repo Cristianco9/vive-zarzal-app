@@ -31,9 +31,9 @@ import { reservationSchema } from '../schemas/reservationSchema.js';
 import { createOneReservation }        from '../controllers/reservation/createOneReservation.js';
 import { deleteOneReservation }        from '../controllers/reservation/deleteOneReservation.js';
 import { listAllReservations }         from '../controllers/reservation/listAllReservations.js';
-import { listReservationsByBusiness }  from '../controllers/reservation/listReservationsByBusiness.js';
+import { listReservationsByBusiness }  from '../controllers/reservation/listBusinessReservations.js';
 import { listOneReservation }          from '../controllers/reservation/listOneReservation.js';
-import { listReservationsByService }   from '../controllers/reservation/listReservationsByService.js';
+import { listReservationsByService }   from '../controllers/reservation/listServiceReservations.js';
 import { listUserReservations }        from '../controllers/reservation/listUserReservations.js';
 import { updateOneReservation }        from '../controllers/reservation/updateOneReservation.js';
 
