@@ -173,6 +173,7 @@ src/controllers/UI/login.js
 src/controllers/UI/registerAdvertiserForm.js
 src/controllers/UI/registerCustomerForm.js
 src/controllers/UI/selectRole.js
+src/controllers/UI/services.js
 src/controllers/user/createOneUser.js
 src/controllers/user/deleteOneUser.js
 src/controllers/user/deleteOwnAccount.js
@@ -255,6 +256,8 @@ src/db/seeders/20260617030358-insert-message-status.cjs
 src/db/seeders/20260617030541-insert-reservation-status.cjs
 src/db/seeders/20260617030830-insert-roles.cjs
 src/db/seeders/20260617031010-insert-service-status.cjs
+src/db/seeders/20260617083611-demo-advertisers.cjs
+src/db/seeders/20260617085933-services-demo.cjs
 src/libraries/DBConnection.js
 src/libraries/netConfig.js
 src/middlewares/apiAuthHandler.js
@@ -269,6 +272,7 @@ src/public/js/redirectView.js
 src/public/js/registerAdvertiserForm.js
 src/public/js/registerCustomerForm.js
 src/public/js/selectRole.js
+src/public/js/services.js
 src/public/styles/components/footer.css
 src/public/styles/components/header.css
 src/public/styles/dashboard.css
@@ -278,6 +282,7 @@ src/public/styles/registerAdvertiserForm.css
 src/public/styles/registerCustomerForm.css
 src/public/styles/root.css
 src/public/styles/selectRole.css
+src/public/styles/services.css
 src/router/ageRestrictionRouter.js
 src/router/BusinessReviewRouter.js
 src/router/businessRouter.js
@@ -394,6 +399,7 @@ src/views/partials/header.ejs
 src/views/registerAdvertiserForm.ejs
 src/views/registerCustomerForm.ejs
 src/views/selectRole.ejs
+src/views/services.ejs
 </directory_structure>
 
 <files>
@@ -8281,6 +8287,45 @@ export const selectRole = async (req, res, next) => {
 };
 </file>
 
+<file path="src/controllers/UI/services.js">
+// controllers/services.controller.js
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the services page template.
+ *
+ * This function handles the request to display a services page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const services = async (req, res, next) => {
+  try {
+    // Extract the user full name that the middleware saved in req.user
+    const userFullname = req.user?.fullName || 'Invitado';
+
+    // Pass an isAuthenticated flag so the view can render login/logout appropriately
+    const isAuthenticated = Boolean(req.user);
+
+    // Return rendering the template and send the user data object
+    res.render('services', {
+      userFullname: userFullname,
+      isAuthenticated: isAuthenticated
+    });
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de servicios',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
 <file path="src/controllers/user/createOneUser.js">
 // controller snippet — update your existing createOneUser
 import Boom from '@hapi/boom';
@@ -14841,6 +14886,433 @@ module.exports = {
 };
 </file>
 
+<file path="src/db/seeders/20260617083611-demo-advertisers.cjs">
+'use strict';
+
+const bcrypt = require('bcryptjs');
+
+// Same salt rounds used in src/utils/auth/passwordHash.js
+const SALT_ROUNDS = 11;
+
+// ============================================================
+// Demo data: 3 advertisers ("Anunciante"), each with one business
+// ============================================================
+const ADVERTISERS = [
+  {
+    nombre_usuario: 'María Fernanda',
+    apellido_usuario: 'Gómez Restrepo',
+    fecha_nacimiento_usuario: '1988-04-12',
+    numero_documento_usuario: '1006789321',
+    correo_usuario: 'mariafernanda.dulceria@vivezarzal.com',
+    username_usuario: 'dulceria_zarzal',
+    contrasena_usuario: 'Anunciante2026*',
+    genero: 'Femenino',
+    ubicacion: {
+      nombre_ubicacion: 'Centro de Zarzal',
+      descripcion_ubicacion: 'Calle 10 # 8-23, Barrio Centro, Zarzal, Valle del Cauca',
+      codigo_ubicacion: 'ZAR-DULCERIA-01',
+    },
+    negocio: {
+      nombre_negocio: 'Dulces y Postres La Paila',
+      descripcion_negocio:
+        'Repostería artesanal especializada en postres tradicionales del Valle del Cauca: manjar blanco, cortado de leche, dulce de mango y obleas caseras.',
+      facebook_negocio: 'https://facebook.com/dulceslapaila',
+      instagram_negocio: 'https://instagram.com/dulceslapaila',
+      tiktok_negocio: null,
+      pagina_web_negocio: null,
+    },
+  },
+  {
+    nombre_usuario: 'Jorge Eliécer',
+    apellido_usuario: 'Salazar Tobón',
+    fecha_nacimiento_usuario: '1982-09-05',
+    numero_documento_usuario: '1006789454',
+    correo_usuario: 'jorge.artesanias@vivezarzal.com',
+    username_usuario: 'artesanias_zarzal',
+    contrasena_usuario: 'Anunciante2026*',
+    genero: 'Masculino',
+    ubicacion: {
+      nombre_ubicacion: 'Barrio La Floresta',
+      descripcion_ubicacion: 'Carrera 5 # 12-40, Barrio La Floresta, Zarzal, Valle del Cauca',
+      codigo_ubicacion: 'ZAR-ARTESANIAS-01',
+    },
+    negocio: {
+      nombre_negocio: 'Artesanías Manos de Zarzal',
+      descripcion_negocio:
+        'Taller artesanal que elabora piezas en guadua, fique y cerámica, además de bisutería y souvenirs inspirados en la cultura del Valle del Cauca.',
+      facebook_negocio: 'https://facebook.com/manosdezarzal',
+      instagram_negocio: 'https://instagram.com/manosdezarzal',
+      tiktok_negocio: 'https://tiktok.com/@manosdezarzal',
+      pagina_web_negocio: null,
+    },
+  },
+  {
+    nombre_usuario: 'Luz Dary',
+    apellido_usuario: 'Imbachí Marín',
+    fecha_nacimiento_usuario: '1975-01-23',
+    numero_documento_usuario: '1006789587',
+    correo_usuario: 'luzdary.saboresvalle@vivezarzal.com',
+    username_usuario: 'sabores_del_valle',
+    contrasena_usuario: 'Anunciante2026*',
+    genero: 'Femenino',
+    ubicacion: {
+      nombre_ubicacion: 'Vía Zarzal - La Paila',
+      descripcion_ubicacion: 'Km 2 Vía Zarzal - La Paila, Zarzal, Valle del Cauca',
+      codigo_ubicacion: 'ZAR-COMIDAS-01',
+    },
+    negocio: {
+      nombre_negocio: 'Sabores del Valle - Comida Típica',
+      descripcion_negocio:
+        'Restaurante de comida típica vallecaucana: sancocho de gallina, tamales vallunos, sudado de pollo y aborrajados, preparados con receta tradicional.',
+      facebook_negocio: 'https://facebook.com/saboresdelvallezarzal',
+      instagram_negocio: 'https://instagram.com/saboresdelvallezarzal',
+      tiktok_negocio: null,
+      pagina_web_negocio: null,
+    },
+  },
+];
+
+module.exports = {
+  // ============================================================
+  // UP — Insert advertiser users, their locations and businesses
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    const now = new Date();
+
+    // --- Lookup catalog ids needed for the foreign keys ---
+
+    const [roles] = await queryInterface.sequelize.query(
+      `SELECT id_rol FROM rol WHERE tipo_rol = 'Anunciante' LIMIT 1`
+    );
+    if (!roles.length) {
+      throw new Error('Role "Anunciante" not found. Run the roles seeder first.');
+    }
+    const advertiserRoleId = roles[0].id_rol;
+
+    const [genders] = await queryInterface.sequelize.query(
+      `SELECT id_genero, tipo_genero FROM genero WHERE tipo_genero IN ('Femenino', 'Masculino')`
+    );
+    const genderIdByName = {};
+    genders.forEach((g) => {
+      genderIdByName[g.tipo_genero] = g.id_genero;
+    });
+
+    const [documentTypes] = await queryInterface.sequelize.query(
+      `SELECT id_tipo_documento FROM tipo_documento WHERE nombre_tipo_documento = 'Cédula de ciudadanía' LIMIT 1`
+    );
+    const documentTypeId = documentTypes.length ? documentTypes[0].id_tipo_documento : null;
+
+    const [cities] = await queryInterface.sequelize.query(`
+      SELECT c.id_ciudad
+      FROM ciudad c
+      INNER JOIN departamento d ON d.id_departamento = c.id_departamento
+      WHERE c.nombre_ciudad = 'Zarzal' AND d.nombre_departamento = 'Valle del Cauca'
+      LIMIT 1
+    `);
+    if (!cities.length) {
+      throw new Error('City "Zarzal" (Valle del Cauca) not found. Run the cities seeder first.');
+    }
+    const zarzalCityId = cities[0].id_ciudad;
+
+    // --- Insert locations (ubicacion) for each business ---
+
+    await queryInterface.bulkInsert(
+      'ubicacion',
+      ADVERTISERS.map((a) => ({
+        id_ciudad: zarzalCityId,
+        nombre_ubicacion: a.ubicacion.nombre_ubicacion,
+        descripcion_ubicacion: a.ubicacion.descripcion_ubicacion,
+        codigo_ubicacion: a.ubicacion.codigo_ubicacion,
+        fecha_creacion_ubicacion: now,
+        fecha_modificacion_ubicacion: now,
+      }))
+    );
+
+    const [locations] = await queryInterface.sequelize.query(`
+      SELECT id_ubicacion, codigo_ubicacion FROM ubicacion
+      WHERE codigo_ubicacion IN (${ADVERTISERS.map((a) => `'${a.ubicacion.codigo_ubicacion}'`).join(',')})
+    `);
+    const locationIdByCode = {};
+    locations.forEach((l) => {
+      locationIdByCode[l.codigo_ubicacion] = l.id_ubicacion;
+    });
+
+    // --- Insert advertiser users (password hashed with bcrypt) ---
+
+    const usersToInsert = await Promise.all(
+      ADVERTISERS.map(async (a) => ({
+        id_rol: advertiserRoleId,
+        id_genero: genderIdByName[a.genero] || null,
+        id_tipo_documento: documentTypeId,
+        nombre_usuario: a.nombre_usuario,
+        apellido_usuario: a.apellido_usuario,
+        fecha_nacimiento_usuario: a.fecha_nacimiento_usuario,
+        numero_documento_usuario: a.numero_documento_usuario,
+        correo_usuario: a.correo_usuario,
+        username_usuario: a.username_usuario,
+        contrasena_usuario: await bcrypt.hash(a.contrasena_usuario, SALT_ROUNDS),
+        fecha_creacion_usuario: now,
+        fecha_actualizacion_usuario: now,
+      }))
+    );
+
+    await queryInterface.bulkInsert('usuario', usersToInsert);
+
+    const [users] = await queryInterface.sequelize.query(`
+      SELECT id_usuario, correo_usuario FROM usuario
+      WHERE correo_usuario IN (${ADVERTISERS.map((a) => `'${a.correo_usuario}'`).join(',')})
+    `);
+    const userIdByEmail = {};
+    users.forEach((u) => {
+      userIdByEmail[u.correo_usuario] = u.id_usuario;
+    });
+
+    // --- Insert businesses (negocio), linked to their owner and location ---
+
+    await queryInterface.bulkInsert(
+      'negocio',
+      ADVERTISERS.map((a) => ({
+        id_usuario_propietario: userIdByEmail[a.correo_usuario],
+        id_ubicacion: locationIdByCode[a.ubicacion.codigo_ubicacion],
+        nombre_negocio: a.negocio.nombre_negocio,
+        descripcion_negocio: a.negocio.descripcion_negocio,
+        facebook_negocio: a.negocio.facebook_negocio,
+        instagram_negocio: a.negocio.instagram_negocio,
+        tiktok_negocio: a.negocio.tiktok_negocio,
+        pagina_web_negocio: a.negocio.pagina_web_negocio,
+        fecha_creacion_negocio: now,
+        fecha_modificacion_negocio: now,
+      }))
+    );
+  },
+
+  // ============================================================
+  // DOWN — Remove the businesses, locations and users created above
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.bulkDelete('negocio', {
+      nombre_negocio: ADVERTISERS.map((a) => a.negocio.nombre_negocio),
+    });
+
+    await queryInterface.bulkDelete('usuario', {
+      correo_usuario: ADVERTISERS.map((a) => a.correo_usuario),
+    });
+
+    await queryInterface.bulkDelete('ubicacion', {
+      codigo_ubicacion: ADVERTISERS.map((a) => a.ubicacion.codigo_ubicacion),
+    });
+  },
+};
+</file>
+
+<file path="src/db/seeders/20260617085933-services-demo.cjs">
+'use strict';
+
+// ============================================================
+// Demo data: 3 products ("servicio") per business, each with
+// 2 working placeholder images served from picsum.photos
+// (a free, royalty-free image CDN — guaranteed to resolve,
+// unlike random stock-photo links that can break or require a
+// license). Swap these URLs later for real product photos
+// through the existing image upload flow whenever you have them.
+// ============================================================
+
+const businessProducts = {
+  'Dulces y Postres La Paila': {
+    categoria: 'Postres y Dulcerías',
+    productos: [
+      {
+        nombre_servicio: 'Manjar Blanco Tradicional',
+        descripcion_servicio:
+          'Postre típico vallecaucano elaborado con leche, azúcar y arroz, cocinado lentamente hasta lograr una textura cremosa. Presentación de 500g.',
+        precio_servicio: 12000,
+        imagenes: ['manjar-blanco-zarzal', 'manjar-blanco-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Cortado de Leche Casero',
+        descripcion_servicio:
+          'Dulce tradicional a base de leche cuajada y panela, cortado en cuadros y servido fresco. Presentación de 6 unidades.',
+        precio_servicio: 8000,
+        imagenes: ['cortado-leche-zarzal', 'cortado-leche-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Obleas con Arequipe y Queso',
+        descripcion_servicio:
+          'Oblea artesanal rellena de arequipe casero, queso campesino y mermelada a elección. Se prepara al momento.',
+        precio_servicio: 6000,
+        imagenes: ['obleas-arequipe-zarzal', 'obleas-arequipe-zarzal-2'],
+      },
+    ],
+  },
+  'Artesanías Manos de Zarzal': {
+    categoria: 'Artesanías Típicas',
+    productos: [
+      {
+        nombre_servicio: 'Canasta Tejida en Fique',
+        descripcion_servicio:
+          'Canasta decorativa y funcional tejida a mano con fibra de fique por artesanos locales. Ideal como souvenir o para uso doméstico.',
+        precio_servicio: 45000,
+        imagenes: ['canasta-fique-zarzal', 'canasta-fique-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Set de Figuras en Guadua',
+        descripcion_servicio:
+          'Juego de 3 figuras decorativas talladas en guadua, inspiradas en la flora y fauna del Valle del Cauca.',
+        precio_servicio: 38000,
+        imagenes: ['figuras-guadua-zarzal', 'figuras-guadua-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Collar de Bisutería Artesanal',
+        descripcion_servicio:
+          'Collar elaborado a mano con semillas naturales y mostacillas de colores, diseño único hecho por artesanos de Zarzal.',
+        precio_servicio: 25000,
+        imagenes: ['collar-artesanal-zarzal', 'collar-artesanal-zarzal-2'],
+      },
+    ],
+  },
+  'Sabores del Valle - Comida Típica': {
+    categoria: 'Restaurantes Tradicionales',
+    productos: [
+      {
+        nombre_servicio: 'Sancocho de Gallina Valluno',
+        descripcion_servicio:
+          'Sancocho tradicional preparado con gallina criolla, plátano, yuca y mazorca, servido con arroz y aguacate.',
+        precio_servicio: 22000,
+        imagenes: ['sancocho-gallina-zarzal', 'sancocho-gallina-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Tamal Vallecaucano',
+        descripcion_servicio:
+          'Tamal envuelto en hoja de plátano, relleno de arroz, pollo, cerdo y verduras, cocinado a fuego lento.',
+        precio_servicio: 9000,
+        imagenes: ['tamal-valluno-zarzal', 'tamal-valluno-zarzal-2'],
+      },
+      {
+        nombre_servicio: 'Aborrajados con Queso',
+        descripcion_servicio:
+          'Plátano maduro frito, relleno de queso campesino y bañado en huevo, acompañado de salsa de la casa.',
+        precio_servicio: 7000,
+        imagenes: ['aborrajados-zarzal', 'aborrajados-zarzal-2'],
+      },
+    ],
+  },
+};
+
+const ALL_PRODUCT_NAMES = Object.values(businessProducts).flatMap((b) =>
+  b.productos.map((p) => p.nombre_servicio)
+);
+
+module.exports = {
+  // ============================================================
+  // UP — Insert 3 products per business plus their images
+  // ============================================================
+  async up(queryInterface, Sequelize) {
+    const now = new Date();
+    const businessNames = Object.keys(businessProducts);
+
+    // --- Lookup the businesses created by the advertisers seeder ---
+
+    const [businesses] = await queryInterface.sequelize.query(`
+      SELECT id_negocio, nombre_negocio FROM negocio
+      WHERE nombre_negocio IN (${businessNames.map((n) => `'${n}'`).join(',')})
+    `);
+    if (businesses.length !== businessNames.length) {
+      throw new Error(
+        'Could not find all 3 businesses. Run the advertisers/businesses seeder first.'
+      );
+    }
+    const businessIdByName = {};
+    businesses.forEach((b) => {
+      businessIdByName[b.nombre_negocio] = b.id_negocio;
+    });
+
+    // --- Lookup the categories used by each business's products ---
+
+    const categoryNames = [...new Set(businesses.map((b) => businessProducts[b.nombre_negocio].categoria))];
+    const [categories] = await queryInterface.sequelize.query(`
+      SELECT id_categoria, nombre_categoria FROM categoria
+      WHERE nombre_categoria IN (${categoryNames.map((n) => `'${n}'`).join(',')})
+    `);
+    const categoryIdByName = {};
+    categories.forEach((c) => {
+      categoryIdByName[c.nombre_categoria] = c.id_categoria;
+    });
+
+    // --- Lookup the "Disponible" service status ---
+
+    const [statuses] = await queryInterface.sequelize.query(
+      `SELECT id_estado_servicio FROM estado_servicio WHERE nombre_estado_servicio = 'Disponible' LIMIT 1`
+    );
+    if (!statuses.length) {
+      throw new Error('Service status "Disponible" not found. Run the service status seeder first.');
+    }
+    const availableStatusId = statuses[0].id_estado_servicio;
+
+    // --- Insert the products (servicio) ---
+
+    const servicesToInsert = [];
+    for (const businessName of businessNames) {
+      const { categoria, productos } = businessProducts[businessName];
+      for (const producto of productos) {
+        servicesToInsert.push({
+          nombre_servicio: producto.nombre_servicio,
+          descripcion_servicio: producto.descripcion_servicio,
+          precio_servicio: producto.precio_servicio,
+          id_categoria_servicio: categoryIdByName[categoria],
+          id_estado_servicio: availableStatusId,
+          id_restriccion_edad_servicio: null,
+          id_negocio: businessIdByName[businessName],
+          fecha_creacion_servicio: now,
+          fecha_modificacion_servicio: now,
+        });
+      }
+    }
+
+    await queryInterface.bulkInsert('servicio', servicesToInsert);
+
+    // --- Re-fetch the generated ids so we can attach images to each one ---
+
+    const [createdServices] = await queryInterface.sequelize.query(`
+      SELECT id_servicio, nombre_servicio FROM servicio
+      WHERE nombre_servicio IN (${ALL_PRODUCT_NAMES.map((n) => `'${n}'`).join(',')})
+    `);
+    const serviceIdByName = {};
+    createdServices.forEach((s) => {
+      serviceIdByName[s.nombre_servicio] = s.id_servicio;
+    });
+
+    // --- Insert the images for each product ---
+
+    const imagesToInsert = [];
+    for (const { productos } of Object.values(businessProducts)) {
+      for (const producto of productos) {
+        const serviceId = serviceIdByName[producto.nombre_servicio];
+        producto.imagenes.forEach((seed, index) => {
+          imagesToInsert.push({
+            id_servicio: serviceId,
+            url_imagen_servicio: `https://picsum.photos/seed/${seed}/800/600`,
+            descripcion_imagen_servicio: `${producto.nombre_servicio} - foto ${index + 1}`,
+            fecha_creacion_imagen_servicio: now,
+            fecha_modificacion_imagen_servicio: now,
+          });
+        });
+      }
+    }
+
+    await queryInterface.bulkInsert('imagen_servicio', imagesToInsert);
+  },
+
+  // ============================================================
+  // DOWN — Remove the products (images cascade-delete automatically)
+  // ============================================================
+  async down(queryInterface, Sequelize) {
+    await queryInterface.bulkDelete('servicio', {
+      nombre_servicio: ALL_PRODUCT_NAMES,
+    });
+  },
+};
+</file>
+
 <file path="src/libraries/DBConnection.js">
 // Import the Sequelize constructor from the 'sequelize' library
 import { Sequelize } from 'sequelize';
@@ -16168,6 +16640,179 @@ document.addEventListener('DOMContentLoaded', () => {
       nextBtn.click();
     }
   });
+});
+</file>
+
+<file path="src/public/js/services.js">
+document.addEventListener('DOMContentLoaded', () => {
+  const endpoint = '/app/v1/services/list-all';
+  const grid = document.getElementById('vz-grid');
+  const emptyBox = document.getElementById('vz-empty');
+  const searchInput = document.getElementById('vz-search-input');
+  const searchBtn = document.getElementById('vz-search-btn');
+
+  let services = [];
+
+  // Fetch y render inicial (grid por defecto)
+  fetch(endpoint)
+    .then(r => r.json())
+    .then(data => {
+      if (!data || !data.services) throw new Error('No services returned');
+      services = data.services;
+      renderGrid(services);
+    })
+    .catch(err => {
+      grid.innerHTML = `<p style="padding:20px;color:#a00">Error cargando servicios: ${err.message}</p>`;
+      console.error(err);
+    });
+
+  // Búsqueda simple en client-side
+  searchBtn.addEventListener('click', () => {
+    applyFilter();
+  });
+
+  searchInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') applyFilter();
+  });
+
+  function applyFilter() {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    const filtered = services.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q) ||
+      (s.category && s.category.name && s.category.name.toLowerCase().includes(q)) ||
+      (s.business && s.business.name && s.business.name.toLowerCase().includes(q))
+    );
+    renderGrid(filtered);
+  }
+
+  // Render grid (matriz) — muestra todas las tarjetas en varias filas
+  function renderGrid(list) {
+    grid.innerHTML = '';
+    emptyBox.style.display = 'none';
+
+    if (!list || list.length === 0) {
+      emptyBox.style.display = 'block';
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    list.forEach(s => fragment.appendChild(createCard(s)));
+    grid.appendChild(fragment);
+  }
+
+  function createCard(s) {
+    const card = document.createElement('article');
+    card.className = 'vz-card';
+
+    // IMAGEN: priorizamos s.imageUrl si existe, sino placeholder SVG
+    const imgDiv = document.createElement('div');
+    imgDiv.className = 'vz-card__img';
+    if (s.imageUrl) {
+      imgDiv.style.backgroundImage = `url("${s.imageUrl}")`;
+    } else {
+      const colors = ['#f2a93b','#77b36a','#4aa3d8','#d66ea0','#f28b6f'];
+      const color = colors[s.id % colors.length] || '#ccc';
+      const titleText = s.name || 'Servicio';
+      const svg = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='1000'><rect width='100%' height='100%' fill='${color}'/><text x='50%' y='50%' font-size='48' font-family='Arial' dominant-baseline='middle' text-anchor='middle' fill='#fff'>${escapeXml(titleText)}</text></svg>`);
+      imgDiv.style.backgroundImage = `url("data:image/svg+xml;charset=UTF-8,${svg}")`;
+    }
+    imgDiv.style.backgroundSize = 'cover';
+    imgDiv.style.backgroundPosition = 'center';
+
+    // favorito (corazón)
+    const fav = document.createElement('div');
+    fav.className = 'vz-card__fav';
+    // Si no usas FontAwesome, reemplaza innerHTML por un SVG
+    fav.innerHTML = '<i class="fa-regular fa-heart"></i>';
+    fav.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fav.classList.toggle('liked');
+      // opcional: guardar favorito en localStorage
+      // saveFavState(s.id, fav.classList.contains('liked'));
+    });
+
+    imgDiv.appendChild(fav);
+
+    // cuerpo
+    const body = document.createElement('div');
+    body.className = 'vz-card__body';
+
+    const title = document.createElement('a');
+    title.className = 'vz-card__title';
+    title.href = `/services/${s.id}`;
+    title.textContent = s.name;
+
+    const desc = document.createElement('p');
+    desc.className = 'vz-card__desc';
+    desc.textContent = truncate(s.description || '', 120);
+
+    const meta = document.createElement('div');
+    meta.className = 'vz-card__meta';
+
+    const left = document.createElement('div');
+    left.className = 'vz-card__meta-left';
+
+    const locIcon = document.createElement('i');
+    locIcon.className = 'fa-solid fa-map-pin';
+    locIcon.style.color = '#d33';
+    locIcon.style.fontSize = '12px';
+
+    const locationText = document.createElement('span');
+    const bizName = (s.business && s.business.name) ? s.business.name : 'Ubicación';
+    locationText.textContent = bizName;
+
+    left.appendChild(locIcon);
+    left.appendChild(locationText);
+
+    const rating = document.createElement('div');
+    rating.className = 'vz-card__rating';
+    const simulated = (Math.round((4.6 + (s.id % 5) * 0.1) * 10) / 10).toFixed(1);
+    rating.textContent = simulated;
+    left.appendChild(rating);
+
+    const right = document.createElement('div');
+    const price = document.createElement('div');
+    price.className = 'vz-price';
+    price.textContent = formatCOP(s.price);
+    right.appendChild(price);
+
+    meta.appendChild(left);
+    meta.appendChild(right);
+
+    // montar
+    body.appendChild(title);
+    body.appendChild(desc);
+    body.appendChild(meta);
+
+    card.appendChild(imgDiv);
+    card.appendChild(body);
+
+    return card;
+  }
+
+  // Helpers
+  function formatCOP(val){
+    const num = Number(val);
+    if (isNaN(num)) return '';
+    return num.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+  }
+  function truncate(text, n){
+    if (!text) return '';
+    if (text.length <= n) return text;
+    return text.slice(0, n-1) + '…';
+  }
+  function escapeXml(unsafe) {
+    return (unsafe || '').replace(/[&<>'"]/g, function (c) {
+      switch (c) {
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case "'": return '&apos;';
+        case '"': return '&quot;';
+      }
+    });
+  }
 });
 </file>
 
@@ -17692,6 +18337,112 @@ select.input {
   .select-role-header .btn-text { padding: 6px 8px; font-size: 14px; }
   .select-card { padding: 16px; }
 }
+</file>
+
+<file path="src/public/styles/services.css">
+:root{
+  --primary:#f6bf2f;
+  --accent:#1a73e8;
+  --muted:#666;
+  --card-bg:#fff;
+  --shadow: 0 2px 8px rgba(0,0,0,0.12);
+  --max-width:1200px;
+  --gap:20px;
+  --border:#e6e6e6;
+}
+
+/* Contenedor general */
+.vz-main{ padding:30px 16px 60px; max-width:var(--max-width); margin:0 auto; font-family: "Helvetica Neue", Arial, sans-serif; color:#222; }
+
+/* Hero / título centrado */
+.vz-title{ text-align:center; color:var(--primary); font-size:30px; margin-bottom:18px; font-weight:700; }
+
+/* Search: entrada + botón al estilo de la imagen */
+.vz-search{ display:flex; justify-content:center; gap:0; margin-bottom:36px; }
+.vz-search input{
+  width:520px; max-width:72%;
+  padding:12px 14px; border-radius:6px 0 0 6px; border:1px solid var(--border); border-right:0;
+  font-size:15px; color:#333;
+  box-shadow: none;
+}
+.vz-search button.vz-btn--primary{
+  padding:12px 18px; border-radius:0 6px 6px 0; border:1px solid var(--border);
+  background:var(--primary); color:#000; font-weight:700; cursor:pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+}
+
+/* GRID: por defecto muestra la matriz */
+.vz-grid-section{ padding:0 12px; }
+.vz-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:18px; align-items:start; }
+
+/* Tarjeta */
+.vz-card{
+  background:var(--card-bg);
+  border-radius:6px;
+  box-shadow:var(--shadow);
+  border:1px solid #dcdcdc;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:330px;
+}
+
+/* Imagen con proporción (usar aspect-ratio si soportado) */
+.vz-card__img{
+  position:relative;
+  width:100%;
+  aspect-ratio: 16/10;
+  background:#ddd center/cover no-repeat;
+}
+
+/* Corazón overlay */
+.vz-card__fav{
+  position:absolute;
+  top:10px;
+  left:10px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.95);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  cursor:pointer;
+  transition: transform .12s ease;
+}
+.vz-card__fav:hover{ transform: scale(1.05); }
+.vz-card__fav i{ color:#ccc; font-size:16px; }
+.vz-card__fav.liked{ background:#ffeded; }
+.vz-card__fav.liked i{ color:#e53e3e; }
+
+/* Body */
+.vz-card__body{ padding:12px 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.vz-card__title{ color:var(--accent); font-weight:700; text-decoration:none; font-size:16px; }
+.vz-card__desc{ color:var(--muted); font-size:13px; line-height:1.3; flex:1; margin-top:4px; }
+
+/* Meta inferior: ubicación, rating y precio */
+.vz-card__meta{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:8px; border-top:4px solid #f1f1f1; margin-top:8px; }
+.vz-card__meta-left{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
+.vz-card__location{ display:flex; align-items:center; gap:6px; color:#b33; font-size:13px; }
+.vz-card__rating{ background:#ffd27a; color:#6b3b00; padding:4px 8px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; box-shadow: 0 1px 0 rgba(0,0,0,0.05); }
+.vz-price{ color:#1a9b3a; font-weight:800; font-size:15px; }
+
+/* Empty message */
+.vz-empty{ font-size:16px; }
+
+/* Responsive: adaptar 3->2->1 columnas */
+@media (max-width:1100px){
+  .vz-grid{ grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width:700px){
+  .vz-search input{ width:100%; max-width:100%; }
+  .vz-grid{ grid-template-columns: 1fr; }
+  .vz-card{ min-height:400px; }
+}
+
+/* Footer */
+.vz-footer{ background:#444; color:#fff; padding:20px 0; margin-top:40px; }
+.vz-footer__inner{ max-width:var(--max-width); margin:0 auto; padding:0 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+.vz-footer a{ color:#87e0ff; }
 </file>
 
 <file path="src/router/ageRestrictionRouter.js">
@@ -20834,6 +21585,7 @@ import { validatorHandler  } from '../middlewares/validatorHandler.js';
 // Import the controllers functions to manage user interfaces templates
 import { landingPage } from "../controllers/UI/landingPage.js";
 import { dashboard } from "../controllers/UI/dashboard.js";
+import { services } from "../controllers/UI/services.js";
 import { login } from "../controllers/UI/login.js";
 import { selectRole } from "../controllers/UI/selectRole.js";
 import { registerAdvertiserForm } from "../controllers/UI/registerAdvertiserForm.js";
@@ -20850,13 +21602,22 @@ UIRouter.get(
   landingPage
 );
 
-// Define a GET route for login view
+// Define a GET route for dashboard view
 UIRouter.get(
   // Route path display the dashboard page
   '/dashboard',
   // Controller function to render the dashboard page
   dashboard
 );
+
+// Define a GET route for services view
+UIRouter.get(
+  // Route path display the services page
+  '/services',
+  // Controller function to render the services page
+  services
+);
+
 
 // Define a GET route for login view
 UIRouter.get(
@@ -27396,6 +28157,8 @@ import { Category } from '../db/models/categoryModel.js';
 import { ServiceStatus } from '../db/models/serviceStatusModel.js';
 import { AgeRestriction } from '../db/models/ageRestrictionModel.js';
 import { Business } from '../db/models/businessModel.js';
+// import the service image services
+import { ServiceImage } from '../db/models/serviceImageModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -27654,7 +28417,7 @@ export class ServiceServices {
   }
 
   /**
-   * Retrieves every service ordered by id ascending.
+   * Retrieves every service ordered by id ascending, including service images.
    *
    * @returns {Promise<Object[]>} List of services (empty array if none).
    * @throws {Boom} Internal error if the query fails.
@@ -27669,11 +28432,22 @@ export class ServiceServices {
           { model: ServiceStatus, as: 'status' },
           { model: AgeRestriction, as: 'ageRestriction' },
           { model: Business, as: 'business' },
+          // incluimos ServiceImage; asumimos la asociación Service.hasMany(ServiceImage, { as: 'images' })
+          { model: ServiceImage, as: 'images' }
         ],
       });
 
-      // always return an array, even when there are no records
-      return allServices.length ? allServices : [];
+      // siempre retornar array (puede estar vacío)
+      const servicesArray = allServices.length ? allServices : [];
+
+      // Mapear a plain objects y añadir imageUrl = primera imagen si existe
+      const result = servicesArray.map(s => {
+        const obj = (typeof s.toJSON === 'function') ? s.toJSON() : s;
+        obj.imageUrl = (obj.images && obj.images.length) ? obj.images[0].imageUrl : null;
+        return obj;
+      });
+
+      return result;
 
     } catch (error) {
       throw Boom.boomify(error, { message: 'Unable to find services' });
@@ -30587,6 +31361,60 @@ export const password = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d@$!%*?&._\-#]{8,30}$/;
   <!-- Scripts -->
   <script src="/js/redirectView.js" defer></script>
   <script src="/js/selectRole.js" defer></script>
+</body>
+
+</html>
+</file>
+
+<file path="src/views/services.ejs">
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicios | Vive Zarzal</title>
+
+  <!-- Estilos (ajusta rutas si usas /css en lugar de /styles) -->
+  <link rel="stylesheet" href="/styles/root.css">
+  <link rel="stylesheet" href="/styles/components/header.css">
+  <link rel="stylesheet" href="/styles/components/footer.css">
+  <link rel="stylesheet" href="/styles/services.css">
+
+  <!-- Iconos (opcional). Si no quieres CDN, elimina esta línea y usa SVG inline) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <%- include('partials/header') %>
+
+  <main class="vz-main">
+    <!-- HERO / BÚSQUEDA -->
+    <section class="vz-hero" aria-labelledby="services-title">
+      <h1 id="services-title" class="vz-title">Productos y Servicios</h1>
+
+      <div class="vz-search" role="search" aria-label="Buscar servicios">
+        <input id="vz-search-input" type="search" placeholder="Buscar actividades, lugares, servicios..." aria-label="Buscar" />
+        <button id="vz-search-btn" class="vz-btn vz-btn--primary" aria-label="Buscar">Buscar</button>
+      </div>
+    </section>
+
+    <!-- GRID por defecto: matriz de cajas (3 columnas en desktop) -->
+    <section class="vz-grid-section" aria-roledescription="lista de servicios">
+      <div id="vz-grid" class="vz-grid" aria-live="polite">
+        <!-- tarjetas serán insertadas por JS -->
+      </div>
+
+      <!-- mensaje cuando no hay resultados -->
+      <div id="vz-empty" class="vz-empty" style="display:none; text-align:center; padding:28px; color:#666;">
+        No se encontraron servicios.
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script src="/js/services.js" defer></script>
 </body>
 
 </html>
