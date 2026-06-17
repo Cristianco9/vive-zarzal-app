@@ -39,6 +39,8 @@ import { checkRole } from '../middlewares/checkRoleHandler.js';
 // Middleware factory that validates a request property against a Joi schema
 import { validatorHandler } from '../middlewares/validatorHandler.js';
 
+import validateCreateUser from '../middlewares/validateCreateUser.js';
+
 // ── Validation schema ───────────────────────────────────────────────────────
 
 // Joi schema collection for the user entity
@@ -76,7 +78,7 @@ export const userRouter = Router();
 userRouter.post(
   '/create',
   // Step 1: validate the creation payload
-  validatorHandler(userSchema.newUserData, 'body'),
+  validateCreateUser,
   // Step 2: delegate to the controller
   createOneUser
 );

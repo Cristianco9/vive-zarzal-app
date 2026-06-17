@@ -88,11 +88,7 @@ serviceRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 serviceRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllServices
 );
 
@@ -102,13 +98,9 @@ serviceRouter.get(
 // ─────────────────────────────────────────────────────────────────────────────
 serviceRouter.get(
   '/list-one/:id',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: validate that a valid ID was provided
+  // Step 1: validate that a valid ID was provided
   validatorHandler(serviceSchema.getServiceById, 'params'),
-  // Step 4: delegate to the controller
+  // Step 2: delegate to the controller
   getServiceById
 );
 

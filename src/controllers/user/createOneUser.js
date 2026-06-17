@@ -1,61 +1,62 @@
-// Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userService.js';
-// Import Boom for handling HTTP-friendly error objects
+// controller snippet — update your existing createOneUser
 import Boom from '@hapi/boom';
+// Import the UserServices class from the userServices module
+import { UserServices } from '../../services/userService.js'; 
+import Sequelize from 'sequelize';
 
-/**
- * Controller function to create a new user.
- *
- * This function handles the request to create a new user by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
- *
- * @param {Object} req - The request object containing the user's data.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
- *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
- */
 export const createOneUser = async (req, res, next) => {
-
-  // Extract the new user data from the request body
-  const newUser = {
-    roleId: req.body.newUserData.roleId,
-    genderId: req.body.newUserData.genderId,
-    documentTypeId: req.body.newUserData.documentTypeId,
-    firstName: req.body.newUserData.firstName,
-    lastName: req.body.newUserData.lastName,
-    birthDate: req.body.newUserData.birthDate,
-    documentNumber: req.body.newUserData.documentNumber,
-    email: req.body.newUserData.email,
-    username: req.body.newUserData.username,
-    password: req.body.newUserData.password,
-  };
-
-  // Instantiate the UserServices class to manage the user operations
-  const userManager = new UserServices();
-
   try {
-    // Attempt to create a new user using the provided data
-    const response = await userManager.createOne(newUser);
+    // Log the incoming body so we can see exact shape
+    console.log('CREATE USER BODY:', JSON.stringify(req.body));
 
-    // If the user is created successfully, send a success response
-    if (response.status === 'CREATED SUCCESSFULLY') {
-      return res.status(201).json({
-        success: true,
-        message: 'User created successfully',
-        // Include the new token in the response
-        authentication: res.locals.newUserToken
+    const userManager = new UserServices();
+    const body = req.body || {};
+
+    // Support both shapes: { newUserData: {...}, business: {...} } or flat {...}
+    const newUserData = body.newUserData && typeof body.newUserData === 'object'
+      ? body.newUserData
+      : body;
+
+    const business = body.business && typeof body.business === 'object'
+      ? body.business
+      : null;
+
+    let result;
+    if (business) {
+      // If you have a service method that creates user + business in transaction
+      result = await userManager.createOneWithBusiness({ newUserData, business });
+    } else {
+      result = await userManager.createOne(newUserData);
+    }
+
+    return res.status(201).json(result);
+  } catch (error) {
+    // Log full error and stack
+    console.error('createOneUser ERROR:', error && (error.stack || error));
+
+    // Handle common Sequelize DB errors with friendly responses
+    if (error && error.name === 'SequelizeUniqueConstraintError') {
+      const fields = Object.keys(error.fields || {}).join(', ');
+      return res.status(409).json({
+        statusCode: 409,
+        error: 'Conflict',
+        message: `Duplicate value for fields: ${fields}`,
+        details: error.errors?.map(e => e.message) || []
       });
     }
 
-  } catch (error) {
-    // Handle errors during user creation by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to create the user in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    if (error && error.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Foreign key constraint error (related resource not found)'
+      });
+    }
+
+    // If it's already a Boom error, forward it
+    if (Boom.isBoom && Boom.isBoom(error)) return next(error);
+
+    // Fallback: wrap and forward
+    return next(Boom.boomify(error, { message: 'Unable to create user' }));
   }
 };

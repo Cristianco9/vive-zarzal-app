@@ -1,0 +1,193 @@
+/* src/public/styles/registerAdvertiser.css
+   Estilos para la vista "Registro - Anunciante"
+   Basado en root.css tokens. Reemplaza el archivo anterior.
+*/
+
+.register-main {
+  background: var(--bg-body, #ffffff);
+  min-height: calc(100vh - var(--navbar-height, 64px) - var(--footer-height, 80px));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-12, 48px) 0;
+}
+
+.register-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card contenedor */
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-section, #efefef);
+  border-radius: 40px;
+  padding: var(--space-8, 32px);
+  box-shadow: var(--shadow-sm, 0 8px 30px rgba(16,24,40,0.06));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+  align-items: stretch;
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+/* Título */
+.register-title {
+  color: var(--color-brand-blue, #0b5cff);
+  text-align: center;
+  font-size: var(--font-size-lg, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0 0 var(--space-4, 16px);
+}
+
+/* Formulario */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+/* Labels e inputs: reutiliza si existe login.css; si no, estos son los básicos */
+.label {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 6px;
+  display: block;
+  font-size: var(--font-size-sm, 13px);
+}
+
+/* Inputs y selects uniformes */
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d1d5db);
+  font-size: var(--font-size-md, 15px);
+  background: var(--color-white, #fff);
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-fast, 120ms), border-color var(--transition-fast, 120ms);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Selects: mantener flecha, padding extra a la derecha */
+select.input {
+  padding-right: 2.4rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text, #111827) 50%),
+                    linear-gradient(135deg, var(--color-text, #111827) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1rem + 2px), calc(100% - 12px) calc(1rem + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Focus state */
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent, #17a2b8);
+  box-shadow: 0 4px 14px rgba(23,162,184,0.06);
+}
+
+/* Aumentar espacio vertical entre campos para mejor lectura */
+.register-form > * {
+  margin-bottom: 0;
+}
+
+/* Campos específicos multilinea (si usas textarea para descripción) */
+textarea.input {
+  min-height: 88px;
+  resize: vertical;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+/* Helper elements */
+.terms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-2, 8px);
+}
+
+.terms-label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--text-secondary, #6b7280);
+}
+
+.terms-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Mensajes de error */
+.form-error {
+  color: #d9534f;
+  font-size: var(--font-size-sm, 13px);
+  margin-top: var(--space-2, 8px);
+  display: none;
+  text-align: left;
+}
+
+/* Acciones / submit */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4, 16px);
+}
+
+.btn-register {
+  background: var(--color-primary-light, #f3c24b);
+  color: var(--color-black, #111);
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: transform var(--transition-fast, 120ms), opacity var(--transition-fast, 120ms);
+}
+
+.btn-register:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ajustes visuales para inputs de URL y campos sociales (mantener consistencia) */
+.input[type="url"] {
+  direction: ltr;
+}
+
+/* Asegurar que el ancho no se rompa en móviles */
+.register-card .input,
+.register-card select.input {
+  max-width: 100%;
+}
+
+/* Pequeños ajustes de alineación del checkbox dentro de terms-label */
+.terms-label input[type="checkbox"] {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+/* Bordes y radio más suaves en tamaños pequeños */
+@media (max-width: 600px) {
+  .register-card {
+    padding: var(--space-6, 20px);
+    border-radius: 24px;
+    margin: 0 16px;
+  }
+  .register-title {
+    font-size: var(--font-size-md, 18px);
+  }
+  .input {
+    font-size: 14px;
+  }
+  .btn-register {
+    padding: 0.55rem 1.2rem;
+    border-radius: 10px;
+  }
+}

@@ -167,6 +167,9 @@ src/controllers/serviceStatus/deleteOneServiceStatus.js
 src/controllers/serviceStatus/listAllServiceStatuses.js
 src/controllers/serviceStatus/listOneServiceStatus.js
 src/controllers/serviceStatus/updateOneServiceStatus.js
+src/controllers/UI/dashboard.js
+src/controllers/UI/landingPage.js
+src/controllers/UI/login.js
 src/controllers/user/createOneUser.js
 src/controllers/user/deleteOneUser.js
 src/controllers/user/deleteOwnAccount.js
@@ -254,8 +257,17 @@ src/libraries/netConfig.js
 src/middlewares/apiAuthHandler.js
 src/middlewares/checkRoleHandler.js
 src/middlewares/errorHandler.js
+src/middlewares/setCurrentPath.js
 src/middlewares/tokenHandlers/authAppTokenHandler.js
 src/middlewares/validatorHandler.js
+src/public/js/login.js
+src/public/js/redirectView.js
+src/public/styles/components/footer.css
+src/public/styles/components/header.css
+src/public/styles/dashboard.css
+src/public/styles/landingPage.css
+src/public/styles/login.css
+src/public/styles/root.css
 src/router/ageRestrictionRouter.js
 src/router/BusinessReviewRouter.js
 src/router/businessRouter.js
@@ -364,6 +376,11 @@ src/utils/regEx/serviceStatusRegEx.js
 src/utils/regEx/userImageRegEx.js
 src/utils/regEx/userPhoneRegEx.js
 src/utils/regEx/userRegEx.js
+src/views/dashboard.ejs
+src/views/landingPage.ejs
+src/views/login.ejs
+src/views/partials/footer.ejs
+src/views/partials/header.ejs
 </directory_structure>
 
 <files>
@@ -1786,6 +1803,7 @@ import {
   boomErrorHandler,
   ORMErrorHandler
 } from './middlewares/errorHandler.js';
+import setCurrentPath from './middlewares/setCurrentPath.js';
 // Import the setup of the database entities associations
 import { setupAssociations } from './db/models/index.js';
 
@@ -1845,6 +1863,8 @@ app.set('view engine', 'ejs');
   app.use(ORMErrorHandler);
   // Middleware for handling Boom errors
   app.use(boomErrorHandler);
+  // General to get the URL endpoint
+  app.use(setCurrentPath);
   // General error handling middleware
   app.use(errorHandler);
 
@@ -8041,6 +8061,103 @@ export const updateOneServiceStatus = async (req, res, next) => {
       error
     );
     // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/UI/dashboard.js">
+// controllers/dashboard.controller.js
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the dashboard page template.
+ *
+ * This function handles the request to display a dashboard page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const dashboard = async (req, res, next) => {
+  try {
+    // Extract the user full name that the middleware saved in req.user
+    const userFullname = req.user?.fullName || 'Invitado';
+
+    // Pass an isAuthenticated flag so the view can render login/logout appropriately
+    const isAuthenticated = Boolean(req.user);
+
+    // Return rendering the template and send the user data object
+    res.render('dashboard', {
+      userFullname: userFullname,
+      isAuthenticated: isAuthenticated
+    });
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de dashboard',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/UI/landingPage.js">
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the landing page template.
+ *
+ * This function handles the request to display a landing page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const landingPage = async (req, res, next) => {
+  try {
+    // delete older cookie and render the landing page
+    res.clearCookie('authentication').render('landingPage');
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de página de inicio',
+      err);
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/UI/login.js">
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to render the login page template.
+ *
+ * This function handles the request to display a login page view to have access to
+ * the application. Returning a response rendering a HTML template
+ *
+ * @param {Object} req - The request object containing the data sended in the request
+ * @param {Object} res - The response rendering a HTML template a throw views template engine
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {html} - Return rendering a HTML template
+ */
+export const login = async (req, res, next) => {
+  try {
+    // delete older cookie and render the login page
+    res.clearCookie('authentication').render('login');
+  } catch (err) {
+    const boomError = Boom.notImplemented(
+      'No es posible renderizar la vista de página de inicio de sesión',
+      err);
     next(boomError);
   }
 };
@@ -14844,6 +14961,14 @@ export const ORMErrorHandler = (err, req, res, next) => {
 }
 </file>
 
+<file path="src/middlewares/setCurrentPath.js">
+export default function setCurrentPath(req, res, next) {
+  // Use originalUrl to preserve full path including mounted base paths and query path not included
+  res.locals.currentPath = req.originalUrl || req.url || '/';
+  next();
+}
+</file>
+
 <file path="src/middlewares/tokenHandlers/authAppTokenHandler.js">
 import { config } from '../../config/config.js';
 import { signUserToken } from '../../utils/auth/tokenSign.js';
@@ -14895,6 +15020,7 @@ export const authAppVerifyToken = (req, res, next) => {
     const userData = {
       id: decoded.id,
       role: decoded.role,
+      fullName: decoded.fullName
     };
 
     // Regenerate a new token for the user, carrying the role forward
@@ -14943,6 +15069,1215 @@ export const validatorHandler = (schema, property) => {
     // If no error, proceed to the next middleware
     next();
   }
+}
+</file>
+
+<file path="src/public/js/login.js">
+(async function () {
+  'use strict';
+
+  /**
+   * handleSubmit(event)
+   * Uses the form 'action' attribute (fallback to '/app/v1/users/login').
+   * Sends credentials as { credentials } JSON payload.
+   * On 200 -> redirect to /app/v1/dashboard
+   * On 401/404 -> replace document.body with server HTML (per original logic)
+   * Network errors -> show user-friendly message in #wrong-input
+   */
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    // Elements and values
+    const form = event.currentTarget;
+    const actionUrl = form.getAttribute('action') || '/app/v1/users/login';
+    const userName = document.getElementById('username')?.value || '';
+    const password = document.getElementById('password')?.value || '';
+
+    // Locate or create the error container used to show messages
+    let wrongInput = document.getElementById('wrong-input');
+    if (!wrongInput) {
+      wrongInput = document.createElement('div');
+      wrongInput.id = 'wrong-input';
+      wrongInput.style.display = 'none';
+      wrongInput.className = 'form-error';
+      // Insert the error container just above the form actions if possible, otherwise at the top of the form
+      const actions = form.querySelector('.form-actions');
+      if (actions) actions.parentNode.insertBefore(wrongInput, actions);
+      else form.insertBefore(wrongInput, form.firstChild);
+    }
+
+    // Reset previous messages
+    wrongInput.textContent = '';
+    wrongInput.style.display = 'none';
+
+    // Small UX: disable submit button and show loading label
+    const submitBtn = form.querySelector('.btn-login');
+    const origBtnText = submitBtn ? submitBtn.textContent : null;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Ingresando...';
+    }
+
+    const credentials = { userName, password };
+
+    try {
+      const response = await fetch(actionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          // If you use CSRF, include token header here, e.g. 'CSRF-Token': csrfToken
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ credentials })
+      });
+
+      if (response.status === 200) {
+        // Successful login — navigate to dashboard
+        window.location.href = '/app/v1/dashboard';
+        return;
+      }
+
+      if (response.status === 401 || response.status === 404) {
+        // Original logic replaced the document body with server HTML.
+        // This mirrors that behavior exactly: get HTML and replace document.body.
+        const html = await response.text();
+        document.body.innerHTML = html;
+
+        // After replacing body, try to attach listener to the accept button if it exists.
+        // There is no guarantee of lifecycle here; we attempt best-effort.
+        const acceptButton = document.querySelector('.button');
+        if (acceptButton) {
+          acceptButton.addEventListener('click', function () {
+            window.location.href = '/app/v1/';
+          });
+        }
+        return;
+      }
+
+      // Other non-success statuses: attempt to parse JSON for message, otherwise show generic error
+      let errMsg = 'Error en el inicio de sesión';
+      try {
+        const payload = await response.json();
+        if (payload && payload.message) errMsg = payload.message;
+      } catch (e) {
+        // not JSON — attempt to read text
+        try {
+          const text = await response.text();
+          if (text) errMsg = text;
+        } catch (ignore) {}
+      }
+
+      wrongInput.textContent = errMsg;
+      wrongInput.style.display = 'block';
+    } catch (error) {
+      // Network / fetch error
+      wrongInput.textContent = 'Error de conexión con el servidor';
+      wrongInput.style.display = 'block';
+      console.error('Login fetch error:', error);
+    } finally {
+      // restore submit button state if still present (not redirected)
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        if (origBtnText) submitBtn.textContent = origBtnText;
+      }
+    }
+  }
+
+  // Attach handler on DOM ready
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('loginForm');
+    if (!form) return;
+    form.addEventListener('submit', handleSubmit);
+  });
+})();
+</file>
+
+<file path="src/public/js/redirectView.js">
+// redirectView.js — minimal navigation helpers + logout handling + active menu highlight
+// Comments in English per request. Load after header partial is rendered.
+
+(function () {
+  'use strict';
+
+  /**
+   * redirect(element)
+   * Elements using data-path and onclick="redirect(this)" will navigate to the path.
+   * Using this keeps navigation consistent across anchor-like elements and buttons.
+   */
+  window.redirect = function (el) {
+    if (!el) return;
+    var path = el.getAttribute('data-path');
+    if (!path) return;
+    // Basic client-side navigation:
+    window.location.href = path;
+  };
+
+  /**
+   * setActiveMenuFromLocation()
+   * Finds nav links with data-path and sets the 'active' class on the link whose
+   * path is the best match for the current location.pathname.
+   * It uses startsWith so subroutes (e.g., /app/v1/services/123) are matched.
+   */
+  function setActiveMenuFromLocation() {
+    var current = window.location.pathname || '/';
+    // Normalize: remove trailing slash except for root
+    if (current.length > 1 && current.endsWith('/')) {
+      current = current.slice(0, -1);
+    }
+
+    var menuLinks = document.querySelectorAll('.nav-menu a[data-path]');
+
+    var bestMatch = null;
+    var bestLen = -1;
+
+    menuLinks.forEach(function (link) {
+      var target = link.getAttribute('data-path') || '';
+      // Normalize target
+      if (target.length > 1 && target.endsWith('/')) {
+        target = target.slice(0, -1);
+      }
+      // if current starts with target, it's a candidate
+      if (target && current.indexOf(target) === 0) {
+        if (target.length > bestLen) {
+          bestLen = target.length;
+          bestMatch = link;
+        }
+      }
+      // clear previous active classes
+      link.classList.remove('active');
+    });
+
+    if (bestMatch) {
+      bestMatch.classList.add('active');
+    } else {
+      // Fallback: exact match for root/home path
+      var homeLink = document.querySelector('.nav-menu a[data-path="/app/v1/"]');
+      if (homeLink) {
+        homeLink.classList.remove('active'); // keep it not active unless it's home
+      }
+    }
+  }
+
+  // Intercept logout form submit (if present) to POST via fetch for a smoother UX.
+  // If JS is disabled, the form will be submitted normally due to method="post" fallback.
+  document.addEventListener('DOMContentLoaded', function () {
+    // Set active menu according to current location
+    setActiveMenuFromLocation();
+
+    var logoutForm = document.querySelector('.logout-form');
+
+    if (!logoutForm) return;
+
+    logoutForm.addEventListener('submit', function (ev) {
+      // Prevent normal form submit when JS available
+      ev.preventDefault();
+
+      var logoutUrl = logoutForm.getAttribute('action') || '/app/v1/logout';
+
+      // Optional: Grab CSRF token if you include one in the DOM (uncomment if needed)
+      // var csrfTokenEl = logoutForm.querySelector('input[name="_csrf"]');
+      // var csrfToken = csrfTokenEl ? csrfTokenEl.value : null;
+
+      fetch(logoutUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+          // 'CSRF-Token': csrfToken
+        },
+        body: JSON.stringify({})
+      })
+        .then(function (resp) {
+          // After logout, navigate to the app root
+          window.location.href = '/app/v1/';
+        })
+        .catch(function (err) {
+          // If fetch fails, fallback to classic navigation to ensure logout attempt
+          console.error('Logout failed via fetch, falling back to form submit.', err);
+          logoutForm.submit();
+        });
+    });
+  });
+
+  // If your app modifies the URL client-side (SPA navigation), call
+  // window.setActiveMenuFromLocation() after route change.
+  window.setActiveMenuFromLocation = setActiveMenuFromLocation;
+})();
+</file>
+
+<file path="src/public/styles/components/footer.css">
+/* ==========================================================
+   footer.css — Vive Zarzal footer styles (full-width background)
+   Load this AFTER root.css so it can override token defaults
+   Comments in English
+   ========================================================== */
+
+/* Footer background color token — change here or in root.css if you prefer */
+:root {
+  --footer-bg: #4a4a4a; /* dark band color across full width */
+  --footer-box-bg: transparent; /* keep inner box transparent when background is full-width */
+}
+
+/* SITE FOOTER
+   The footer background spans the full viewport width (full-bleed dark band).
+   Content is centered and constrained inside .footer-inner.
+*/
+.site-footer {
+  width: 100%;
+  background: var(--footer-bg);
+  padding: var(--space-6) 0; /* vertical padding for the band */
+  color: var(--text-inverse);
+  font-family: var(--font-family-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* INNER: constrained content */
+.footer-inner {
+  width: min(var(--container-lg), 84%);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  display: flex;
+  justify-content: center;
+}
+
+/* BOX: optionally transparent to let .site-footer show as full-width band.
+   Keeps centering and vertical spacing for text.
+*/
+.footer-box {
+  background: var(--footer-box-bg);
+  width: 100%;
+  max-width: var(--container-md);
+  border-radius: 0; /* remove rounding so band looks flush; set to var(--radius-sm) if you want rounding */
+  padding: 0; /* we already provide vertical spacing on .site-footer */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+/* TYPOGRAPHY */
+.footer-copy {
+  color: #ffffff;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.footer-contact {
+  color: #e6e6e6;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.footer-contact-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Hover / focus states for accessibility */
+.footer-contact-link:hover,
+.footer-contact-link:focus {
+  color: var(--color-accent-hover);
+  text-decoration: none;
+  outline: none;
+  text-underline-offset: 3px;
+}
+
+/* RESPONSIVE: keep padding and readable font sizes on small screens */
+@media (max-width: 600px) {
+  .site-footer {
+    padding: var(--space-6) var(--space-4);
+  }
+  .footer-inner {
+    width: 92%;
+  }
+  .footer-copy,
+  .footer-contact {
+    font-size: var(--font-size-xs);
+  }
+}
+</file>
+
+<file path="src/public/styles/components/header.css">
+/* ==========================================================
+   header.css — Vive Zarzal header overrides
+   Load this AFTER root.css so it can override token defaults
+   ========================================================== */
+
+/* Brand blue used for the "Vive Zarzal" text (adjustable) */
+:root {
+    --color-brand-blue: #0d6efd;
+    /* adjust to match the exact blue in the design */
+}
+
+/* --------------------------
+   NAVBAR BASE
+   -------------------------- */
+.site-header {
+    background: var(--gray-100);
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* --------------------------
+   INNER CONTAINER: center + constrained width
+   Mirrors the narrow horizontal band in the design
+   -------------------------- */
+.nav-inner {
+    width: min(var(--container-lg), 84%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    justify-content: space-between;
+    padding: 0 var(--space-4);
+}
+
+/* --------------------------
+   BRAND
+   -------------------------- */
+.brand {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-brand-blue);
+    text-decoration: none;
+    font-size: var(--font-size-lg);
+    padding: 0 var(--space-2);
+}
+
+/* --------------------------
+   CENTER NAV MENU
+   Displays menu items centered in the horizontal band
+   -------------------------- */
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: var(--space-8);
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-menu a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-normal);
+    padding: calc(var(--space-2) / 1.25) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.nav-menu a:hover,
+.nav-menu a:focus {
+    background: rgba(0, 0, 0, 0.03);
+    outline: none;
+}
+
+/* --------------------------
+   RIGHT-SIDE ACTIONS
+   User icon, user label and login/logout buttons
+   -------------------------- */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 220px;
+    justify-content: flex-end;
+}
+
+/* User icon button — simple, accessible button with svg icon */
+.user-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+}
+
+.user-btn svg {
+    display: block;
+}
+
+/* User label text to the right of the icon */
+.user-label {
+    color: var(--text-secondary);
+    margin-left: 4px;
+    margin-right: 8px;
+    font-size: var(--font-size-sm);
+}
+
+/* Login button styled as a rounded, yellow pill like the design */
+.btn-login {
+    display: inline-block;
+    background: var(--color-primary-light);
+    color: var(--color-black);
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-login:hover,
+.btn-login:focus {
+    background: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-1px);
+}
+
+/* Logout button: red pill style to indicate destructive action */
+.btn-logout {
+    display: inline-block;
+    background: var(--color-danger);
+    color: var(--color-white);
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    border: 0;
+    cursor: pointer;
+    box-shadow: 0 1px 0 rgba(0, 0, 0);
+}
+
+/* Active menu link: color uses the primary token (yellow/orange)
+   This makes the active item text appear in the brand yellow color. */
+.nav-menu a.active {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    /* subtle underline indicator (thin) to reinforce the active state */
+    box-shadow: inset 0 -3px 0 var(--color-primary);
+    border-radius: 2px;
+}
+
+/* Ensure active state preserves hover/keyboard styles */
+.nav-menu a.active:hover,
+.nav-menu a.active:focus {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--color-primary);
+}
+
+/* Optional: increase specificity when active to avoid inheritance */
+.nav-menu>li>a.active {
+    padding-bottom: calc(var(--space-2) / 1.25);
+}
+</file>
+
+<file path="src/public/styles/dashboard.css">
+/* ==========================================================
+   dashboard.css — Dashboard text-only styles
+   Comments in English
+   ========================================================== */
+
+/* Main layout to push footer down if content is short */
+.dashboard-content {
+  min-height: calc(100vh - var(--navbar-height) - 200px); /* Adjust based on your viewport */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-16) var(--space-4);
+  background: var(--bg-body);
+}
+
+/* Centered container for the text block */
+.message-container {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* Main title styling - 32px roughly */
+.welcome-title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-10);
+  letter-spacing: -0.01em;
+}
+
+/* Content block styling (descriptions) */
+.content-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8); /* spacing between paragraphs like the image */
+}
+
+/* First paragraph: "Descubre los servicios..." */
+.description-primary {
+  color: var(--text-secondary);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-normal);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Second paragraph: "Utiliza el menú superior..." */
+.description-secondary {
+  color: var(--text-muted);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .description-primary {
+    font-size: var(--font-size-md);
+  }
+
+  .dashboard-content {
+    padding: var(--space-10) var(--space-4);
+  }
+}
+</file>
+
+<file path="src/public/styles/landingPage.css">
+/* ==========================================================
+   LANDING PAGE
+   ========================================================== */
+
+.container {
+  width: min(1320px, 90%);
+  margin: 0 auto;
+}
+
+.section {
+  padding: var(--space-16) 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* HERO */
+
+.hero-section {
+  position: relative;
+  min-height: var(--hero-min-height);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-image: url("https://images.unsplash.com/photo-1609604919060-3a5a8c514b05?q=80&w=1170&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-overlay);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: var(--color-white);
+}
+
+.hero-title {
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--space-4);
+}
+
+.hero-description {
+  max-width: 700px;
+  margin: auto;
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-8);
+}
+
+.hero-btn {
+  padding: 1rem 3rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* FEATURES */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  margin-top: var(--space-10);
+}
+
+.feature-card {
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+}
+
+/* DATA SECTION */
+
+.stats-banner {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  padding: var(--space-16) 0;
+  text-align: center;
+}
+
+.stats-grid {
+  margin-top: var(--space-10);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.stats-grid h3 {
+  font-size: var(--font-size-3xl);
+}
+
+/* DESTINOS */
+
+.destination-grid {
+  margin-top: var(--space-10);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.destination-card img {
+  width: 100%;
+  height: var(--card-image-height);
+  object-fit: cover;
+}
+
+.card-body {
+  padding: var(--space-6);
+}
+
+/* TESTIMONIOS */
+
+.testimonial-grid {
+  margin-top: var(--space-10);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.message-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+}
+
+.message-box footer {
+  margin-top: var(--space-4);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* MAPA */
+
+.map-section {
+  background: var(--bg-section);
+}
+
+.map-image {
+  width: 100%;
+  max-width: 800px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* RECONOCIMIENTOS */
+
+.recognition-section {
+  background: var(--color-primary);
+  color: var(--gray-900);
+  padding: var(--space-16) 0;
+  text-align: center;
+}
+
+.recognition-grid {
+  margin-top: var(--space-10);
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.recognition-grid i {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-4);
+}
+
+/* FOOTER */
+
+.footer {
+  background: #111;
+  color: white;
+  text-align: center;
+  padding: var(--space-6);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 992px) {
+
+  .feature-grid,
+  .destination-grid,
+  .testimonial-grid,
+  .recognition-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-3xl);
+  }
+}
+</file>
+
+<file path="src/public/styles/login.css">
+/* ==========================================================
+   login.css — Login page styles for Vive Zarzal
+   Load after root.css and component CSS
+   Comments in English
+   ========================================================== */
+
+/* Page main area */
+.login-main {
+  background: var(--bg-body);
+  min-height: calc(100vh - var(--navbar-height) - var(--footer-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-4);
+}
+
+/* Wrapper to center the card */
+.login-wrapper {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  justify-content: center;
+}
+
+/* The rounded, light-gray card with big corner radius as in the mock */
+.login-card {
+  width: 100%;
+  background: var(--bg-section); /* light gray interior */
+  border-radius: 48px; /* large rounded corners matching the image */
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Title (blue) */
+.login-title {
+  color: var(--color-brand-blue);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-6);
+}
+
+/* Form layout */
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Labels */
+.label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  display: block;
+}
+
+/* Inputs */
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--gray-300);
+  font-size: var(--font-size-md);
+  background: var(--color-white);
+  margin-bottom: var(--space-5);
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px rgba(23,162,184,0.06); /* subtle accent glow */
+}
+
+/* Actions row: login + register */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* Primary login button — yellow pill */
+.btn-login {
+  background: var(--color-primary-light);
+  color: var(--color-black);
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 0;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.btn-login:hover,
+.btn-login:focus {
+  background: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-2px);
+}
+
+/* Register link styled as subtle button/ghost to the right of login */
+.btn-register {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+  color: var(--text-primary);
+  background: transparent;
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+/* Header "back" button (blue) */
+.btn-back {
+  display: inline-block;
+  background: var(--color-brand-blue);
+  color: var(--color-white);
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-back:hover,
+.btn-back:focus {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.form-error {
+  color: #d9534f; /* bootstrap danger-ish red */
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+  text-align: center;
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .login-card {
+    padding: var(--space-6);
+    border-radius: 32px;
+  }
+
+  .login-wrapper {
+    padding: 0 var(--space-4);
+  }
+
+  .login-title {
+    font-size: var(--font-size-md);
+  }
+}
+</file>
+
+<file path="src/public/styles/root.css">
+/* ==========================================================
+   VIVE ZARZAL - DESIGN TOKENS
+   root.css
+   ========================================================== */
+
+:root {
+
+  /* ========================================================
+     COLORS
+     ======================================================== */
+
+  --color-primary: #E49A2E;
+  --color-primary-hover: #C98420;
+  --color-primary-light: #F5C87A;
+
+  --color-secondary: #28A745;
+  --color-secondary-hover: #218838;
+
+  --color-accent: #17A2B8;
+  --color-accent-hover: #138496;
+
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-danger: #DC3545;
+  --color-info: #0DCAF0;
+
+  /* Neutral palette */
+
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  --gray-50: #F8F9FA;
+  --gray-100: #F1F3F5;
+  --gray-200: #E9ECEF;
+  --gray-300: #DEE2E6;
+  --gray-400: #CED4DA;
+  --gray-500: #ADB5BD;
+  --gray-600: #6C757D;
+  --gray-700: #495057;
+  --gray-800: #343A40;
+  --gray-900: #212529;
+
+  /* Backgrounds */
+
+  --bg-body: #FFFFFF;
+  --bg-body-alt: #F8F9FA;
+
+  --bg-card: #FFFFFF;
+  --bg-section: #F8F9FA;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+
+  /* Text */
+
+  --text-primary: #212529;
+  --text-secondary: #6C757D;
+  --text-muted: #868E96;
+  --text-inverse: #FFFFFF;
+
+  /* ========================================================
+     TYPOGRAPHY
+     ======================================================== */
+
+  --font-family-primary: "Poppins", sans-serif;
+
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-md: 1rem;         /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 2rem;        /* 32px */
+  --font-size-4xl: 2.5rem;      /* 40px */
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.8;
+
+  /* ========================================================
+     SPACING SYSTEM (8px GRID)
+     ======================================================== */
+
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* ========================================================
+     BORDER RADIUS
+     ======================================================== */
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* ========================================================
+     SHADOWS
+     ======================================================== */
+
+  --shadow-xs:
+    0 1px 2px rgba(0,0,0,0.05);
+
+  --shadow-sm:
+    0 2px 4px rgba(0,0,0,0.08);
+
+  --shadow-md:
+    0 5px 10px rgba(0,0,0,0.12);
+
+  --shadow-lg:
+    0 8px 20px rgba(0,0,0,0.15);
+
+  --shadow-xl:
+    0 12px 30px rgba(0,0,0,0.20);
+
+  /* ========================================================
+     TRANSITIONS
+     ======================================================== */
+
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* ========================================================
+     LAYOUT
+     ======================================================== */
+
+  --container-sm: 540px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1140px;
+  --container-xxl: 1320px;
+
+  --navbar-height: 70px;
+  --footer-height: 80px;
+
+  /* ========================================================
+     Z-INDEX
+     ======================================================== */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-toast: 1100;
+
+  /* ========================================================
+     IMAGES
+     ======================================================== */
+
+  --card-image-height: 220px;
+  --hero-min-height: 100vh;
+
+  /* ========================================================
+     GRADIENTS
+     ======================================================== */
+
+  --gradient-body:
+    linear-gradient(
+      to right,
+      #F8F9FA,
+      #EAF4FF
+    );
+
+  --gradient-primary:
+    linear-gradient(
+      135deg,
+      #E49A2E,
+      #F5C87A
+    );
+}
+
+/* ==========================================================
+   DARK THEME
+   ========================================================== */
+
+[data-theme="dark"] {
+
+  --bg-body: #121212;
+  --bg-body-alt: #1A1A1A;
+
+  --bg-card: #1E1E1E;
+  --bg-section: #1E1E1E;
+
+  --text-primary: #F0F0F0;
+  --text-secondary: #CFCFCF;
+  --text-muted: #AAAAAA;
+
+  --gray-900: #F8F9FA;
+
+  --shadow-md:
+    0 5px 15px rgba(0,0,0,0.35);
+
+  --shadow-lg:
+    0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* ==========================================================
+   GLOBAL ELEMENT TOKENS
+   ========================================================== */
+
+body {
+  font-family: var(--font-family-primary);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary-custom {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.btn-primary-custom:hover {
+  background: var(--color-primary-hover);
+}
+
+.section-title {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-primary-brand {
+  color: var(--color-primary);
+}
+
+.shadow-brand {
+  box-shadow: var(--shadow-md);
 }
 </file>
 
@@ -17359,8 +18694,6 @@ roleRouter.get(
   '/list-all',
   // Step 1: verify the session token
   authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
   // Step 3: delegate to the controller (no payload to validate)
   listAllRoles
 );
@@ -18104,24 +19437,44 @@ import { checkApiKey } from '../middlewares/apiAuthHandler.js';
 // Import the middleware to verify the data types sended in the request
 import { validatorHandler  } from '../middlewares/validatorHandler.js';
 // Import the controllers functions to manage user interfaces templates
+import { landingPage } from "../controllers/UI/landingPage.js";
+import { dashboard } from "../controllers/UI/dashboard.js";
+import { login } from "../controllers/UI/login.js";
 
 // Create a new Router instance
 export const UIRouter = Router();
 
 // Define a GET route for login view
-/*
 UIRouter.get(
-  // Route path display the login view
+  // Route path display the landing page
   '/',
-  // Middleware to validate the data type
-  //validatorHandler(userSchema, 'body'),
-  // Middleware to verify the API key sended by the client before
-  // proceeding to the controller
-  //checkApiKey,
-  // Controller function to render a login template
-  //loginForm
+  // Controller function to render the landing page
+  landingPage
 );
-*/
+
+// Define a GET route for login view
+UIRouter.get(
+  // Route path display the dashboard page
+  '/dashboard',
+  // Controller function to render the landing page
+  dashboard
+);
+
+// Define a GET route for login view
+UIRouter.get(
+  // Route path display the login page
+  '/auth/login',
+  // Controller function to render the landing page
+  login
+);
+
+// Define a GET route for ladingPage view
+UIRouter.get(
+  // Route path display the landing page
+  '/auth/logout',
+  // Controller function to render the landing page
+  landingPage
+);
 </file>
 
 <file path="src/router/userImageRouter.js">
@@ -25531,7 +26884,11 @@ export class UserImageServices {
 
         // Generate JWT token with user data, including the role name
         const userToken = signUserToken(
-          { id: userRecord.id, role: userRecord.role.name },
+          { 
+            id: userRecord.id, 
+            role: userRecord.role.name,
+            fullName: `${userRecord.firstName} ${userRecord.lastName}`
+          },
           config.authAppJwtKey,
           '1h'
         );
@@ -26886,6 +28243,549 @@ export const username = /^[a-zA-Z0-9._-]{3,80}$/;
 // allowing any combination of letters, digits, and common symbols.
 // The password must be between 8 and 30 characters long.
 export const password = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d@$!%*?&._\-#]{8,30}$/;
+</file>
+
+<file path="src/views/dashboard.ejs">
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard | Vive Zarzal</title>
+
+  <link rel="stylesheet" href="/styles/root.css">
+  <link rel="stylesheet" href="/styles/components/header.css">
+  <link rel="stylesheet" href="/styles/components/footer.css">
+  <link rel="stylesheet" href="/styles/dashboard.css">
+</head>
+
+<body>
+
+  <%- include('./partials/header') %>
+
+  <main class="dashboard-content" role="main">
+    <div class="message-container">
+      <!-- Main Greeting -->
+      <h1 class="welcome-title">Bienvenido a Vive Zarzal</h1>
+
+      <div class="content-body">
+        <!-- Main Description -->
+        <p class="description-primary">
+          Descubre los servicios, experiencias y comercios turísticos que ofrece el municipio de Zarzal.
+        </p>
+
+        <!-- Instructions -->
+        <p class="description-secondary">
+          Utiliza el menú superior para comenzar a explorar la plataforma.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <%- include('./partials/footer') %>
+
+</body>
+
+</html>
+</file>
+
+<file path="src/views/landingPage.ejs">
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vive Zarzal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/styles/root.css">
+  <link rel="stylesheet" href="/styles/landingPage.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+  <main class="landing-page">
+
+    <!-- HERO -->
+
+    <section class="hero-section">
+
+      <div class="bg-overlay"></div>
+
+      <div class="hero-content container">
+
+        <h1 class="hero-title">
+          Bienvenido a Vive Zarzal
+        </h1>
+
+        <p class="hero-description">
+          Vive experiencias únicas, conecta con la cultura local y recorre
+          los mejores destinos turísticos de la región.
+        </p>
+
+        <a data-path="/app/v1/dashboard" onclick="redirect(this)" class="btn-primary-custom hero-btn">
+          Comenzar
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- FEATURES -->
+
+    <section class="info-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          ¿Qué puedes hacer aquí?
+        </h2>
+
+        <div class="feature-grid">
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-map-location-dot feature-icon"></i>
+
+            <h3>Explorar Lugares</h3>
+
+            <p>
+              Descubre rutas, parajes naturales y joyas escondidas
+              en tu región.
+            </p>
+
+          </article>
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-calendar-days feature-icon"></i>
+
+            <h3>Planificar Actividades</h3>
+
+            <p>
+              Desde caminatas hasta festivales culturales,
+              agenda tu próxima aventura.
+            </p>
+
+          </article>
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-camera-retro feature-icon"></i>
+
+            <h3>Captura Momentos</h3>
+
+            <p>
+              Registra recuerdos memorables y compártelos
+              con otros viajeros.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DATA -->
+
+    <section class="stats-banner">
+
+      <div class="container">
+
+        <h2>
+          ¿Por qué elegir Vive Zarzal?
+        </h2>
+
+        <p>
+          Te ayudamos a redescubrir tu tierra con una experiencia
+          personalizada, moderna y segura.
+        </p>
+
+        <div class="stats-grid">
+
+          <div>
+            <h3>+200</h3>
+            <p>Lugares registrados</p>
+          </div>
+
+          <div>
+            <h3>+1.000</h3>
+            <p>Usuarios activos</p>
+          </div>
+
+          <div>
+            <h3>100%</h3>
+            <p>Hecho en Colombia 🇨🇴</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DESTINOS -->
+
+    <section class="featured-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          Destinos Destacados
+        </h2>
+
+        <div class="destination-grid">
+
+          <article class="card destination-card">
+
+            <img
+              src="https://turismovalledelcauca.com/wp-content/uploads/2020/01/foto-municipio-zarzal-turismo-valle-del-cauca-colombia.jpg"
+              alt="Sobrevuelo Zarzal">
+
+            <div class="card-body">
+
+              <h3>Sobre vuelo sobre Zarzal</h3>
+
+              <p>
+                Explora la belleza del municipio desde el aire.
+              </p>
+
+            </div>
+
+          </article>
+
+          <article class="card destination-card">
+
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/0/02/Parque_santander_zarzal_valle.jpg"
+              alt="Parque principal">
+
+            <div class="card-body">
+
+              <h3>Parque principal del municipio</h3>
+
+              <p>
+                Espacio público lleno de comercio y gastronomía local.
+              </p>
+
+            </div>
+
+          </article>
+
+          <article class="card destination-card">
+
+            <img
+              src="https://www.livevalledelcauca.com/assets/images/zarzal/lago-de-pesca-la-abuelita.jpg"
+              alt="Lago de Pesca">
+
+            <div class="card-body">
+
+              <h3>Lago de Pesca La Abuelita</h3>
+
+              <p>
+                Un lugar imperdible para los amantes de la pesca.
+              </p>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TESTIMONIOS -->
+
+    <section class="testimonials-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          Lo que dicen nuestros visitantes
+        </h2>
+
+        <div class="testimonial-grid">
+
+          <blockquote class="message-box">
+            <p>
+              "Una experiencia inolvidable. La mejor forma de conocer Zarzal."
+            </p>
+            <footer>Juan G.</footer>
+          </blockquote>
+
+          <blockquote class="message-box">
+            <p>
+              "Fácil de usar, muy útil para planear mis paseos con la familia."
+            </p>
+            <footer>María L.</footer>
+          </blockquote>
+
+          <blockquote class="message-box">
+            <p>
+              "Recomiendo Vive Zarzal a todo el que quiera explorar el Valle."
+            </p>
+            <footer>Andrés P.</footer>
+          </blockquote>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- MAPA -->
+
+    <section class="map-section section">
+
+      <div class="container text-center">
+
+        <h2 class="section-title">
+          Explora Zarzal desde el mapa
+        </h2>
+
+        <img
+          src="https://media.istockphoto.com/id/163113165/photo/colombia.webp?a=1&b=1&s=612x612&w=0&k=20&c=zQSAKOcl4TI-MZyC_AcLpNzik33sOv1tXzPtyCz2Rg8="
+          alt="Mapa Zarzal"
+          class="map-image">
+
+      </div>
+
+    </section>
+
+    <!-- RECONOCIMIENTOS -->
+
+    <section class="recognition-section">
+
+      <div class="container">
+
+        <h2>
+          Reconocimientos y Resultados
+        </h2>
+
+        <div class="recognition-grid">
+
+          <article>
+            <i class="fa-solid fa-star"></i>
+            <h3>App destacada regional</h3>
+            <p>Premiada por innovación en turismo digital.</p>
+          </article>
+
+          <article>
+            <i class="fa-solid fa-users"></i>
+            <h3>Comunidad activa</h3>
+            <p>Colaboraciones con instituciones y guías locales.</p>
+          </article>
+
+          <article>
+            <i class="fa-brands fa-whatsapp"></i>
+            <h3>Soporte en línea</h3>
+            <p>Atención y asesoría vía WhatsApp todos los días.</p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <p>
+        © 2026 Vive Zarzal. Todos los derechos reservados.
+      </p>
+
+      <p>
+        contacto@vivezarzal.com
+      </p>
+
+    </div>
+
+  </footer>
+
+  <script type="application/javascript" src="/js/redirectView.js"></script>
+
+</body>
+
+</html>
+</file>
+
+<file path="src/views/login.ejs">
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión | Vive Zarzal</title>
+
+  <!-- Design tokens and component styles -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+  <link rel="stylesheet" href="/styles/login.css" />
+</head>
+
+<body>
+
+  <!-- Inline header (reused from header partial but placed here as requested) -->
+  <nav class="site-header" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+
+      <!-- keep center menu minimal (you may hide or show) -->
+      <ul class="nav-menu" role="menubar" aria-label="Main menu">
+        <li role="none"><a role="menuitem" data-path="/app/v1/services" onclick="redirect(this)">Servicios</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/experiences" onclick="redirect(this)">Experiencias</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/advertiser" onclick="redirect(this)">Anunciantes</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- small placeholder user icon -->
+        <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
+          </svg>
+        </button>
+
+        <span class="user-label">Invitado</span>
+
+        <!-- "Regresar" button (blue) on the right as in the mock -->
+        <a data-path="/app/v1/" onclick="redirect(this)" class="btn-back" role="button">Regresar</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- LOGIN MAIN CONTENT -->
+  <main class="login-main" role="main">
+    <div class="login-wrapper">
+      <div class="login-card" role="region" aria-labelledby="login-title">
+        <h2 id="login-title" class="login-title">Inicio de sesión</h2>
+
+        <form id="loginForm" class="login-form" action="/app/v1/users/login" method="post" novalidate>
+          <!-- If you use CSRF, insert it here: -->
+          <!-- <input type="hidden" name="_csrf" value="<​%= csrfToken %>"> -->
+
+          <label for="username" class="label">Usuario</label>
+          <input id="username" name="username" type="text" autocomplete="username" class="input" required />
+
+          <label for="password" class="label">Contraseña</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" class="input" required />
+
+          <div id="wrong-input" class="form-error" style="display:none;color:#d9534f;margin-bottom:var(--space-3);"></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-login">Ingresar</button>
+            <a data-path="/app/v1/auth/register" onclick="redirect(this)" class="btn-register">Registrarse</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Reuse footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts: redirectView handles data-path navigation; loginView for form helper -->
+  <script src="/js/redirectView.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+
+</html>
+</file>
+
+<file path="src/views/partials/footer.ejs">
+<% /* partials/footer.ejs */ %>
+<footer class="site-footer" role="contentinfo" aria-label="Site footer">
+  <div class="footer-inner">
+    <div class="footer-box">
+      <p class="footer-copy">© <%= new Date().getFullYear() %> Vive Zarzal. Todos los derechos reservados.</p>
+      <p class="footer-contact">
+        Contacto:&nbsp;
+        <a class="footer-contact-link" href="mailto:contacto@vivezarzal.com">contacto@vivezarzal.com</a>
+      </p>
+    </div>
+  </div>
+</footer>
+</file>
+
+<file path="src/views/partials/header.ejs">
+<% /* partials/header.ejs */ %>
+<nav class="site-header" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+
+    <ul class="nav-menu" role="menubar" aria-label="Main menu">
+      <li role="none">
+        <a role="menuitem"
+           data-path="/app/v1/services"
+           onclick="redirect(this)"
+           class="<​%= (currentPath && currentPath.startsWith('/app/v1/services')) ? 'active' : '' %>">
+          Servicios
+        </a>
+      </li>
+
+      <li role="none">
+        <a role="menuitem"
+           data-path="/app/v1/experiences"
+           onclick="redirect(this)"
+           class="<​%= (currentPath && currentPath.startsWith('/app/v1/experiences')) ? 'active' : '' %>">
+          Experiencias
+        </a>
+      </li>
+
+      <li role="none">
+        <a role="menuitem"
+           data-path="/app/v1/advertiser"
+           onclick="redirect(this)"
+           class="<​%= (currentPath && currentPath.startsWith('/app/v1/advertiser')) ? 'active' : '' %>">
+          Anunciantes
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
+        </svg>
+      </button>
+
+      <span class="user-label"><%= userFullname %></span>
+
+      <% if (isAuthenticated) { %>
+        <form class="logout-form" action="/app/v1/auth/logout" method="post" style="display:inline;">
+          <button type="submit" class="btn-logout">Cerrar sesión</button>
+        </form>
+      <% } else { %>
+        <a data-path="/app/v1/auth/login" onclick="redirect(this)" class="btn-login" role="button">Ingresar</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<script type="application/javascript" src="/js/redirectView.js"></script>
 </file>
 
 </files>

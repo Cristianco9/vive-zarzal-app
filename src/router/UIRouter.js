@@ -71,5 +71,5 @@ UIRouter.get(
   // Route path display the register advertiser form
   '/auth/register/advertiser',
   // Controller function to render the register advertiser form
-  registerCustomerForm
+  registerAdvertiserForm
 );

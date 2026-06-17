@@ -4,7 +4,7 @@
 // - "cliente"    -> /app/v1/auth/register/customer
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API = '/app/v1/roles//list-all'; // ajustar si tu endpoint real difiere
+  const API = '/app/v1/roles/list-all'; // ajustar si tu endpoint real difiere
   const select = document.getElementById('roleSelect');
   const nextBtn = document.getElementById('nextBtn');
 
