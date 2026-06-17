@@ -8,21 +8,15 @@ import { checkApiKey } from '../middlewares/apiAuthHandler.js';
 // Import the middleware to verify the data types sended in the request
 import { validatorHandler  } from '../middlewares/validatorHandler.js';
 // Import the controllers functions to manage user interfaces templates
+import { landingPage } from "../controllers/UI/landingPage.js";
 
 // Create a new Router instance
 export const UIRouter = Router();
 
 // Define a GET route for login view
-/*
 UIRouter.get(
-  // Route path display the login view
+  // Route path display the landing page
   '/',
-  // Middleware to validate the data type
-  //validatorHandler(userSchema, 'body'),
-  // Middleware to verify the API key sended by the client before
-  // proceeding to the controller
-  //checkApiKey,
-  // Controller function to render a login template
-  //loginForm
+  // Controller function to render the landing page
+  landingPage
 );
-*/

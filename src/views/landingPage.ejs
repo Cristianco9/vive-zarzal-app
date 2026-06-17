@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Vive Zarzal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/styles/root.css">
+  <link rel="stylesheet" href="/styles/landingPage.css">
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+  <main class="landing-page">
+
+    <!-- HERO -->
+
+    <section class="hero-section">
+
+      <div class="bg-overlay"></div>
+
+      <div class="hero-content container">
+
+        <h1 class="hero-title">
+          Bienvenido a Vive Zarzal
+        </h1>
+
+        <p class="hero-description">
+          Vive experiencias únicas, conecta con la cultura local y recorre
+          los mejores destinos turísticos de la región.
+        </p>
+
+        <a data-path="/app/v1/dashboard" onclick="redirect(this)" class="btn-primary-custom hero-btn">
+          Comenzar
+        </a>
+
+      </div>
+
+    </section>
+
+    <!-- FEATURES -->
+
+    <section class="info-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          ¿Qué puedes hacer aquí?
+        </h2>
+
+        <div class="feature-grid">
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-map-location-dot feature-icon"></i>
+
+            <h3>Explorar Lugares</h3>
+
+            <p>
+              Descubre rutas, parajes naturales y joyas escondidas
+              en tu región.
+            </p>
+
+          </article>
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-calendar-days feature-icon"></i>
+
+            <h3>Planificar Actividades</h3>
+
+            <p>
+              Desde caminatas hasta festivales culturales,
+              agenda tu próxima aventura.
+            </p>
+
+          </article>
+
+          <article class="feature-card">
+
+            <i class="fa-solid fa-camera-retro feature-icon"></i>
+
+            <h3>Captura Momentos</h3>
+
+            <p>
+              Registra recuerdos memorables y compártelos
+              con otros viajeros.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DATA -->
+
+    <section class="stats-banner">
+
+      <div class="container">
+
+        <h2>
+          ¿Por qué elegir Vive Zarzal?
+        </h2>
+
+        <p>
+          Te ayudamos a redescubrir tu tierra con una experiencia
+          personalizada, moderna y segura.
+        </p>
+
+        <div class="stats-grid">
+
+          <div>
+            <h3>+200</h3>
+            <p>Lugares registrados</p>
+          </div>
+
+          <div>
+            <h3>+1.000</h3>
+            <p>Usuarios activos</p>
+          </div>
+
+          <div>
+            <h3>100%</h3>
+            <p>Hecho en Colombia 🇨🇴</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DESTINOS -->
+
+    <section class="featured-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          Destinos Destacados
+        </h2>
+
+        <div class="destination-grid">
+
+          <article class="card destination-card">
+
+            <img
+              src="https://turismovalledelcauca.com/wp-content/uploads/2020/01/foto-municipio-zarzal-turismo-valle-del-cauca-colombia.jpg"
+              alt="Sobrevuelo Zarzal">
+
+            <div class="card-body">
+
+              <h3>Sobre vuelo sobre Zarzal</h3>
+
+              <p>
+                Explora la belleza del municipio desde el aire.
+              </p>
+
+            </div>
+
+          </article>
+
+          <article class="card destination-card">
+
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/0/02/Parque_santander_zarzal_valle.jpg"
+              alt="Parque principal">
+
+            <div class="card-body">
+
+              <h3>Parque principal del municipio</h3>
+
+              <p>
+                Espacio público lleno de comercio y gastronomía local.
+              </p>
+
+            </div>
+
+          </article>
+
+          <article class="card destination-card">
+
+            <img
+              src="https://www.livevalledelcauca.com/assets/images/zarzal/lago-de-pesca-la-abuelita.jpg"
+              alt="Lago de Pesca">
+
+            <div class="card-body">
+
+              <h3>Lago de Pesca La Abuelita</h3>
+
+              <p>
+                Un lugar imperdible para los amantes de la pesca.
+              </p>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TESTIMONIOS -->
+
+    <section class="testimonials-section section">
+
+      <div class="container">
+
+        <h2 class="section-title text-center">
+          Lo que dicen nuestros visitantes
+        </h2>
+
+        <div class="testimonial-grid">
+
+          <blockquote class="message-box">
+            <p>
+              "Una experiencia inolvidable. La mejor forma de conocer Zarzal."
+            </p>
+            <footer>Juan G.</footer>
+          </blockquote>
+
+          <blockquote class="message-box">
+            <p>
+              "Fácil de usar, muy útil para planear mis paseos con la familia."
+            </p>
+            <footer>María L.</footer>
+          </blockquote>
+
+          <blockquote class="message-box">
+            <p>
+              "Recomiendo Vive Zarzal a todo el que quiera explorar el Valle."
+            </p>
+            <footer>Andrés P.</footer>
+          </blockquote>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- MAPA -->
+
+    <section class="map-section section">
+
+      <div class="container text-center">
+
+        <h2 class="section-title">
+          Explora Zarzal desde el mapa
+        </h2>
+
+        <img
+          src="https://media.istockphoto.com/id/163113165/photo/colombia.webp?a=1&b=1&s=612x612&w=0&k=20&c=zQSAKOcl4TI-MZyC_AcLpNzik33sOv1tXzPtyCz2Rg8="
+          alt="Mapa Zarzal"
+          class="map-image">
+
+      </div>
+
+    </section>
+
+    <!-- RECONOCIMIENTOS -->
+
+    <section class="recognition-section">
+
+      <div class="container">
+
+        <h2>
+          Reconocimientos y Resultados
+        </h2>
+
+        <div class="recognition-grid">
+
+          <article>
+            <i class="fa-solid fa-star"></i>
+            <h3>App destacada regional</h3>
+            <p>Premiada por innovación en turismo digital.</p>
+          </article>
+
+          <article>
+            <i class="fa-solid fa-users"></i>
+            <h3>Comunidad activa</h3>
+            <p>Colaboraciones con instituciones y guías locales.</p>
+          </article>
+
+          <article>
+            <i class="fa-brands fa-whatsapp"></i>
+            <h3>Soporte en línea</h3>
+            <p>Atención y asesoría vía WhatsApp todos los días.</p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <p>
+        © 2026 Vive Zarzal. Todos los derechos reservados.
+      </p>
+
+      <p>
+        contacto@vivezarzal.com
+      </p>
+
+    </div>
+
+  </footer>
+
+  <script type="application/javascript" src="/js/redirectView.js"></script>
+
+</body>
+
+</html>
