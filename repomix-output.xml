@@ -130,7 +130,9 @@ src/controllers/phone/updateOnePhone.js
 src/controllers/reservation/createOneReservation.js
 src/controllers/reservation/deleteOneReservation.js
 src/controllers/reservation/listAllReservations.js
+src/controllers/reservation/listBusinessReservations.js
 src/controllers/reservation/listOneReservation.js
+src/controllers/reservation/listServiceReservations.js
 src/controllers/reservation/listUserReservations.js
 src/controllers/reservation/updateOneReservation.js
 src/controllers/reservationStatus/createOneReservationStatus.js
@@ -167,6 +169,7 @@ src/controllers/serviceStatus/listOneServiceStatus.js
 src/controllers/serviceStatus/updateOneServiceStatus.js
 src/controllers/user/createOneUser.js
 src/controllers/user/deleteOneUser.js
+src/controllers/user/deleteOwnAccount.js
 src/controllers/user/findUserByEmail.js
 src/controllers/user/listAllUsers.js
 src/controllers/user/listOneUser.js
@@ -175,10 +178,12 @@ src/controllers/user/recoverUserPassword.js
 src/controllers/user/updateOneUser.js
 src/controllers/userImage/createOneUserImage.js
 src/controllers/userImage/deleteOneUserImage.js
+src/controllers/userImage/deleteOneUserImageAdmin.js
 src/controllers/userImage/listAllUserImages.js
 src/controllers/userImage/listAllUserImagesByUser.js
 src/controllers/userImage/listOneUserImage.js
 src/controllers/userImage/updateOneUserImage.js
+src/controllers/userImage/updateOneUserImageAdmin.js
 src/db/config.js
 src/db/migrations/20260615092518-country.cjs
 src/db/migrations/20260615092634-department.cjs
@@ -261,7 +266,10 @@ src/router/roleRouter.js
 src/router/serviceImageRouter.js
 src/router/serviceReviewRouter.js
 src/router/serviceRouter.js
+src/router/serviceStatusRouter.js
 src/router/UIRouter.js
+src/router/userImageRouter.js
+src/router/userRouter.js
 src/schemas/ageRestrictionSchema.js
 src/schemas/businessPhoneSchema.js
 src/schemas/businessReviewSchema.js
@@ -5781,60 +5789,47 @@ export const updateOnePhone = async (req, res, next) => {
 <file path="src/controllers/reservation/createOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
 
 /**
- * Controller function to create a new reservation.
+ * Controller — POST /reservations
  *
- * This function handles the request to create a new reservation by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * Creates a new reservation and its initial detail record (status: pendiente).
+ * The authenticated user's ID is taken from the JWT token and passed to the
+ * service layer to create the ReservationDetail ownership record.
  *
- * @param {Object} req - The request object containing the reservation's data.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * Expected body: { serviceId, quantity }
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @param {Object}   req  - Express request.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 201 JSON with the new reservation and detail IDs.
  */
 export const createOneReservation = async (req, res, next) => {
 
-  // Extract the service ID from the request body
-  const { serviceId } = req.body;
-  
-  // Extract the user ID from the authenticated request
+  // Extract the required fields from the request body
+  const { serviceId, quantity } = req.body;
+
+  // Extract the authenticated user's ID from the JWT token
   const userId = req.user.id;
 
   try {
-    // Validate that serviceId is provided
-    if (!serviceId) {
-      // Throw a Boom bad request error if serviceId is missing
-      throw Boom.badRequest('serviceId is required');
-    }
-
-    // Instantiate the ReservationServices class to manage reservation operations
+    // Instantiate the service manager
     const reservationManager = new ReservationServices();
-    
-    // Attempt to create a new reservation using the provided data
-    const result = await reservationManager.createOne({ serviceId }, userId);
 
-    // If the reservation is created successfully, send a success response
+    // Delegate creation to the service layer — userId is required to build
+    // the ReservationDetail record that links the user to the reservation
+    const result = await reservationManager.createOne({ serviceId, quantity }, userId);
+
     return res.status(201).json({
       success: true,
       message: 'Reservation created successfully',
       data: result,
-      // Include the new token in the response if available
-      authentication: res.locals.newUserToken
+      authentication: res.locals.newUserToken,
     });
 
   } catch (error) {
-    // Handle errors during reservation creation by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to create the reservation in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (404) or any unexpected error
+    next(error);
   }
 };
 </file>
@@ -5842,60 +5837,44 @@ export const createOneReservation = async (req, res, next) => {
 <file path="src/controllers/reservation/deleteOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete an existing reservation.
+ * Controller — DELETE /reservations/:id
  *
- * This function handles the request to delete an existing reservation by extracting
- * the reservation ID from the request parameters and invoking the appropriate service
- * method with user ownership validation.
+ * Deletes a reservation. Only the owner of the reservation
+ * (determined via its ReservationDetail records) may perform this action.
+ * A 403 is returned by the service layer if the caller is not the owner.
  *
- * @param {Object} req - The request object containing the reservation ID.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
- *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @param {Object}   req  - Express request. Expects :id in params.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 200 JSON confirming the deletion.
  */
 export const deleteOneReservation = async (req, res, next) => {
 
-  // Extract the reservation ID from the request parameters
+  // Extract the reservation ID from the route parameters
   const { id } = req.params;
-  
-  // Extract the user ID from the authenticated request
+
+  // Extract the authenticated user's ID from the JWT token
   const userId = req.user.id;
 
   try {
-    // Validate that reservation ID is provided
-    if (!id) {
-      // Throw a Boom bad request error if reservation ID is missing
-      throw Boom.badRequest('Reservation ID is required');
-    }
-
-    // Instantiate the ReservationServices class to manage reservation operations
+    // Instantiate the service manager
     const reservationManager = new ReservationServices();
-    
-    // Attempt to delete the reservation using the provided ID and user ID
+
+    // Delegate the deletion to the service layer (ownership is enforced there)
     const result = await reservationManager.deleteOne(Number(id), userId);
 
-    // If the reservation is deleted successfully, send a success response
     return res.status(200).json({
       success: true,
       message: 'Reservation deleted successfully',
       data: result,
-      // Include the new token in the response if available
-      authentication: res.locals.newUserToken
+      authentication: res.locals.newUserToken,
     });
 
   } catch (error) {
-    // Handle errors during reservation deletion by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to delete the reservation from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 / 403 / 404) or any unexpected error
+    next(error);
   }
 };
 </file>
@@ -5948,63 +5927,134 @@ export const listAllReservations = async (req, res, next) => {
 };
 </file>
 
+<file path="src/controllers/reservation/listBusinessReservations.js">
+// Import the ReservationServices class from the reservationServices module
+import { ReservationServices } from '../../services/reservationServices.js';
+
+/**
+ * Controller — GET /reservations/business/:businessId
+ *
+ * Retrieves all reservations linked to any service that belongs to the
+ * given business. The chain traversed is:
+ *   Business → Service (businessId) → Reservation (serviceId)
+ *
+ * Returns 404 if the business does not exist.
+ * Typically restricted to administrators or the business owner via middleware.
+ *
+ * @param {Object}   req  - Express request. Expects :businessId in params.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 200 JSON with the business's reservations.
+ */
+export const listReservationsByBusiness = async (req, res, next) => {
+
+  // Extract the business ID from the route parameters
+  const { businessId } = req.params;
+
+  try {
+    // Instantiate the service manager
+    const reservationManager = new ReservationServices();
+
+    // Retrieve all reservations across every service of the given business
+    const reservations = await reservationManager.listByBusiness(Number(businessId));
+
+    return res.status(200).json({
+      success: true,
+      message: 'Reservations for the business retrieved successfully',
+      data: reservations,
+      authentication: res.locals.newUserToken,
+    });
+
+  } catch (error) {
+    // Forward the Boom error (404) or any unexpected error
+    next(error);
+  }
+};
+</file>
+
 <file path="src/controllers/reservation/listOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
 
 /**
- * Controller function to retrieve a single reservation.
+ * Controller — GET /reservations/:id
  *
- * This function handles the request to retrieve a single reservation by extracting
- * the reservation ID from the request parameters and invoking the appropriate service
- * method with user ownership validation.
+ * Retrieves a single reservation with its service and detail records.
+ * Only the owner of the reservation may access it; the service layer
+ * returns 403 if the calling user has no matching ReservationDetail row.
  *
- * @param {Object} req - The request object containing the reservation ID.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
- *
- * @returns {Promise<void>} - Returns a JSON response with the reservation data.
+ * @param {Object}   req  - Express request. Expects :id in params.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 200 JSON with the reservation data.
  */
 export const listOneReservation = async (req, res, next) => {
 
-  // Extract the reservation ID from the request parameters
+  // Extract the reservation ID from the route parameters
   const { id } = req.params;
-  
-  // Extract the user ID from the authenticated request
+
+  // Extract the authenticated user's ID from the JWT token
   const userId = req.user.id;
 
   try {
-    // Validate that reservation ID is provided
-    if (!id) {
-      // Throw a Boom bad request error if reservation ID is missing
-      throw Boom.badRequest('Reservation ID is required');
-    }
-
-    // Instantiate the ReservationServices class to manage reservation operations
+    // Instantiate the service manager
     const reservationManager = new ReservationServices();
-    
-    // Attempt to retrieve the reservation using the provided ID and user ID
+
+    // Delegate the lookup to the service layer (ownership is enforced there)
     const reservation = await reservationManager.listOne(Number(id), userId);
 
-    // If the reservation is retrieved successfully, send it in the response
     return res.status(200).json({
       success: true,
       message: 'Reservation retrieved successfully',
       data: reservation,
-      // Include the new token in the response if available
-      authentication: res.locals.newUserToken
+      authentication: res.locals.newUserToken,
     });
 
   } catch (error) {
-    // Handle errors during reservation retrieval by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to retrieve the reservation from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 / 403 / 404) or any unexpected error
+    next(error);
+  }
+};
+</file>
+
+<file path="src/controllers/reservation/listServiceReservations.js">
+// Import the ReservationServices class from the reservationServices module
+import { ReservationServices } from '../../services/reservationServices.js';
+
+/**
+ * Controller — GET /reservations/service/:serviceId
+ *
+ * Retrieves all reservations associated with a specific service.
+ * Returns 404 if the service does not exist.
+ * Typically restricted to administrators or the business owner via middleware.
+ *
+ * @param {Object}   req  - Express request. Expects :serviceId in params.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 200 JSON with the service's reservations.
+ */
+export const listReservationsByService = async (req, res, next) => {
+
+  // Extract the service ID from the route parameters
+  const { serviceId } = req.params;
+
+  try {
+    // Instantiate the service manager
+    const reservationManager = new ReservationServices();
+
+    // Retrieve all reservations for the given service
+    const reservations = await reservationManager.listByService(Number(serviceId));
+
+    return res.status(200).json({
+      success: true,
+      message: 'Reservations for the service retrieved successfully',
+      data: reservations,
+      authentication: res.locals.newUserToken,
+    });
+
+  } catch (error) {
+    // Forward the Boom error (404) or any unexpected error
+    next(error);
   }
 };
 </file>
@@ -6064,63 +6114,47 @@ export const listUserReservations = async (req, res, next) => {
 <file path="src/controllers/reservation/updateOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
 
 /**
- * Controller function to update an existing reservation.
+ * Controller — PATCH /reservations/:id
  *
- * This function handles the request to update an existing reservation by extracting
- * the reservation ID from the request parameters and the update data from the request body,
- * then invoking the appropriate service method with user ownership validation.
+ * Updates an existing reservation. Only the owner of the reservation
+ * (determined via its ReservationDetail records) may perform this action.
+ * A 403 is returned by the service layer if the caller is not the owner.
  *
- * @param {Object} req - The request object containing the reservation ID and update data.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
- *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @param {Object}   req  - Express request. Expects :id in params and update data in body.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 200 JSON confirming the update.
  */
 export const updateOneReservation = async (req, res, next) => {
 
-  // Extract the reservation ID from the request parameters
+  // Extract the reservation ID from the route parameters
   const { id } = req.params;
-  
-  // Extract the update data from the request body
+
+  // Extract the update payload from the request body
   const newData = req.body;
-  
-  // Extract the user ID from the authenticated request
+
+  // Extract the authenticated user's ID from the JWT token
   const userId = req.user.id;
 
   try {
-    // Validate that reservation ID is provided
-    if (!id) {
-      // Throw a Boom bad request error if reservation ID is missing
-      throw Boom.badRequest('Reservation ID is required');
-    }
-
-    // Instantiate the ReservationServices class to manage reservation operations
+    // Instantiate the service manager
     const reservationManager = new ReservationServices();
-    
-    // Attempt to update the reservation using the provided data and user ID
+
+    // Delegate the update to the service layer (ownership is enforced there)
     const result = await reservationManager.updateOne(Number(id), newData, userId);
 
-    // If the reservation is updated successfully, send a success response
     return res.status(200).json({
       success: true,
       message: 'Reservation updated successfully',
       data: result,
-      // Include the new token in the response if available
-      authentication: res.locals.newUserToken
+      authentication: res.locals.newUserToken,
     });
 
   } catch (error) {
-    // Handle errors during reservation update by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to update the reservation in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 / 403 / 404) or any unexpected error
+    next(error);
   }
 };
 </file>
@@ -7986,10 +8020,10 @@ import { UserServices } from '../../services/userServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete a user.
+ * Controller function to delete a user (admin only).
  *
  * This function handles the request to delete an existing user by extracting
- * the user ID from the request body, invoking the appropriate service method, and
+ * the user ID from the request parameters, invoking the appropriate service method, and
  * returning a response based on the operation's success or failure.
  *
  * @param {Object} req - The request object containing the user ID.
@@ -8000,8 +8034,8 @@ import Boom from '@hapi/boom';
  */
 export const deleteOneUser = async (req, res, next) => {
 
-  // Extract the user ID from the request body
-  const { id } = req.body;
+  // Extract the user ID from the request parameters
+  const { id } = req.params;
 
   // Instantiate the UserServices class to manage the user operations
   const userManager = new UserServices();
@@ -8032,6 +8066,65 @@ export const deleteOneUser = async (req, res, next) => {
 };
 </file>
 
+<file path="src/controllers/user/deleteOwnAccount.js">
+// Import the UserServices class from the userServices module
+import { UserServices } from '../../services/userServices.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function that allows a user to delete their own account.
+ *
+ * This function handles the request for a user to delete their own account by extracting
+ * the user ID from the JWT token, invoking the appropriate service method, and
+ * returning a response based on the operation's success or failure.
+ *
+ * @param {Object} req - The request object containing the authenticated user data.
+ * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ */
+export const deleteOwnAccount = async (req, res, next) => {
+
+  // Extract the user ID from the JWT token (authenticated user)
+  const userId = req.user.id;
+
+  // Optionally validate that the user ID in the token matches the one in params
+  const { id } = req.params;
+  if (userId !== parseInt(id)) {
+    return next(Boom.forbidden('Cannot delete another user\'s account'));
+  }
+
+  // Instantiate the UserServices class to manage the user operations
+  const userManager = new UserServices();
+
+  try {
+    // Attempt to delete the authenticated user's own account
+    const response = await userManager.deleteOwnAccount(userId);
+
+    // If the user's account is deleted successfully, send a success response
+    if (response.status === 'ACCOUNT DELETED SUCCESSFULLY') {
+      return res.status(201).json({
+        success: true,
+        message: 'Your account has been deleted successfully',
+        // Include the new token in the response
+        authentication: res.locals.newUserToken
+      });
+    }
+
+  } catch (error) {
+    // Handle errors during user deletion by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to delete your account from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
 <file path="src/controllers/user/findUserByEmail.js">
 // Import the UserServices class from the userServices module
 import { UserServices } from '../../services/userServices.js';
@@ -8046,7 +8139,7 @@ import Boom from '@hapi/boom';
  * be used only by the authentication layer for credential verification and must
  * never expose the password through the public API.
  *
- * @param {Object} req - The request object, expected to contain the user's email in the body.
+ * @param {Object} req - The request object, expected to contain the user's email in the params.
  * @param {Object} res - The response object to send the user data if found.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8054,8 +8147,8 @@ import Boom from '@hapi/boom';
  */
 export const findUserByEmail = async (req, res, next) => {
 
-  // Destructure the email from the request body
-  const { email } = req.body;
+  // Destructure the email from the request parameters
+  const { email } = req.params;
 
   // Instantiate the UserServices class to manage user operations
   const userManager = new UserServices();
@@ -8155,7 +8248,7 @@ import Boom from '@hapi/boom';
  * the user data if found. If an error occurs or the record is not found, it is handled
  * appropriately using Boom.
  *
- * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} req - The request object, expected to contain the user ID in the params.
  * @param {Object} res - The response object to send the user data if found.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8163,8 +8256,8 @@ import Boom from '@hapi/boom';
  */
 export const listOneUser = async (req, res, next) => {
 
-  // Destructure the user ID from the request body
-  const { id } = req.body;
+  // Destructure the user ID from the request parameters
+  const { id } = req.params;
 
   // Instantiate the UserServices class to manage user operations
   const userManager = new UserServices();
@@ -8219,7 +8312,7 @@ import Boom from '@hapi/boom';
 export const loginUser = async (req, res, next) => {
 
   // Extract the credentials from the request body
-  const { username, password } = req.body;
+  const { username, password } = req.body.loginCredentials;
 
   // Instantiate the UserServices class to manage the user operations
   const userManager = new UserServices();
@@ -8276,7 +8369,7 @@ import Boom from '@hapi/boom';
 export const recoverUserPassword = async (req, res, next) => {
 
   // Extract the email and new password from the request body
-  const { email, newPassword } = req.body;
+  const { email, newPassword } = req.body.passwordRecoveryData;
 
   // Instantiate the UserServices class to manage the user operations
   const userManager = new UserServices();
@@ -8317,10 +8410,11 @@ import Boom from '@hapi/boom';
  * Controller function to handle the update of a user.
  *
  * This function processes requests to update a user's details in the database. It accepts
- * the user ID and the new data from the request body. If the update is successful,
- * it returns a success message. If there's an error, it handles the error appropriately.
+ * the user ID from the request parameters and the new data from the request body. 
+ * If the update is successful, it returns a success message. If there's an error, 
+ * it handles the error appropriately.
  *
- * @param {Object} req - The request object, expected to contain the user ID and new data in the body.
+ * @param {Object} req - The request object, expected to contain the user ID in params and new data in the body.
  * @param {Object} res - The response object to send the result of the update operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8328,15 +8422,18 @@ import Boom from '@hapi/boom';
  */
 export const updateOneUser = async (req, res, next) => {
 
-  // Extract user ID and new user data from the request body
-  const { id, newUserData } = req.body;
+  // Extract user ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract new user data from the request body
+  const { updateUserData } = req.body;
 
   // Instantiate the UserServices class to manage user operations
   const userManager = new UserServices();
 
   try {
     // Attempt to update the user details in the database
-    const response = await userManager.updateOne(id, newUserData);
+    const response = await userManager.updateOne(id, updateUserData);
 
     // If the update is successful, return a 201 response with a success message
     if (response.status === 'UPDATED SUCCESSFULLY') {
@@ -8425,10 +8522,66 @@ import { UserImageServices } from '../../services/userImageServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to delete a user image.
+ * Controller function to delete a user image (owned by user).
  *
  * This function handles the request to delete an existing user image by extracting
- * the user image ID from the request body, invoking the appropriate service method,
+ * the user image ID from the request parameters and the user ID from the authenticated user,
+ * invoking the appropriate service method, and returning a response based on the operation's success or failure.
+ *
+ * @param {Object} req - The request object containing the authenticated user and user image ID.
+ * @param {Object} res - The response object to send the outcome of the operation.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ */
+export const deleteOneUserImage = async (req, res, next) => {
+
+  // Extract the user image ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the user ID from the authenticated user
+  const userId = req.user.id;
+
+  // Instantiate the UserImageServices class to manage the user image operations
+  const userImageManager = new UserImageServices();
+
+  try {
+    // Attempt to delete the user image by the provided ID and user ID
+    const response = await userImageManager.deleteOne(id, userId);
+
+    // If the user image is deleted successfully, send a success response
+    if (response.status === 'DELETED SUCCESSFULLY') {
+      return res.status(201).json({
+        success: true,
+        message: 'User image deleted successfully',
+        // Include the new token in the response
+        authentication: res.locals.newUserToken
+      });
+    }
+
+  } catch (error) {
+    // Handle errors during deletion by sending a Boom error response
+    const boomError = Boom.serverUnavailable(
+      'Unable to delete the user image from the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/userImage/deleteOneUserImageAdmin.js">
+// Import the UserImageServices class from the userImageServices module
+import { UserImageServices } from '../../services/userImageServices.js';
+// Import Boom to create HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to delete a user image (admin only).
+ *
+ * This function handles the request to delete any user image by extracting
+ * the user image ID from the request parameters, invoking the appropriate service method,
  * and returning a response based on the operation's success or failure.
  *
  * @param {Object} req - The request object containing the user image ID.
@@ -8437,17 +8590,17 @@ import Boom from '@hapi/boom';
  *
  * @returns {Promise<void>} - Returns a JSON response with the operation result.
  */
-export const deleteOneUserImage = async (req, res, next) => {
+export const deleteOneUserImageAdmin = async (req, res, next) => {
 
-  // Extract the user image ID from the request body
-  const { id } = req.body;
+  // Extract the user image ID from the request parameters
+  const { id } = req.params;
 
   // Instantiate the UserImageServices class to manage the user image operations
   const userImageManager = new UserImageServices();
 
   try {
-    // Attempt to delete the user image by the provided ID
-    const response = await userImageManager.deleteOne(id);
+    // Attempt to delete the user image by the provided ID (admin)
+    const response = await userImageManager.deleteOneAdmin(id);
 
     // If the user image is deleted successfully, send a success response
     if (response.status === 'DELETED SUCCESSFULLY') {
@@ -8535,7 +8688,7 @@ import Boom from '@hapi/boom';
  * a given user ID, invoking the appropriate service method and returning a response
  * with the list of records. If an error occurs, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} req - The request object, expected to contain the user ID in the params.
  * @param {Object} res - The response object to send the list of user images.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8543,8 +8696,8 @@ import Boom from '@hapi/boom';
  */
 export const listAllUserImagesByUser = async (req, res, next) => {
 
-  // Destructure the user ID from the request body
-  const { userId } = req.body;
+  // Destructure the user ID from the request params
+  const { userId } = req.params;
 
   // Instantiate the UserImageServices class to manage the user image operations
   const userImageManager = new UserImageServices();
@@ -8589,7 +8742,7 @@ import Boom from '@hapi/boom';
  * based on the provided ID. It calls the appropriate service method and returns
  * the record if found. If an error occurs, it is handled appropriately using Boom.
  *
- * @param {Object} req - The request object, expected to contain the user image ID in the body.
+ * @param {Object} req - The request object, expected to contain the user image ID in the params.
  * @param {Object} res - The response object to send the user image data if found.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8597,8 +8750,8 @@ import Boom from '@hapi/boom';
  */
 export const listOneUserImage = async (req, res, next) => {
 
-  // Destructure the user image ID from the request body
-  const { id } = req.body;
+  // Destructure the user image ID from the request params
+  const { id } = req.params;
 
   // Instantiate the UserImageServices class to manage user image operations
   const userImageManager = new UserImageServices();
@@ -8637,13 +8790,13 @@ import { UserImageServices } from '../../services/userImageServices.js';
 import Boom from '@hapi/boom';
 
 /**
- * Controller function to handle the update of a user image.
+ * Controller function to handle the update of a user image (owned by user).
  *
  * This function processes requests to update a user image's details in the database.
- * It accepts the user image ID and the new data from the request body. If the update
- * is successful, it returns a success message. If there's an error, it handles it appropriately.
+ * It accepts the user image ID from the request parameters, the user ID from the authenticated user,
+ * and the new data from the request body. If the update is successful, it returns a success message.
  *
- * @param {Object} req - The request object, expected to contain the user image ID and new data in the body.
+ * @param {Object} req - The request object, expected to contain the user image ID in params and new data in the body.
  * @param {Object} res - The response object to send the result of the update operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -8651,15 +8804,77 @@ import Boom from '@hapi/boom';
  */
 export const updateOneUserImage = async (req, res, next) => {
 
-  // Extract user image ID and new data from the request body
-  const { id, newUserImageData } = req.body;
+  // Extract user image ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract the user ID from the authenticated user
+  const userId = req.user.id;
+  
+  // Extract new data from the request body
+  const { newUserImageData } = req.body;
 
   // Instantiate the UserImageServices class to manage user image operations
   const userImageManager = new UserImageServices();
 
   try {
     // Attempt to update the user image details in the database
-    const response = await userImageManager.updateOne(id, newUserImageData);
+    const response = await userImageManager.updateOne(id, userId, newUserImageData);
+
+    // If the update is successful, return a 201 response with a success message
+    if (response.status === 'UPDATED SUCCESSFULLY') {
+      return res.status(201).json({
+        success: true,
+        message: 'User image updated successfully',
+        // Include the new token in the response
+        authentication: res.locals.newUserToken
+      });
+    }
+
+  } catch (error) {
+    // Handle errors during the update process by returning a 503 error
+    const boomError = Boom.serverUnavailable(
+      'Unable to update the user image in the database',
+      error
+    );
+    // Pass the Boom error to the next middleware in the stack
+    next(boomError);
+  }
+};
+</file>
+
+<file path="src/controllers/userImage/updateOneUserImageAdmin.js">
+// Import the UserImageServices class from the userImageServices module
+import { UserImageServices } from '../../services/userImageServices.js';
+// Import Boom to create HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
+/**
+ * Controller function to handle the update of a user image (admin only).
+ *
+ * This function processes requests to update any user image's details in the database.
+ * It accepts the user image ID from the request parameters and the new data from the request body.
+ * If the update is successful, it returns a success message.
+ *
+ * @param {Object} req - The request object, expected to contain the user image ID in params and new data in the body.
+ * @param {Object} res - The response object to send the result of the update operation.
+ * @param {Function} next - The next middleware function in the Express.js stack.
+ *
+ * @returns {Promise<void>} - Returns a JSON response with a success message, or an error if the update fails.
+ */
+export const updateOneUserImageAdmin = async (req, res, next) => {
+
+  // Extract user image ID from the request parameters
+  const { id } = req.params;
+  
+  // Extract new data from the request body
+  const { newUserImageData } = req.body;
+
+  // Instantiate the UserImageServices class to manage user image operations
+  const userImageManager = new UserImageServices();
+
+  try {
+    // Attempt to update the user image details in the database (admin)
+    const response = await userImageManager.updateOneAdmin(id, newUserImageData);
 
     // If the update is successful, return a 201 response with a success message
     if (response.status === 'UPDATED SUCCESSFULLY') {
@@ -15158,9 +15373,33 @@ export default genderRouter;
 <file path="src/router/index.js">
 // Import the Router class from Express
 import { Router } from "express";
+
 // Import the UIRouter for handling user-interface-related routes
 import { UIRouter } from "./UIRouter.js";
-// Import the UIRouter for handling user-related routes
+
+// Import subrouters
+import { ageRestrictionRouter } from "./ageRestrictionRouter.js";
+import { businessReviewRouter } from "./BusinessReviewRouter.js";
+import { businessRouter } from "./businessRouter.js";
+import { categoryRouter } from "./categoryRouter.js";
+import { cityRouter } from "./cityRouter.js";
+import { countryRouter } from "./countryRouter.js";
+import { departmentRouter } from "./departmentRouter.js";
+import { documentTypeRouter } from "./documentTypeRouter.js";
+import { favoriteUserServiceRouter } from "./favoriteUserServiceRouter.js";
+import { genderRouter } from "./genderRouter.js";
+import { locationRouter } from "./locationRouter.js";
+import { messageRouter } from "./messageRouter.js";
+import { messageStatusRouter } from "./messageStatusRouter.js";
+import { phoneRouter } from "./phoneRouter.js";
+import { reservationsRouter } from "./reservationsRouter.js";
+import { reservationStatusRouter } from "./reservationStatusRouter.js";
+import { roleRouter } from "./roleRouter.js";
+import { serviceImageRouter } from "./serviceImageRouter.js";
+import { serviceReviewRouter } from "./serviceReviewRouter.js";
+import { serviceRouter } from "./serviceRouter.js";
+import { serviceStatusRouter } from "./serviceStatusRouter.js";
+import { userImageRouter } from "./userImageRouter.js";
 import { userRouter } from "./userRouter.js";
 
 // Function to set up API routes
@@ -15172,12 +15411,34 @@ const routerApi = (app) => {
   // Use the router instance for the '/app/v1' path
   app.use('/app/v1', router);
 
-  // Use the userRouter for handling the root '/' route under '/app/v1/'
+  // UI
   router.use('/', UIRouter);
 
-  // Use the userRouter for handling '/users' routes under '/app/v1'
+  // Catalog routes
+  router.use('/age-restrictions', ageRestrictionRouter);
+  router.use('/businesses', businessRouter);
+  router.use('/business-reviews', businessReviewRouter);
+  router.use('/categories', categoryRouter);
+  router.use('/cities', cityRouter);
+  router.use('/countries', countryRouter);
+  router.use('/departments', departmentRouter);
+  router.use('/document-types', documentTypeRouter);
+  router.use('/favorite-user-services', favoriteUserServiceRouter);
+  router.use('/genders', genderRouter);
+  router.use('/locations', locationRouter);
+  router.use('/messages', messageRouter);
+  router.use('/message-statuses', messageStatusRouter);
+  router.use('/phones', phoneRouter);
+  router.use('/reservation', reservationsRouter);
+  router.use('/reservation-statuses', reservationStatusRouter);
+  router.use('/roles', roleRouter);
+  router.use('/service-images', serviceImageRouter);
+  router.use('/service-reviews', serviceReviewRouter);
+  router.use('/services', serviceRouter);
+  router.use('/service-statuses', serviceStatusRouter);
+  router.use('/user-images', userImageRouter);
   router.use('/users', userRouter);
-}
+};
 
 // Export the routerApi function for use in other parts of the application
 export default routerApi;
@@ -15746,7 +16007,145 @@ export default phoneRouter;
 </file>
 
 <file path="src/router/reservationsRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// RESERVATIONS ROUTER
+// Entity: Reservation | Table: reserva
+//
+// Defines and exposes the HTTP endpoints used to manage reservations.
+// Each route is protected by JWT authentication and role authorization.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken  → validates the session JWT and refreshes it.
+//   2. checkRole([...])    → authorizes only the allowed roles for the action.
+//   3. validatorHandler(schema, source) → validates the payload (Joi).
+//   4. controller          → executes the business operation and returns the response.
+//
+// NOTE: reservationSchema.newReservationData must be updated to include
+//       `quantity` (currently only validates `serviceId`).
+//
+// Mounted at: /app/v1/reservations  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
 
+import { Router } from 'express';
+
+// Middlewares
+import { authAppVerifyToken } from '../middlewares/tokenHandlers/authAppTokenHandler.js';
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// Schemas
+import { reservationSchema } from '../schemas/reservationSchema.js';
+
+// Controllers
+import { createOneReservation }        from '../controllers/reservation/createOneReservation.js';
+import { deleteOneReservation }        from '../controllers/reservation/deleteOneReservation.js';
+import { listAllReservations }         from '../controllers/reservation/listAllReservations.js';
+import { listReservationsByBusiness }  from '../controllers/reservation/listReservationsByBusiness.js';
+import { listOneReservation }          from '../controllers/reservation/listOneReservation.js';
+import { listReservationsByService }   from '../controllers/reservation/listReservationsByService.js';
+import { listUserReservations }        from '../controllers/reservation/listUserReservations.js';
+import { updateOneReservation }        from '../controllers/reservation/updateOneReservation.js';
+
+export const reservationsRouter = Router();
+
+// ────
+// POST /create  →  Create a new reservation
+// Body: { serviceId, quantity }
+// Allowed: cliente
+// ────
+reservationsRouter.post(
+  '/create',
+  authAppVerifyToken,
+  checkRole(['cliente']),
+  validatorHandler(reservationSchema.newReservationData, 'body'),
+  createOneReservation
+);
+
+// ────
+// DELETE /delete/:id  →  Delete a reservation by ID
+// Params: { id }
+// Allowed: administrador, cliente (service layer enforces ownership for cliente)
+// ────
+reservationsRouter.delete(
+  '/delete/:id',
+  authAppVerifyToken,
+  checkRole(['administrador', 'cliente']),
+  validatorHandler(reservationSchema.deleteReservation, 'params'),
+  deleteOneReservation
+);
+
+// ────
+// GET /list-all  →  List every reservation in the system
+// Allowed: administrador
+// ────
+reservationsRouter.get(
+  '/list-all',
+  authAppVerifyToken,
+  checkRole(['administrador']),
+  listAllReservations
+);
+
+// ────
+// GET /list-by-business/:businessId  →  List all reservations of a business
+// Params: { businessId }
+// Allowed: administrador, anunciante (service layer enforces ownership for anunciante)
+// ────
+reservationsRouter.get(
+  '/list-by-business/:businessId',
+  authAppVerifyToken,
+  checkRole(['administrador', 'anunciante']),
+  listReservationsByBusiness
+);
+
+// ────
+// GET /list-one/:id  →  Retrieve a single reservation by ID
+// Params: { id }
+// Allowed: administrador, anunciante, cliente
+// ────
+reservationsRouter.get(
+  '/list-one/:id',
+  authAppVerifyToken,
+  checkRole(['administrador', 'anunciante', 'cliente']),
+  validatorHandler(reservationSchema.getReservationById, 'params'),
+  listOneReservation
+);
+
+// ────
+// GET /list-by-service/:serviceId  →  List all reservations of a service
+// Params: { serviceId }
+// Allowed: administrador, anunciante
+// ────
+reservationsRouter.get(
+  '/list-by-service/:serviceId',
+  authAppVerifyToken,
+  checkRole(['administrador', 'anunciante']),
+  listReservationsByService
+);
+
+// ────
+// GET /list-by-user  →  List all reservations of the authenticated user
+// Allowed: administrador, cliente
+// ────
+reservationsRouter.get(
+  '/list-by-user',
+  authAppVerifyToken,
+  checkRole(['administrador', 'cliente']),
+  listUserReservations
+);
+
+// ────
+// PATCH /update/:id  →  Update an existing reservation by ID
+// Params: { id } | Body: { serviceId? }
+// Allowed: administrador, anunciante, cliente (service layer enforces ownership)
+// ────
+reservationsRouter.patch(
+  '/update/:id',
+  authAppVerifyToken,
+  checkRole(['administrador', 'anunciante', 'cliente']),
+  updateOneReservation
+);
+
+export default reservationsRouter;
 </file>
 
 <file path="src/router/reservationStatusRouter.js">
@@ -16563,6 +16962,151 @@ serviceRouter.get(
 export default serviceRouter;
 </file>
 
+<file path="src/router/serviceStatusRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// SERVICE STATUS ROUTER
+// Entity: ServiceStatus | Table: estado_servicio
+//
+// Defines and exposes the HTTP endpoints used to manage the "serviceStatus" entity.
+// A service status represents the current state of a service (e.g., active, inactive, etc.).
+// This is a catalog entity with restricted write access.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it.
+//   2. checkRole(['administrador', 'anunciante', 'cliente]) → authorizes 
+//      only administrators to create, update and delete. All roles can list.
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Administrator (Administrador): Full CRUD access
+//   - Advertiser (Anunciante): Read-only access (list all, list one)
+//   - Client (Cliente): Read-only access (list all, list one)
+//
+// Mounted at: /app/v1/service-statuses  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the service status entity
+import { serviceStatusSchema } from '../schemas/serviceStatusSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single service status
+import { createOneServiceStatus } from
+  '../controllers/serviceStatus/createOneServiceStatus.js';
+// Controller to retrieve every service status
+import { listAllServiceStatuses } from
+  '../controllers/serviceStatus/listAllServiceStatuses.js';
+// Controller to retrieve a single service status by its ID
+import { listOneServiceStatus } from
+  '../controllers/serviceStatus/listOneServiceStatus.js';
+// Controller to update a single service status by its ID
+import { updateOneServiceStatus } from
+  '../controllers/serviceStatus/updateOneServiceStatus.js';
+// Controller to delete a single service status by its ID
+import { deleteOneServiceStatus } from
+  '../controllers/serviceStatus/deleteOneServiceStatus.js';
+
+// Create a new Router instance dedicated to the service status resource
+export const serviceStatusRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new service status
+// Body: { authentication, newServiceStatusData: { name, description } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceStatusRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the creation payload
+  validatorHandler(serviceStatusSchema.newServiceStatusData, 'body'),
+  // Step 4: delegate to the controller
+  createOneServiceStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all service statuses
+// Body: { authentication }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceStatusRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all roles
+  checkRole(['administrador', 'anunciante', 'cliente']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllServiceStatuses
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single service status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceStatusRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize all roles
+  checkRole(['administrador', 'anunciante', 'cliente']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceStatusSchema.getServiceStatusById, 'params'),
+  // Step 4: delegate to the controller
+  listOneServiceStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing service status by ID
+// Body: { authentication, id, newServiceStatusData: { name?, description? } }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceStatusRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(serviceStatusSchema.updateServiceStatusData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneServiceStatus
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a service status by ID
+// Body: { authentication, id }
+// ─────────────────────────────────────────────────────────────────────────────
+serviceStatusRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(serviceStatusSchema.deleteServiceStatus, 'body'),
+  // Step 4: delegate to the controller
+  deleteOneServiceStatus
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default serviceStatusRouter;
+</file>
+
 <file path="src/router/UIRouter.js">
 // Import the Router class from Express
 import { Router } from "express";
@@ -16592,6 +17136,416 @@ UIRouter.get(
   //loginForm
 );
 */
+</file>
+
+<file path="src/router/userImageRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// USER IMAGE ROUTER
+// Entity: UserImage | Table: imagen_usuario
+//
+// Defines and exposes the HTTP endpoints used to manage the "user image" entity.
+// A user image represents an image associated with a user profile. Each image 
+// belongs to exactly one user.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it (if required).
+//   2. checkRole([...]) → authorizes based on role-specific permissions
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Create: Administrator, Client, Advertiser
+//   - Delete: Administrator, Client, Advertiser (own images only)
+//   - Admin Delete: Administrator only
+//   - List All: Administrator only
+//   - List One: Administrator only
+//   - List by User: Administrator, Client, Advertiser
+//   - Update: Administrator, Client, Advertiser (own images only)
+//   - Admin Update: Administrator only
+//
+// Mounted at: /app/v1/user-images  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the user image entity
+import { userImageSchema } from '../schemas/userImageSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single user image
+import { createOneUserImage } from '../controllers/userImage/createOneUserImage.js';
+// Controller to delete a user image (owned by user)
+import { deleteOneUserImage } from '../controllers/userImage/deleteOneUserImage.js';
+// Controller to delete a user image (admin only)
+import { deleteOneUserImageAdmin } from '../controllers/userImage/deleteOneUserImage.js';
+// Controller to retrieve every user image
+import { listAllUserImages } from '../controllers/userImage/listAllUserImages.js';
+// Controller to retrieve every image belonging to a specific user
+import { listAllUserImagesByUser } from '../controllers/userImage/listAllUserImagesByUser.js';
+// Controller to retrieve a single user image by its ID
+import { listOneUserImage } from '../controllers/userImage/listOneUserImage.js';
+// Controller to update a user image (owned by user)
+import { updateOneUserImage } from '../controllers/userImage/updateOneUserImage.js';
+// Controller to update a user image (admin only)
+import { updateOneUserImageAdmin } from '../controllers/userImage/updateOneUserImage.js';
+
+// Create a new Router instance dedicated to the user image resource
+export const userImageRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new user image
+// Body: { newUserImageData: { userId, url, name, altText } }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.post(
+  '/create',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize administrator, client, and advertiser roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate the creation payload
+  validatorHandler(userImageSchema.newUserImageData, 'body'),
+  // Step 4: delegate to the controller
+  createOneUserImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a user image (owned by user)
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize administrator, client, and advertiser roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userImageSchema.getUserImageId, 'params'),
+  // Step 4: delegate to the controller
+  deleteOneUserImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /admin-delete/:id  →  Delete any user image (admin only)
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.delete(
+  '/admin-delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userImageSchema.getUserImageId, 'params'),
+  // Step 4: delegate to the controller
+  deleteOneUserImageAdmin
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all user images (admin only)
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllUserImages
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single user image by ID (admin only)
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userImageSchema.getUserImageId, 'params'),
+  // Step 4: delegate to the controller
+  listOneUserImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-by-user/:userId  →  List all images belonging to a specific user
+// Params: { userId }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.get(
+  '/list-by-user/:userId',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize administrator, client, and advertiser roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate that a valid user ID was provided
+  validatorHandler(userImageSchema.getUserId, 'params'),
+  // Step 4: delegate to the controller
+  listAllUserImagesByUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update a user image (owned by user)
+// Params: { id }
+// Body: { newUserImageData: { userId?, url?, name?, altText? } }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize administrator, client, and advertiser roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(userImageSchema.updateUserImageData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneUserImage
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /admin-update/:id  →  Update any user image (admin only)
+// Params: { id }
+// Body: { newUserImageData: { userId?, url?, name?, altText? } }
+// ─────────────────────────────────────────────────────────────────────────────
+userImageRouter.patch(
+  '/admin-update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate the update payload
+  validatorHandler(userImageSchema.updateUserImageData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneUserImageAdmin
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default userImageRouter;
+</file>
+
+<file path="src/router/userRouter.js">
+// ────────────────────────────────────────────────────────────────────────────
+// USER ROUTER
+// Entity: User | Table: usuario
+//
+// Defines and exposes the HTTP endpoints used to manage the "user" entity.
+// A user represents a person registered in the system with credentials and profile data.
+// Each user belongs to exactly one gender, one role and one document type.
+//
+// Security pipeline applied to each route (in order):
+//   1. authAppVerifyToken → validates the session JWT and refreshes it (if required).
+//   2. checkRole([...]) → authorizes based on role-specific permissions
+//   3. validatorHandler(schema, 'body') → validates the incoming payload (Joi).
+//   4. controller → executes the business operation and builds the response.
+//
+// Role-based permissions:
+//   - Create: No authentication required
+//   - Delete: Administrator only
+//   - Delete Own Account: Client, Advertiser
+//   - Find by Email: Administrator only
+//   - List All: Administrator only
+//   - List One: Administrator only
+//   - Login: No authentication required
+//   - Password Recovery: Administrator, Client, Advertiser
+//   - Update: Client, Advertiser
+//
+// Mounted at: /app/v1/users  (see src/router/index.js)
+// ────────────────────────────────────────────────────────────────────────────
+
+// Import the Router class from Express to create an isolated routing instance
+import { Router } from "express";
+
+// ── Middlewares ─────────────────────────────────────────────────────────────
+
+// Middleware that verifies the authentication JWT and regenerates it on success
+import { authAppVerifyToken } from
+  '../middlewares/tokenHandlers/authAppTokenHandler.js';
+// Middleware factory that restricts access based on the user's role
+import { checkRole } from '../middlewares/checkRoleHandler.js';
+// Middleware factory that validates a request property against a Joi schema
+import { validatorHandler } from '../middlewares/validatorHandler.js';
+
+// ── Validation schema ───────────────────────────────────────────────────────
+
+// Joi schema collection for the user entity
+import { userSchema } from '../schemas/userSchema.js';
+
+// ── Controllers ─────────────────────────────────────────────────────────────
+
+// Controller to create a single user
+import { createOneUser } from '../controllers/user/createOneUser.js';
+// Controller to delete a single user by its ID (admin only)
+import { deleteOneUser } from '../controllers/user/deleteOneUser.js';
+// Controller to allow users to delete their own account
+import { deleteOwnAccount } from '../controllers/user/deleteOwnAccount.js';
+// Controller to find a user by email
+import { findUserByEmail } from '../controllers/user/findUserByEmail.js';
+// Controller to retrieve every user
+import { listAllUsers } from '../controllers/user/listAllUsers.js';
+// Controller to retrieve a single user by its ID
+import { listOneUser } from '../controllers/user/listOneUser.js';
+// Controller to handle user login
+import { loginUser } from '../controllers/user/loginUser.js';
+// Controller to handle password recovery
+import { recoverUserPassword } from '../controllers/user/recoverUserPassword.js';
+// Controller to update a single user by its ID
+import { updateOneUser } from '../controllers/user/updateOneUser.js';
+
+// Create a new Router instance dedicated to the user resource
+export const userRouter = Router();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /create  →  Create a new user
+// Body: { newUserData: { roleId, genderId, documentTypeId, firstName, lastName,
+//                        birthDate, documentNumber, email, username, password } }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.post(
+  '/create',
+  // Step 1: validate the creation payload
+  validatorHandler(userSchema.newUserData, 'body'),
+  // Step 2: delegate to the controller
+  createOneUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete/:id  →  Delete a user by ID (admin only)
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.delete(
+  '/delete/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userSchema.getUserId, 'params'),
+  // Step 4: delegate to the controller
+  deleteOneUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE /delete-own/:id  →  Allow user to delete their own account
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.delete(
+  '/delete-own/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userSchema.getUserId, 'params'),
+  // Step 4: delegate to the controller
+  deleteOwnAccount
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /find-by-email/:email  →  Find a user by email (admin only)
+// Params: { email }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.get(
+  '/find-by-email/:email',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid email was provided
+  validatorHandler(userSchema.getUserByEmail, 'params'),
+  // Step 4: delegate to the controller
+  findUserByEmail
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-all  →  List all users (admin only)
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.get(
+  '/list-all',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: delegate to the controller (no payload to validate)
+  listAllUsers
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /list-one/:id  →  Retrieve a single user by ID (admin only)
+// Params: { id }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.get(
+  '/list-one/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize only the administrator role
+  checkRole(['administrador']),
+  // Step 3: validate that a valid ID was provided
+  validatorHandler(userSchema.getUserId, 'params'),
+  // Step 4: delegate to the controller
+  listOneUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /login  →  Authenticate a user and generate session tokens
+// Body: { loginCredentials: { username, password } }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.post(
+  '/login',
+  // Step 1: validate the login credentials
+  validatorHandler(userSchema.loginCredentials, 'body'),
+  // Step 2: delegate to the controller
+  loginUser
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /recover-password  →  Initiate password recovery process
+// Body: { passwordRecoveryData: { email, newPassword } }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.post(
+  '/recover-password',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize administrator, client, and advertiser roles
+  checkRole(['administrador', 'cliente', 'anunciante']),
+  // Step 3: validate the password recovery payload
+  validatorHandler(userSchema.passwordRecoveryData, 'body'),
+  // Step 4: delegate to the controller
+  recoverUserPassword
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /update/:id  →  Update an existing user by ID
+// Params: { id }
+// Body: { updateUserData: { roleId?, genderId?, documentTypeId?, firstName?, 
+//         lastName?, birthDate?, documentNumber?, email?, username?, password? } }
+// ─────────────────────────────────────────────────────────────────────────────
+userRouter.patch(
+  '/update/:id',
+  // Step 1: verify the session token
+  authAppVerifyToken,
+  // Step 2: authorize client and advertiser roles
+  checkRole(['cliente', 'anunciante']),
+  // Step 3: validate the update payload
+  validatorHandler(userSchema.updateUserData, 'body'),
+  // Step 4: delegate to the controller
+  updateOneUser
+);
+
+// Export the configured router for registration in the main router (index.js)
+export default userRouter;
 </file>
 
 <file path="src/schemas/ageRestrictionSchema.js">
@@ -17715,14 +18669,14 @@ import {
 // ── Primitive Joi types ───────────────────────────────────────────────────────
 
 const joiId = Joi.number().integer().positive().messages({
-  'number.base':     'El ID debe ser un número.',
-  'number.integer':  'El ID debe ser un número entero.',
+  'number.base': 'El ID debe ser un número.',
+  'number.integer': 'El ID debe ser un número entero.',
   'number.positive': 'El ID debe ser un número positivo.',
 });
 
 const joiServiceId = Joi.number().integer().positive().messages({
-  'number.base':     'El serviceId debe ser un número.',
-  'number.integer':  'El serviceId debe ser un número entero.',
+  'number.base': 'El serviceId debe ser un número.',
+  'number.integer': 'El serviceId debe ser un número entero.',
   'number.positive': 'El serviceId debe ser un número positivo.',
 });
 
@@ -17743,6 +18697,11 @@ export const reservationSchema = {
   // DELETE /reservations/:id
   deleteReservation: Joi.object({
     id: joiId.required(),
+  }),
+
+  newReservationData: Joi.object({
+    serviceId: joiServiceId.required(),
+    quantity: joiQuantity.required(),   // ← agregar esta línea
   }),
 
 };
@@ -21306,12 +22265,12 @@ export class PhoneServices {
 <file path="src/services/reservationService.js">
 // import the reservation data model
 import { Reservation } from '../db/models/reservationModel.js';
-// import the service model to validate the foreign key relation
+// import the service model to validate the foreign key relation and traverse to business
 import { Service } from '../db/models/serviceModel.js';
-// import the reservation detail model to expose its related details
+// import the business model to filter reservations by business
+import { Business } from '../db/models/businessModel.js';
+// import the reservation detail model to expose its related details and check ownership
 import { ReservationDetail } from '../db/models/reservationDetailsModel.js';
-// import the user model to validate ownership
-import { User } from '../db/models/userModel.js';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -21323,22 +22282,60 @@ import Boom from '@hapi/boom';
  * ReservationDetail records. The foreign key is validated on every
  * write operation to preserve referential integrity.
  *
+ * Ownership rule: a user owns a reservation when at least one
+ * ReservationDetail row linked to that reservation carries their userId.
+ *
  * Association aliases (defined in setupAssociations):
- *   - service -> Reservation.belongsTo(Service)
- *   - details -> Reservation.hasMany(ReservationDetail)
+ *   - service  → Reservation.belongsTo(Service)
+ *   - details  → Reservation.hasMany(ReservationDetail)
+ *   - services → Business.hasMany(Service)
  */
 export class ReservationServices {
+
+  // ─── Private helpers ────────────────────────────────────────────────────────
+
+  /**
+   * Resolves and validates that a reservation exists.
+   * Optionally enforces that the calling user is its owner.
+   *
+   * @param {number}  reservationId - Reservation to look up.
+   * @param {number}  userId        - Caller's user ID.
+   * @param {boolean} checkOwner    - When true, throws 403 if the user is not the owner.
+   * @returns {Promise<Reservation>} The found reservation instance (with details included).
+   * @throws {Boom} NotFound if missing, Forbidden if not the owner.
+   */
+  async #findAndCheckOwnership(reservationId, userId, checkOwner = true) {
+
+    const reservation = await Reservation.findOne({
+      where: { id: reservationId },
+      include: [{ model: ReservationDetail, as: 'details' }],
+    });
+
+    if (!reservation) {
+      throw Boom.notFound('Reservation not found');
+    }
+
+    if (checkOwner) {
+      const isOwner = reservation.details.some(d => d.userId === userId);
+      if (!isOwner) {
+        throw Boom.forbidden('User not authorized to access this reservation');
+      }
+    }
+
+    return reservation;
+  }
+
+  // ─── Write operations ────────────────────────────────────────────────────────
 
   /**
    * Creates a new reservation associated with an existing service.
    *
-   * @param {Object} newReservation - Reservation data.
+   * @param {Object} newReservation          - Reservation data.
    * @param {number} newReservation.serviceId - Parent service identifier.
-   * @param {number} userId - ID of the user creating the reservation.
    * @returns {Promise<Object>} Status object confirming the creation.
    * @throws {Boom} NotFound if the service does not exist, internal error otherwise.
    */
-  async createOne(newReservation, userId) {
+  async createOne(newReservation) {
 
     try {
       // ensure the parent service exists before creating the reservation
@@ -21353,48 +22350,34 @@ export class ReservationServices {
         serviceId: newReservation.serviceId,
       });
 
-      // return a success response
       return { status: 'CREATED SUCCESSFULLY', reservationId: reservation.id };
 
     } catch (error) {
-      // preserve Boom errors, wrap any unexpected one
       if (Boom.isBoom(error)) throw error;
       throw Boom.boomify(error, { message: 'Unable to create new reservation' });
     }
   }
 
   /**
-   * Updates an existing reservation by its identifier.
+   * Updates an existing reservation.
+   * Only the owner of the reservation (identified via ReservationDetail.userId)
+   * is allowed to perform this operation.
    *
    * @param {number} reservationId - Identifier of the reservation to update.
-   * @param {Object} newData - New values to persist.
-   * @param {number} userId - ID of the user attempting the update.
+   * @param {Object} newData       - New values to persist.
+   * @param {number} userId        - ID of the user attempting the update.
    * @returns {Promise<Object>} Status object confirming the update.
-   * @throws {Boom} BadRequest, NotFound or internal error.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
    */
   async updateOne(reservationId, newData, userId) {
 
     if (!newData) {
-      // reject the request when there is no payload to apply
       throw Boom.badRequest('No data provided');
     }
 
     try {
-      // find the reservation with its details to check ownership
-      const reservation = await Reservation.findOne({
-        where: { id: reservationId },
-        include: [{ model: ReservationDetail, as: 'details' }]
-      });
-
-      if (!reservation) {
-        throw Boom.notFound('Reservation not found');
-      }
-
-      // check if user owns this reservation
-      const isOwner = reservation.details.some(detail => detail.userId === userId);
-      if (!isOwner) {
-        throw Boom.forbidden('User not authorized to update this reservation');
-      }
+      // verify existence and ownership before mutating
+      await this.#findAndCheckOwnership(reservationId, userId);
 
       // if the parent service is being changed, validate it exists
       if (newData.serviceId) {
@@ -21404,22 +22387,15 @@ export class ReservationServices {
         }
       }
 
-      // update the record in the database
       const [updatedRows] = await Reservation.update(
-        {
-          serviceId: newData.serviceId,
-        },
-        {
-          where: { id: reservationId }
-        }
+        { serviceId: newData.serviceId },
+        { where: { id: reservationId } }
       );
 
-      // if no rows were affected, the reservation does not exist
       if (!updatedRows) {
         throw Boom.notFound('Reservation not found');
       }
 
-      // return a success response
       return { status: 'UPDATED SUCCESSFULLY' };
 
     } catch (error) {
@@ -21429,48 +22405,33 @@ export class ReservationServices {
   }
 
   /**
-   * Deletes a reservation by its identifier.
+   * Deletes a reservation.
+   * Only the owner of the reservation (identified via ReservationDetail.userId)
+   * is allowed to perform this operation.
    *
    * @param {number} reservationId - Identifier of the reservation to delete.
-   * @param {number} userId - ID of the user attempting the deletion.
+   * @param {number} userId        - ID of the user attempting the deletion.
    * @returns {Promise<Object>} Status object confirming the deletion.
-   * @throws {Boom} BadRequest, NotFound or internal error.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
    */
   async deleteOne(reservationId, userId) {
 
     if (!reservationId) {
-      // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No reservation ID provided');
     }
 
     try {
-      // find the reservation with its details to check ownership
-      const reservation = await Reservation.findOne({
-        where: { id: reservationId },
-        include: [{ model: ReservationDetail, as: 'details' }]
-      });
+      // verify existence and ownership before mutating
+      await this.#findAndCheckOwnership(reservationId, userId);
 
-      if (!reservation) {
-        throw Boom.notFound('Reservation not found');
-      }
-
-      // check if user owns this reservation
-      const isOwner = reservation.details.some(detail => detail.userId === userId);
-      if (!isOwner) {
-        throw Boom.forbidden('User not authorized to delete this reservation');
-      }
-
-      // destroy the record in the database
       const deletedRows = await Reservation.destroy({
         where: { id: reservationId }
       });
 
-      // if no rows were deleted, the reservation does not exist
       if (!deletedRows) {
         throw Boom.notFound('Reservation not found');
       }
 
-      // return a success response
       return { status: 'DELETED SUCCESSFULLY' };
 
     } catch (error) {
@@ -21479,13 +22440,16 @@ export class ReservationServices {
     }
   }
 
+  // ─── Read operations ─────────────────────────────────────────────────────────
+
   /**
    * Retrieves a single reservation, including its service and details.
+   * Only the owner of the reservation may access it.
    *
    * @param {number} reservationId - Identifier of the reservation.
-   * @param {number} userId - ID of the user requesting the reservation.
-   * @returns {Promise<Object>} The reservation record with its relations.
-   * @throws {Boom} BadRequest, NotFound or internal error.
+   * @param {number} userId        - ID of the user requesting the reservation.
+   * @returns {Promise<Reservation>} The reservation record with its relations.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
    */
   async listOne(reservationId, userId) {
 
@@ -21494,7 +22458,7 @@ export class ReservationServices {
     }
 
     try {
-      const theReservation = await Reservation.findOne({
+      const reservation = await Reservation.findOne({
         where: { id: reservationId },
         include: [
           { model: Service, as: 'service' },
@@ -21502,17 +22466,16 @@ export class ReservationServices {
         ],
       });
 
-      if (!theReservation) {
+      if (!reservation) {
         throw Boom.notFound('Reservation not found');
       }
 
-      // check if user owns this reservation
-      const isOwner = theReservation.details.some(detail => detail.userId === userId);
+      const isOwner = reservation.details.some(d => d.userId === userId);
       if (!isOwner) {
         throw Boom.forbidden('User not authorized to access this reservation');
       }
 
-      return theReservation;
+      return reservation;
 
     } catch (error) {
       if (Boom.isBoom(error)) throw error;
@@ -21521,29 +22484,29 @@ export class ReservationServices {
   }
 
   /**
-   * Retrieves reservations belonging to the specified user.
+   * Retrieves all reservations that belong to the given user.
+   * A reservation belongs to the user when at least one of its
+   * ReservationDetail rows carries their userId.
    *
    * @param {number} userId - ID of the user whose reservations to retrieve.
-   * @returns {Promise<Object[]>} List of user's reservations (empty array if none).
+   * @returns {Promise<Reservation[]>} List of reservations (empty array if none).
    * @throws {Boom} Internal error if the query fails.
    */
   async listUserReservations(userId) {
 
     try {
-      // Find all reservations that have details associated with the user
       const userReservations = await Reservation.findAll({
         include: [
-          { 
-            model: ReservationDetail, 
+          {
+            model: ReservationDetail,
             as: 'details',
-            where: { userId: userId }
+            where: { userId },  // inner join — only reservations owned by this user
           },
-          { model: Service, as: 'service' }
+          { model: Service, as: 'service' },
         ],
-        order: [['id', 'ASC']]
+        order: [['id', 'ASC']],
       });
 
-      // always return an array, even when there are no records
       return userReservations.length ? userReservations : [];
 
     } catch (error) {
@@ -21552,9 +22515,86 @@ export class ReservationServices {
   }
 
   /**
-   * Retrieves every reservation ordered by id ascending.
+   * Retrieves all reservations associated with a specific service.
+   * Validates that the service exists before querying.
    *
-   * @returns {Promise<Object[]>} List of reservations (empty array if none).
+   * @param {number} serviceId - ID of the service whose reservations to retrieve.
+   * @returns {Promise<Reservation[]>} List of reservations (empty array if none).
+   * @throws {Boom} NotFound if the service does not exist, internal error otherwise.
+   */
+  async listByService(serviceId) {
+
+    try {
+      const parentService = await Service.findByPk(serviceId);
+
+      if (!parentService) {
+        throw Boom.notFound('Service not found');
+      }
+
+      const reservations = await Reservation.findAll({
+        where: { serviceId },
+        include: [
+          { model: Service, as: 'service' },
+          { model: ReservationDetail, as: 'details' },
+        ],
+        order: [['id', 'ASC']],
+      });
+
+      return reservations.length ? reservations : [];
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find reservations for this service' });
+    }
+  }
+
+  /**
+   * Retrieves all reservations linked to any service that belongs to a business.
+   * Validates that the business exists before querying.
+   *
+   * Chain: Business → Service (businessId) → Reservation (serviceId)
+   *
+   * @param {number} businessId - ID of the business whose reservations to retrieve.
+   * @returns {Promise<Reservation[]>} List of reservations (empty array if none).
+   * @throws {Boom} NotFound if the business does not exist, internal error otherwise.
+   */
+  async listByBusiness(businessId) {
+
+    try {
+      const parentBusiness = await Business.findByPk(businessId);
+
+      if (!parentBusiness) {
+        throw Boom.notFound('Business not found');
+      }
+
+      const reservations = await Reservation.findAll({
+        include: [
+          {
+            model: Service,
+            as: 'service',
+            where: { businessId },  // inner join — only services of this business
+            include: [
+              { model: Business, as: 'business' },
+            ],
+          },
+          { model: ReservationDetail, as: 'details' },
+        ],
+        order: [['id', 'ASC']],
+      });
+
+      return reservations.length ? reservations : [];
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to find reservations for this business' });
+    }
+  }
+
+  /**
+   * Retrieves every reservation ordered by id ascending.
+   * Admin-only operation — no ownership filter is applied.
+   *
+   * @returns {Promise<Reservation[]>} List of all reservations (empty array if none).
    * @throws {Boom} Internal error if the query fails.
    */
   async listAll() {
@@ -21568,7 +22608,6 @@ export class ReservationServices {
         ],
       });
 
-      // always return an array, even when there are no records
       return allReservations.length ? allReservations : [];
 
     } catch (error) {
@@ -23046,14 +24085,78 @@ export class UserImageServices {
   }
 
   /**
-   * Updates an existing user image by its identifier.
+   * Updates an existing user image by its identifier, ensuring the user owns the image.
+   *
+   * @param {number} userImageId - Identifier of the record to update.
+   * @param {number} userId - Identifier of the user requesting the update.
+   * @param {Object} newData - New values to persist.
+   * @returns {Promise<Object>} Status object confirming the update.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
+   */
+  async updateOne(userImageId, userId, newData) {
+
+    if (!newData) {
+      // reject the request when there is no payload to apply
+      throw Boom.badRequest('No data provided');
+    }
+
+    try {
+      // First, find the user image to check ownership
+      const userImage = await UserImage.findByPk(userImageId);
+      if (!userImage) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // Check if the user is the owner of the image or an administrator
+      // Note: This assumes the caller has already verified admin status if needed
+      if (userImage.userId !== userId) {
+        throw Boom.forbidden('You do not have permission to update this image');
+      }
+
+      // validate the owner relation only when it is being changed
+      if (newData.userId) {
+        const ownerUser = await User.findByPk(newData.userId);
+        if (!ownerUser) {
+          throw Boom.notFound('User not found');
+        }
+      }
+
+      // update the record in the database
+      const [updatedRows] = await UserImage.update(
+        {
+          userId: newData.userId,
+          url: newData.url,
+          name: newData.name,
+          altText: newData.altText,
+        },
+        {
+          where: { id: userImageId }
+        }
+      );
+
+      // if no rows were affected, the record does not exist
+      if (!updatedRows) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // return a success response
+      return { status: 'UPDATED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to update user image' });
+    }
+  }
+
+  /**
+   * Updates an existing user image by its identifier (admin only).
    *
    * @param {number} userImageId - Identifier of the record to update.
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(userImageId, newData) {
+  async updateOneAdmin(userImageId, newData) {
 
     if (!newData) {
       // reject the request when there is no payload to apply
@@ -23097,13 +24200,60 @@ export class UserImageServices {
   }
 
   /**
-   * Deletes a user image by its identifier.
+   * Deletes a user image by its identifier, ensuring the user owns the image.
+   *
+   * @param {number} userImageId - Identifier of the record to delete.
+   * @param {number} userId - Identifier of the user requesting the deletion.
+   * @returns {Promise<Object>} Status object confirming the deletion.
+   * @throws {Boom} BadRequest, NotFound, Forbidden or internal error.
+   */
+  async deleteOne(userImageId, userId) {
+
+    if (!userImageId) {
+      // an identifier is mandatory to perform a deletion
+      throw Boom.badRequest('No user image ID provided');
+    }
+
+    try {
+      // First, find the user image to check ownership
+      const userImage = await UserImage.findByPk(userImageId);
+      if (!userImage) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // Check if the user is the owner of the image or an administrator
+      // Note: This assumes the caller has already verified admin status if needed
+      if (userImage.userId !== userId) {
+        throw Boom.forbidden('You do not have permission to delete this image');
+      }
+
+      // destroy the record in the database
+      const deletedRows = await UserImage.destroy({
+        where: { id: userImageId }
+      });
+
+      // if no rows were deleted, the record does not exist
+      if (!deletedRows) {
+        throw Boom.notFound('User image not found');
+      }
+
+      // return a success response
+      return { status: 'DELETED SUCCESSFULLY' };
+
+    } catch (error) {
+      if (Boom.isBoom(error)) throw error;
+      throw Boom.boomify(error, { message: 'Unable to delete user image' });
+    }
+  }
+
+  /**
+   * Deletes a user image by its identifier (admin only).
    *
    * @param {number} userImageId - Identifier of the record to delete.
    * @returns {Promise<Object>} Status object confirming the deletion.
    * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
    */
-  async deleteOne(userImageId) {
+  async deleteOneAdmin(userImageId) {
 
     if (!userImageId) {
       // an identifier is mandatory to perform a deletion
@@ -23214,418 +24364,452 @@ export class UserImageServices {
 
 <file path="src/services/userService.js">
 // import the user data model
-import { User } from '../db/models/userModel.js';
-// import related catalog models to validate foreign key relations
-import { Role } from '../db/models/roleModel.js';
-import { Gender } from '../db/models/genderModel.js';
-import { DocumentType } from '../db/models/documentTypeModel.js';
-// import the user image model to expose the profile image relation
-import { UserImage } from '../db/models/userImageModel.js';
-// import the promise to encrypt the user's password
-import { hashPassword } from '../utils/auth/passwordHash.js';
-// import the module to sign a JWT
-import { signUserToken } from '../utils/auth/tokenSign.js';
-// bcrypt takes care of comparing the user's password
-import bcrypt from 'bcryptjs';
-// boom allows managing possible errors in a standardized way
-import Boom from '@hapi/boom';
-// import the configuration module
-import { config } from '../config/config.js';
-
-/**
- * Service layer for the "User" entity.
- *
- * A user belongs to a role ("roleId", required) and optionally to a gender
- * ("genderId") and a document type ("documentTypeId"). Email, username and
- * document number are unique. Passwords are always hashed before being
- * persisted and are excluded from every read response. Foreign keys are
- * validated on every write operation to preserve referential integrity.
- *
- * Association aliases (defined in setupAssociations):
- *   - role         -> User.belongsTo(Role)
- *   - gender       -> User.belongsTo(Gender)
- *   - documentType -> User.belongsTo(DocumentType)
- *   - profileImage -> User.hasMany(UserImage)
- */
-export class UserServices {
+  import { User } from '../db/models/userModel.js';
+  // import related catalog models to validate foreign key relations
+  import { Role } from '../db/models/roleModel.js';
+  import { Gender } from '../db/models/genderModel.js';
+  import { DocumentType } from '../db/models/documentTypeModel.js';
+  // import the user image model to expose the profile image relation
+  import { UserImage } from '../db/models/userImageModel.js';
+  // import the promise to encrypt the user's password
+  import { hashPassword } from '../utils/auth/passwordHash.js';
+  // import the module to sign a JWT
+  import { signUserToken } from '../utils/auth/tokenSign.js';
+  // bcrypt takes care of comparing the user's password
+  import bcrypt from 'bcryptjs';
+  // boom allows managing possible errors in a standardized way
+  import Boom from '@hapi/boom';
+  // import the configuration module
+  import { config } from '../config/config.js';
 
   /**
-   * Builds the default include used to expose a user with its relations.
-   * The password attribute is always excluded for security reasons.
+   * Service layer for the "User" entity.
    *
-   * @returns {Object} Sequelize query options (attributes + include).
-   */
-  #publicQueryOptions() {
-    return {
-      attributes: { exclude: ['password'] },
-      include: [
-        { model: Role, as: 'role' },
-        { model: Gender, as: 'gender' },
-        { model: DocumentType, as: 'documentType' },
-        { model: UserImage, as: 'profileImage' },
-      ],
-    };
-  }
-
-  /**
-   * Authenticates a user by username and password.
+   * A user belongs to a role ("roleId", required) and optionally to a gender
+   * ("genderId") and a document type ("documentTypeId"). Email, username and
+   * document number are unique. Passwords are always hashed before being
+   * persisted and are excluded from every read response. Foreign keys are
+   * validated on every write operation to preserve referential integrity.
    *
-   * @param {string} username - Username of the account.
-   * @param {string} password - Plain-text password to verify.
-   * @returns {Promise<Object>} Status object, including a JWT token on success.
-   * @throws {Boom} Internal error if the verification fails unexpectedly.
+   * Association aliases (defined in setupAssociations):
+   *   - role         -> User.belongsTo(Role)
+   *   - gender       -> User.belongsTo(Gender)
+   *   - documentType -> User.belongsTo(DocumentType)
+   *   - profileImage -> User.hasMany(UserImage)
    */
-  async login(username, password) {
+  export class UserServices {
 
-    try {
-      // Find the user by their username in the database
-      const userRecord = await User.findOne({
-        where: { username }
-      });
-
-      // if not found a user in the database
-      if (!userRecord) {
-        return { status: 'user not found' };
-      }
-
-      // Compare the provided password with the stored password hash
-      const validPassword = await bcrypt.compare(password, userRecord.password);
-
-      // If the password is not valid, reject the promise
-      if (!validPassword) {
-        return { status: 'wrong password' };
-      }
-
-      // Generate JWT token with user data
-      const userToken = signUserToken(
-        { id: userRecord.id },
-        config.authAppJwtKey,
-        '1h'
-      );
-
-      // Resolves the promise with the JWT token
-      return { status: 'logged', token: userToken };
-
-    } catch (error) {
-      // Return a Boom error if there's an exception
-      throw Boom.boomify(error, { message: 'Unable to verify user credentials' });
+    /**
+     * Builds the default include used to expose a user with its relations.
+     * The password attribute is always excluded for security reasons.
+     *
+     * @returns {Object} Sequelize query options (attributes + include).
+     */
+    #publicQueryOptions() {
+      return {
+        attributes: { exclude: ['password'] },
+        include: [
+          { model: Role, as: 'role' },
+          { model: Gender, as: 'gender' },
+          { model: DocumentType, as: 'documentType' },
+          { model: UserImage, as: 'profileImage' },
+        ],
+      };
     }
-  }
 
-  /**
-   * Creates a new user after validating relations, uniqueness and hashing
-   * its password.
-   *
-   * @param {Object} newUser - User data.
-   * @param {number} newUser.roleId - Role identifier (required).
-   * @param {number} [newUser.genderId] - Optional gender identifier.
-   * @param {number} [newUser.documentTypeId] - Optional document type identifier.
-   * @param {string} newUser.firstName - User first name.
-   * @param {string} newUser.lastName - User last name.
-   * @param {string} [newUser.birthDate] - Optional birth date (YYYY-MM-DD).
-   * @param {string} [newUser.documentNumber] - Optional unique document number.
-   * @param {string} newUser.email - Unique email.
-   * @param {string} newUser.username - Unique username.
-   * @param {string} newUser.password - Plain-text password to be hashed.
-   * @returns {Promise<Object>} Status object confirming the creation.
-   * @throws {Boom} NotFound for missing relations, Conflict for duplicates.
-   */
-  async createOne(newUser) {
+    /**
+     * Authenticates a user by username and password.
+     *
+     * @param {string} username - Username of the account.
+     * @param {string} password - Plain-text password to verify.
+     * @returns {Promise<Object>} Status object, including a JWT token on success.
+     * @throws {Boom} Internal error if the verification fails unexpectedly.
+     */
+    async login(username, password) {
 
-    try {
-      // ensure the required role exists
-      const userRole = await Role.findByPk(newUser.roleId);
-      if (!userRole) {
-        throw Boom.notFound('Role not found');
-      }
-
-      // validate the optional gender only when provided
-      if (newUser.genderId) {
-        const userGender = await Gender.findByPk(newUser.genderId);
-        if (!userGender) {
-          throw Boom.notFound('Gender not found');
-        }
-      }
-
-      // validate the optional document type only when provided
-      if (newUser.documentTypeId) {
-        const userDocumentType = await DocumentType.findByPk(newUser.documentTypeId);
-        if (!userDocumentType) {
-          throw Boom.notFound('Document type not found');
-        }
-      }
-
-      // ensure the email is not already registered
-      const existingEmail = await User.findOne({ where: { email: newUser.email } });
-      if (existingEmail) {
-        throw Boom.conflict('Email already registered');
-      }
-
-      // ensure the username is not already taken
-      const existingUsername = await User.findOne({ where: { username: newUser.username } });
-      if (existingUsername) {
-        throw Boom.conflict('Username already taken');
-      }
-
-      // ensure the document number, when provided, is unique
-      if (newUser.documentNumber) {
-        const existingDocument = await User.findOne({
-          where: { documentNumber: newUser.documentNumber }
+      try {
+        // Find the user by their username in the database
+        const userRecord = await User.findOne({
+          where: { username }
         });
-        if (existingDocument) {
-          throw Boom.conflict('Document number already registered');
+
+        // if not found a user in the database
+        if (!userRecord) {
+          return { status: 'user not found' };
         }
+
+        // Compare the provided password with the stored password hash
+        const validPassword = await bcrypt.compare(password, userRecord.password);
+
+        // If the password is not valid, reject the promise
+        if (!validPassword) {
+          return { status: 'wrong password' };
+        }
+
+        // Generate JWT token with user data
+        const userToken = signUserToken(
+          { id: userRecord.id },
+          config.authAppJwtKey,
+          '1h'
+        );
+
+        // Resolves the promise with the JWT token
+        return { status: 'logged', token: userToken };
+
+      } catch (error) {
+        // Return a Boom error if there's an exception
+        throw Boom.boomify(error, { message: 'Unable to verify user credentials' });
       }
-
-      // hash the password before storing it
-      const hash = await hashPassword(newUser.password);
-
-      // create a new record in the database
-      await User.create({
-        roleId: newUser.roleId,
-        genderId: newUser.genderId,
-        documentTypeId: newUser.documentTypeId,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        birthDate: newUser.birthDate,
-        documentNumber: newUser.documentNumber,
-        email: newUser.email,
-        username: newUser.username,
-        password: hash,
-      });
-
-      // return a success response
-      return { status: 'CREATED SUCCESSFULLY' };
-
-    } catch (error) {
-      // preserve Boom errors, wrap any unexpected one
-      if (Boom.isBoom(error)) throw error;
-      throw Boom.boomify(error, { message: 'Unable to create new user' });
-    }
-  }
-
-  /**
-   * Updates an existing user by its identifier. If a new password is
-   * provided it is re-hashed before being persisted.
-   *
-   * @param {number} userId - Identifier of the user to update.
-   * @param {Object} newData - New values to persist.
-   * @returns {Promise<Object>} Status object confirming the update.
-   * @throws {Boom} BadRequest, NotFound, Conflict or internal error.
-   */
-  async updateOne(userId, newData) {
-
-    if (!newData) {
-      // reject the request when there is no payload to apply
-      throw Boom.badRequest('No data provided');
     }
 
-    try {
-      // validate the role relation only when it is being changed
-      if (newData.roleId) {
-        const userRole = await Role.findByPk(newData.roleId);
+    /**
+     * Creates a new user after validating relations, uniqueness and hashing
+     * its password.
+     *
+     * @param {Object} newUser - User data.
+     * @param {number} newUser.roleId - Role identifier (required).
+     * @param {number} [newUser.genderId] - Optional gender identifier.
+     * @param {number} [newUser.documentTypeId] - Optional document type identifier.
+     * @param {string} newUser.firstName - User first name.
+     * @param {string} newUser.lastName - User last name.
+     * @param {string} [newUser.birthDate] - Optional birth date (YYYY-MM-DD).
+     * @param {string} [newUser.documentNumber] - Optional unique document number.
+     * @param {string} newUser.email - Unique email.
+     * @param {string} newUser.username - Unique username.
+     * @param {string} newUser.password - Plain-text password to be hashed.
+     * @returns {Promise<Object>} Status object confirming the creation.
+     * @throws {Boom} NotFound for missing relations, Conflict for duplicates.
+     */
+    async createOne(newUser) {
+
+      try {
+        // ensure the required role exists
+        const userRole = await Role.findByPk(newUser.roleId);
         if (!userRole) {
           throw Boom.notFound('Role not found');
         }
-      }
 
-      // validate the gender relation only when it is being changed
-      if (newData.genderId) {
-        const userGender = await Gender.findByPk(newData.genderId);
-        if (!userGender) {
-          throw Boom.notFound('Gender not found');
+        // validate the optional gender only when provided
+        if (newUser.genderId) {
+          const userGender = await Gender.findByPk(newUser.genderId);
+          if (!userGender) {
+            throw Boom.notFound('Gender not found');
+          }
         }
-      }
 
-      // validate the document type relation only when it is being changed
-      if (newData.documentTypeId) {
-        const userDocumentType = await DocumentType.findByPk(newData.documentTypeId);
-        if (!userDocumentType) {
-          throw Boom.notFound('Document type not found');
+        // validate the optional document type only when provided
+        if (newUser.documentTypeId) {
+          const userDocumentType = await DocumentType.findByPk(newUser.documentTypeId);
+          if (!userDocumentType) {
+            throw Boom.notFound('Document type not found');
+          }
         }
+
+        // ensure the email is not already registered
+        const existingEmail = await User.findOne({ where: { email: newUser.email } });
+        if (existingEmail) {
+          throw Boom.conflict('Email already registered');
+        }
+
+        // ensure the username is not already taken
+        const existingUsername = await User.findOne({ where: { username: newUser.username } });
+        if (existingUsername) {
+          throw Boom.conflict('Username already taken');
+        }
+
+        // ensure the document number, when provided, is unique
+        if (newUser.documentNumber) {
+          const existingDocument = await User.findOne({
+            where: { documentNumber: newUser.documentNumber }
+          });
+          if (existingDocument) {
+            throw Boom.conflict('Document number already registered');
+          }
+        }
+
+        // hash the password before storing it
+        const hash = await hashPassword(newUser.password);
+
+        // create a new record in the database
+        await User.create({
+          roleId: newUser.roleId,
+          genderId: newUser.genderId,
+          documentTypeId: newUser.documentTypeId,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          birthDate: newUser.birthDate,
+          documentNumber: newUser.documentNumber,
+          email: newUser.email,
+          username: newUser.username,
+          password: hash,
+        });
+
+        // return a success response
+        return { status: 'CREATED SUCCESSFULLY' };
+
+      } catch (error) {
+        // preserve Boom errors, wrap any unexpected one
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to create new user' });
+      }
+    }
+
+    /**
+     * Updates an existing user by its identifier. If a new password is
+     * provided it is re-hashed before being persisted.
+     *
+     * @param {number} userId - Identifier of the user to update.
+     * @param {Object} newData - New values to persist.
+     * @returns {Promise<Object>} Status object confirming the update.
+     * @throws {Boom} BadRequest, NotFound, Conflict or internal error.
+     */
+    async updateOne(userId, newData) {
+
+      if (!newData) {
+        // reject the request when there is no payload to apply
+        throw Boom.badRequest('No data provided');
       }
 
-      // hash the new password if one was supplied
-      const dataToUpdate = { ...newData };
-      if (newData.password) {
-        dataToUpdate.password = await hashPassword(newData.password);
+      try {
+        // validate the role relation only when it is being changed
+        if (newData.roleId) {
+          const userRole = await Role.findByPk(newData.roleId);
+          if (!userRole) {
+            throw Boom.notFound('Role not found');
+          }
+        }
+
+        // validate the gender relation only when it is being changed
+        if (newData.genderId) {
+          const userGender = await Gender.findByPk(newData.genderId);
+          if (!userGender) {
+            throw Boom.notFound('Gender not found');
+          }
+        }
+
+        // validate the document type relation only when it is being changed
+        if (newData.documentTypeId) {
+          const userDocumentType = await DocumentType.findByPk(newData.documentTypeId);
+          if (!userDocumentType) {
+            throw Boom.notFound('Document type not found');
+          }
+        }
+
+        // hash the new password if one was supplied
+        const dataToUpdate = { ...newData };
+        if (newData.password) {
+          dataToUpdate.password = await hashPassword(newData.password);
+        }
+
+        // update the record in the database
+        const [updatedRows] = await User.update(dataToUpdate, {
+          where: { id: userId }
+        });
+
+        // if no rows were affected, the user does not exist
+        if (!updatedRows) {
+          throw Boom.notFound('User not found');
+        }
+
+        // return a success response
+        return { status: 'UPDATED SUCCESSFULLY' };
+
+      } catch (error) {
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to update user' });
+      }
+    }
+
+    /**
+     * Deletes a user by its identifier.
+     *
+     * @param {number} userId - Identifier of the user to delete.
+     * @returns {Promise<Object>} Status object confirming the deletion.
+     * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
+     */
+    async deleteOne(userId) {
+
+      if (!userId) {
+        // an identifier is mandatory to perform a deletion
+        throw Boom.badRequest('No user ID provided');
       }
 
-      // update the record in the database
-      const [updatedRows] = await User.update(dataToUpdate, {
-        where: { id: userId }
-      });
+      try {
+        // destroy the record in the database
+        const deletedRows = await User.destroy({
+          where: { id: userId }
+        });
 
-      // if no rows were affected, the user does not exist
-      if (!updatedRows) {
-        throw Boom.notFound('User not found');
+        // if no rows were deleted, the user does not exist
+        if (!deletedRows) {
+          throw Boom.notFound('User not found');
+        }
+
+        // return a success response
+        return { status: 'DELETED SUCCESSFULLY' };
+
+      } catch (error) {
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to delete user' });
+      }
+    }
+
+    /**
+       * Allows a user to delete their own account by verifying their user ID.
+       *
+       * @param {number} userId - Identifier of the authenticated user.
+       * @returns {Promise<Object>} Status object confirming the deletion.
+       * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
+       */
+    async deleteOwnAccount(userId) {
+
+      if (!userId) {
+        // an identifier is mandatory to perform a deletion
+        throw Boom.badRequest('No user ID provided');
       }
 
-      // return a success response
-      return { status: 'UPDATED SUCCESSFULLY' };
+      try {
+        // destroy the record in the database for the authenticated user
+        const deletedRows = await User.destroy({
+          where: { id: userId }
+        });
 
-    } catch (error) {
-      if (Boom.isBoom(error)) throw error;
-      throw Boom.boomify(error, { message: 'Unable to update user' });
-    }
-  }
+        // if no rows were deleted, the user does not exist
+        if (!deletedRows) {
+          throw Boom.notFound('User not found');
+        }
 
-  /**
-   * Deletes a user by its identifier.
-   *
-   * @param {number} userId - Identifier of the user to delete.
-   * @returns {Promise<Object>} Status object confirming the deletion.
-   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
-   */
-  async deleteOne(userId) {
+        // return a success response
+        return { status: 'ACCOUNT DELETED SUCCESSFULLY' };
 
-    if (!userId) {
-      // an identifier is mandatory to perform a deletion
-      throw Boom.badRequest('No user ID provided');
+      } catch (error) {
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to delete your account' });
+      }
     }
 
-    try {
-      // destroy the record in the database
-      const deletedRows = await User.destroy({
-        where: { id: userId }
-      });
+    /**
+     * Retrieves a single user (without the password) and its relations.
+     *
+     * @param {number} userId - Identifier of the user.
+     * @returns {Promise<Object>} The user record with its relations.
+     * @throws {Boom} BadRequest, NotFound or internal error.
+     */
+    async listOne(userId) {
 
-      // if no rows were deleted, the user does not exist
-      if (!deletedRows) {
-        throw Boom.notFound('User not found');
+      if (!userId) {
+        throw Boom.badRequest('No user ID provided');
       }
 
-      // return a success response
-      return { status: 'DELETED SUCCESSFULLY' };
+      try {
+        const theUser = await User.findOne({
+          where: { id: userId },
+          ...this.#publicQueryOptions(),
+        });
 
-    } catch (error) {
-      if (Boom.isBoom(error)) throw error;
-      throw Boom.boomify(error, { message: 'Unable to delete user' });
-    }
-  }
+        if (!theUser) {
+          throw Boom.notFound('User not found');
+        }
 
-  /**
-   * Retrieves a single user (without the password) and its relations.
-   *
-   * @param {number} userId - Identifier of the user.
-   * @returns {Promise<Object>} The user record with its relations.
-   * @throws {Boom} BadRequest, NotFound or internal error.
-   */
-  async listOne(userId) {
+        return theUser;
 
-    if (!userId) {
-      throw Boom.badRequest('No user ID provided');
+      } catch (error) {
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to find user' });
+      }
     }
 
-    try {
-      const theUser = await User.findOne({
-        where: { id: userId },
-        ...this.#publicQueryOptions(),
-      });
+    /**
+     * Retrieves every user (without passwords) ordered by id ascending.
+     *
+     * @returns {Promise<Object[]>} List of users (empty array if none).
+     * @throws {Boom} Internal error if the query fails.
+     */
+    async listAll() {
 
-      if (!theUser) {
-        throw Boom.notFound('User not found');
+      try {
+        const allUsers = await User.findAll({
+          order: [['id', 'ASC']],
+          ...this.#publicQueryOptions(),
+        });
+
+        // always return an array, even when there are no records
+        return allUsers.length ? allUsers : [];
+
+      } catch (error) {
+        throw Boom.boomify(error, { message: 'Unable to find users' });
+      }
+    }
+
+    /**
+     * Recovers (resets) a user's password identified by email.
+     *
+     * Locates the user by email, hashes the new password and persists it.
+     *
+     * @param {string} email - Email of the account to recover.
+     * @param {string} newPassword - New plain-text password to be hashed.
+     * @returns {Promise<Object>} Status object confirming the password change.
+     * @throws {Boom} BadRequest, NotFound or internal error.
+     */
+    async recoverPassword(email, newPassword) {
+
+      if (!email || !newPassword) {
+        throw Boom.badRequest('Email and new password are required');
       }
 
-      return theUser;
+      try {
+        // find the user by their email
+        const userRecord = await User.findOne({ where: { email } });
 
-    } catch (error) {
-      if (Boom.isBoom(error)) throw error;
-      throw Boom.boomify(error, { message: 'Unable to find user' });
-    }
-  }
+        // if no user was found
+        if (!userRecord) {
+          throw Boom.notFound('User not found');
+        }
 
-  /**
-   * Retrieves every user (without passwords) ordered by id ascending.
-   *
-   * @returns {Promise<Object[]>} List of users (empty array if none).
-   * @throws {Boom} Internal error if the query fails.
-   */
-  async listAll() {
+        // hash the new password before storing it
+        const hash = await hashPassword(newPassword);
 
-    try {
-      const allUsers = await User.findAll({
-        order: [['id', 'ASC']],
-        ...this.#publicQueryOptions(),
-      });
+        // persist the new password
+        await User.update(
+          { password: hash },
+          { where: { id: userRecord.id } }
+        );
 
-      // always return an array, even when there are no records
-      return allUsers.length ? allUsers : [];
+        // return a success response
+        return { status: 'PASSWORD UPDATED SUCCESSFULLY' };
 
-    } catch (error) {
-      throw Boom.boomify(error, { message: 'Unable to find users' });
-    }
-  }
-
-  /**
-   * Recovers (resets) a user's password identified by email.
-   *
-   * Locates the user by email, hashes the new password and persists it.
-   *
-   * @param {string} email - Email of the account to recover.
-   * @param {string} newPassword - New plain-text password to be hashed.
-   * @returns {Promise<Object>} Status object confirming the password change.
-   * @throws {Boom} BadRequest, NotFound or internal error.
-   */
-  async recoverPassword(email, newPassword) {
-
-    if (!email || !newPassword) {
-      throw Boom.badRequest('Email and new password are required');
+      } catch (error) {
+        if (Boom.isBoom(error)) throw error;
+        throw Boom.boomify(error, { message: 'Unable to recover password' });
+      }
     }
 
-    try {
-      // find the user by their email
-      const userRecord = await User.findOne({ where: { email } });
+    /**
+     * Finds a user by email INCLUDING the password hash. Intended for the
+     * authentication layer only, never to be exposed through the API.
+     *
+     * @param {string} email - Email to search for.
+     * @returns {Promise<Object|null>} The user with its password, or null.
+     * @throws {Boom} BadRequest if no email is provided, internal error otherwise.
+     */
+    async findByEmailForAuth(email) {
 
-      // if no user was found
-      if (!userRecord) {
-        throw Boom.notFound('User not found');
+      if (!email) {
+        throw Boom.badRequest('No email provided');
       }
 
-      // hash the new password before storing it
-      const hash = await hashPassword(newPassword);
+      try {
+        // password is intentionally included here for credential verification
+        return await User.findOne({
+          where: { email },
+          include: [{ model: Role, as: 'role' }],
+        });
 
-      // persist the new password
-      await User.update(
-        { password: hash },
-        { where: { id: userRecord.id } }
-      );
-
-      // return a success response
-      return { status: 'PASSWORD UPDATED SUCCESSFULLY' };
-
-    } catch (error) {
-      if (Boom.isBoom(error)) throw error;
-      throw Boom.boomify(error, { message: 'Unable to recover password' });
+      } catch (error) {
+        throw Boom.boomify(error, { message: 'Unable to find user by email' });
+      }
     }
   }
-
-  /**
-   * Finds a user by email INCLUDING the password hash. Intended for the
-   * authentication layer only, never to be exposed through the API.
-   *
-   * @param {string} email - Email to search for.
-   * @returns {Promise<Object|null>} The user with its password, or null.
-   * @throws {Boom} BadRequest if no email is provided, internal error otherwise.
-   */
-  async findByEmailForAuth(email) {
-
-    if (!email) {
-      throw Boom.badRequest('No email provided');
-    }
-
-    try {
-      // password is intentionally included here for credential verification
-      return await User.findOne({
-        where: { email },
-        include: [{ model: Role, as: 'role' }],
-      });
-
-    } catch (error) {
-      throw Boom.boomify(error, { message: 'Unable to find user by email' });
-    }
-  }
-}
 </file>
 
 <file path="src/utils/auth/authApp/strategies/jwt.strategy.js">
