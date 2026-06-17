@@ -10,7 +10,7 @@ import {
   countryId,
   name,
   description,
-} from '../utils/regEx/departamentRegEx.js';
+} from '../utils/regEx/departmentRegEx.js';
 
 // ── Primitive Joi types ───────────────────────────────────────────────────────
 

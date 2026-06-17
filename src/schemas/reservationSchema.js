@@ -24,6 +24,12 @@ const joiServiceId = Joi.number().integer().positive().messages({
   'number.positive': 'El serviceId debe ser un número positivo.',
 });
 
+const joiQuantity = Joi.number().integer().positive().messages({
+  'number.base': 'La cantidad debe ser un número.',
+  'number.integer': 'La cantidad debe ser un número entero.',
+  'number.positive': 'La cantidad debe ser un número positivo.',
+});
+
 // ── Schema export ─────────────────────────────────────────────────────────────
 
 export const reservationSchema = {
@@ -45,7 +51,7 @@ export const reservationSchema = {
 
   newReservationData: Joi.object({
     serviceId: joiServiceId.required(),
-    quantity: joiQuantity.required(),   // ← agregar esta línea
+    quantity: joiQuantity.required(),
   }),
 
 };
