@@ -90,7 +90,11 @@
 
         // Generate JWT token with user data, including the role name
         const userToken = signUserToken(
-          { id: userRecord.id, role: userRecord.role.name },
+          { 
+            id: userRecord.id, 
+            role: userRecord.role.name,
+            fullName = `${userRecord.firstName} ${userRecord.lastName}`
+          },
           config.authAppJwtKey,
           '1h'
         );

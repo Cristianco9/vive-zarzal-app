@@ -48,6 +48,7 @@ export const authAppVerifyToken = (req, res, next) => {
     const userData = {
       id: decoded.id,
       role: decoded.role,
+      fullName: decoded.fullName
     };
 
     // Regenerate a new token for the user, carrying the role forward
