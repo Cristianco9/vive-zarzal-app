@@ -77,11 +77,7 @@ documentTypeRouter.post(
 // ─────────────────────────────────────────────────────────────────────────────
 documentTypeRouter.get(
   '/list-all',
-  // Step 1: verify the session token
-  authAppVerifyToken,
-  // Step 2: authorize all the roles
-  checkRole(['administrador', 'cliente', 'anunciante']),
-  // Step 3: delegate to the controller (no payload to validate)
+  // Step 1: delegate to the controller (no payload to validate)
   listAllDocumentTypes
 );
 
