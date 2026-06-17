@@ -24,6 +24,7 @@ import {
   boomErrorHandler,
   ORMErrorHandler
 } from './middlewares/errorHandler.js';
+import setCurrentPath from './middlewares/setCurrentPath.js';
 // Import the setup of the database entities associations
 import { setupAssociations } from './db/models/index.js';
 
@@ -83,6 +84,8 @@ app.set('view engine', 'ejs');
   app.use(ORMErrorHandler);
   // Middleware for handling Boom errors
   app.use(boomErrorHandler);
+  // General to get the URL endpoint
+  app.use(setCurrentPath);
   // General error handling middleware
   app.use(errorHandler);
 
