@@ -1911,7 +1911,7 @@ export const config = {
 
 <file path="src/controllers/ageRestriction/createOneAgeRestriction.js">
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -1967,7 +1967,7 @@ export const createOneAgeRestriction = async (req, res, next) => {
 
 <file path="src/controllers/ageRestriction/deleteOneAgeRestriction.js">
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2020,7 +2020,7 @@ export const deleteOneAgeRestriction = async (req, res, next) => {
 
 <file path="src/controllers/ageRestriction/listAllAgeRestrictions.js">
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2071,7 +2071,7 @@ export const listAllAgeRestrictions = async (req, res, next) => {
 
 <file path="src/controllers/ageRestriction/listOneAgeRestriction.js">
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2126,7 +2126,7 @@ export const listOneAgeRestriction = async (req, res, next) => {
 
 <file path="src/controllers/ageRestriction/updateOneAgeRestriction.js">
 // Import the AgeRestrictionServices class from the ageRestrictionServices module
-import { AgeRestrictionServices } from '../../services/ageRestrictionServices.js';
+import { AgeRestrictionServices } from '../../services/ageRestrictionService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2179,7 +2179,7 @@ export const updateOneAgeRestriction = async (req, res, next) => {
 
 <file path="src/controllers/business/createOneBusiness.js">
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2241,7 +2241,7 @@ export const createOneBusiness = async (req, res, next) => {
 
 <file path="src/controllers/business/deleteOneBusiness.js">
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2294,7 +2294,7 @@ export const deleteOneBusiness = async (req, res, next) => {
 
 <file path="src/controllers/business/listAllBusinesses.js">
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2345,7 +2345,7 @@ export const listAllBusinesses = async (req, res, next) => {
 
 <file path="src/controllers/business/listOneBusiness.js">
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2400,7 +2400,7 @@ export const listOneBusiness = async (req, res, next) => {
 
 <file path="src/controllers/business/updateOneBusiness.js">
 // Import the BusinessServices class from the businessServices module
-import { BusinessServices } from '../../services/businessServices.js';
+import { BusinessServices } from '../../services/businessService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2453,7 +2453,7 @@ export const updateOneBusiness = async (req, res, next) => {
 
 <file path="src/controllers/businessReview/createOneBusinessReview.js">
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2511,7 +2511,7 @@ export const createOneBusinessReview = async (req, res, next) => {
 
 <file path="src/controllers/businessReview/deleteOneBusinessReview.js">
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2564,7 +2564,7 @@ export const deleteOneBusinessReview = async (req, res, next) => {
 
 <file path="src/controllers/businessReview/listAllBusinessReviews.js">
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2615,7 +2615,7 @@ export const listAllBusinessReviews = async (req, res, next) => {
 
 <file path="src/controllers/businessReview/listOneBusinessReview.js">
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2670,7 +2670,7 @@ export const listOneBusinessReview = async (req, res, next) => {
 
 <file path="src/controllers/businessReview/updateOneBusinessReview.js">
 // Import the BusinessReviewServices class from the businessReviewServices module
-import { BusinessReviewServices } from '../../services/businessReviewServices.js';
+import { BusinessReviewServices } from '../../services/businessReviewService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2723,7 +2723,7 @@ export const updateOneBusinessReview = async (req, res, next) => {
 
 <file path="src/controllers/category/createOneCategory.js">
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2779,7 +2779,7 @@ export const createOneCategory = async (req, res, next) => {
 
 <file path="src/controllers/category/deleteOneCategory.js">
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2832,7 +2832,7 @@ export const deleteOneCategory = async (req, res, next) => {
 
 <file path="src/controllers/category/listAllCategories.js">
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2883,7 +2883,7 @@ export const listAllCategories = async (req, res, next) => {
 
 <file path="src/controllers/category/listOneCategory.js">
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2938,7 +2938,7 @@ export const listOneCategory = async (req, res, next) => {
 
 <file path="src/controllers/category/updateOneCategory.js">
 // Import the CategoryServices class from the categoryServices module
-import { CategoryServices } from '../../services/categoryServices.js';
+import { CategoryServices } from '../../services/categoryService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -2991,7 +2991,7 @@ export const updateOneCategory = async (req, res, next) => {
 
 <file path="src/controllers/city/createOneCity.js">
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3048,7 +3048,7 @@ export const createOneCity = async (req, res, next) => {
 
 <file path="src/controllers/city/deleteOneCity.js">
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3101,7 +3101,7 @@ export const deleteOneCity = async (req, res, next) => {
 
 <file path="src/controllers/city/listAllCities.js">
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3152,7 +3152,7 @@ export const listAllCities = async (req, res, next) => {
 
 <file path="src/controllers/city/listOneCity.js">
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3207,7 +3207,7 @@ export const listOneCity = async (req, res, next) => {
 
 <file path="src/controllers/city/updateOneCity.js">
 // Import the CityServices class from the cityServices module
-import { CityServices } from '../../services/cityServices.js';
+import { CityServices } from '../../services/cityService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3260,7 +3260,7 @@ export const updateOneCity = async (req, res, next) => {
 
 <file path="src/controllers/country/createOneCountry.js">
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3316,7 +3316,7 @@ export const createOneCountry = async (req, res, next) => {
 
 <file path="src/controllers/country/deleteOneCountry.js">
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3369,7 +3369,7 @@ export const deleteOneCountry = async (req, res, next) => {
 
 <file path="src/controllers/country/listAllCountries.js">
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3420,7 +3420,7 @@ export const listAllCountries = async (req, res, next) => {
 
 <file path="src/controllers/country/listOneCountry.js">
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3475,7 +3475,7 @@ export const listOneCountry = async (req, res, next) => {
 
 <file path="src/controllers/country/updateOneCountry.js">
 // Import the CountryServices class from the countryServices module
-import { CountryServices } from '../../services/countryServices.js';
+import { CountryServices } from '../../services/countryService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3528,7 +3528,7 @@ export const updateOneCountry = async (req, res, next) => {
 
 <file path="src/controllers/department/createOneDepartment.js">
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3585,7 +3585,7 @@ export const createOneDepartment = async (req, res, next) => {
 
 <file path="src/controllers/department/deleteOneDepartment.js">
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3638,7 +3638,7 @@ export const deleteOneDepartment = async (req, res, next) => {
 
 <file path="src/controllers/department/listAllDepartments.js">
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3689,7 +3689,7 @@ export const listAllDepartments = async (req, res, next) => {
 
 <file path="src/controllers/department/listOneDepartment.js">
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3744,7 +3744,7 @@ export const listOneDepartment = async (req, res, next) => {
 
 <file path="src/controllers/department/updateOneDepartment.js">
 // Import the DepartmentServices class from the departmentServices module
-import { DepartmentServices } from '../../services/departmentServices.js';
+import { DepartmentServices } from '../../services/departmentService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3797,7 +3797,7 @@ export const updateOneDepartment = async (req, res, next) => {
 
 <file path="src/controllers/documentType/createOneDocumentType.js">
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3852,7 +3852,7 @@ export const createOneDocumentType = async (req, res, next) => {
 
 <file path="src/controllers/documentType/deleteOneDocumentType.js">
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3905,7 +3905,7 @@ export const deleteOneDocumentType = async (req, res, next) => {
 
 <file path="src/controllers/documentType/listAllDocumentTypes.js">
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -3956,7 +3956,7 @@ export const listAllDocumentTypes = async (req, res, next) => {
 
 <file path="src/controllers/documentType/listOneDocumentType.js">
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4011,7 +4011,7 @@ export const listOneDocumentType = async (req, res, next) => {
 
 <file path="src/controllers/documentType/updateOneDocumentType.js">
 // Import the DocumentTypeServices class from the documentTypeServices module
-import { DocumentTypeServices } from '../../services/documentTypeServices.js';
+import { DocumentTypeServices } from '../../services/documentTypeService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4231,11 +4231,17 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to list all favorites belonging to a specific user.
  *
- * This function handles the request to retrieve every favorite owned by a given
- * user, each including its related service. It extracts the user ID from the request
- * body, invokes the appropriate service method, and returns the list of records.
+ * This function handles the request to retrieve every favorite owned by a
+ * given user, each including its related service. The requested userId is
+ * extracted from the request body, but it is only honored as-is when the
+ * authenticated user is an 'administrador'; otherwise the requesting user
+ * may only ever list their OWN favorites, regardless of what userId was
+ * sent in the body.
  *
  * @param {Object} req - The request object, expected to contain the user ID in the body.
+ * @param {Object} req.user - The authenticated user injected by authAppVerifyToken.
+ * @param {number} req.user.id - The ID of the authenticated user.
+ * @param {string} req.user.role - The role of the authenticated user.
  * @param {Object} res - The response object to send the list of the user's favorites.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -4243,13 +4249,26 @@ import Boom from '@hapi/boom';
  */
 export const listAllFavoriteUserServicesByUser = async (req, res, next) => {
 
-  // Extract the user ID from the request body
+  // Extract the requested user ID from the request body
   const { userId } = req.body;
 
-  // Instantiate the FavoriteUserServiceServices class to manage favorite operations
-  const favoriteManager = new FavoriteUserServiceServices();
+  // Identity of the authenticated user, attached by authAppVerifyToken
+  const requestingUser = req.user;
 
   try {
+    // A non-administrator can only ever list their own favorites. If the
+    // requested userId does not match the authenticated user's id, deny
+    // the request instead of trusting whatever was sent in the body.
+    if (
+      requestingUser.role !== 'administrador' &&
+      Number(userId) !== Number(requestingUser.id)
+    ) {
+      throw Boom.forbidden('No tienes permiso para ver los favoritos de otro usuario');
+    }
+
+    // Instantiate the FavoriteUserServiceServices class to manage favorite operations
+    const favoriteManager = new FavoriteUserServiceServices();
+
     // Attempt to retrieve all favorites belonging to the provided user
     const userRecords = await favoriteManager.listAllByUser(userId);
 
@@ -4265,7 +4284,13 @@ export const listAllFavoriteUserServicesByUser = async (req, res, next) => {
     }
 
   } catch (error) {
-    // Handle errors during retrieval by sending a Boom error response
+    // Preserve Boom errors (e.g. the 403 above, or 400/404 from the service
+    // layer) instead of masking them behind a generic 503
+    if (Boom.isBoom(error)) {
+      return next(error);
+    }
+
+    // Handle unexpected errors during retrieval by sending a Boom error response
     const boomError = Boom.serverUnavailable(
       'Unable to retrieve the user favorites from the database',
       error
@@ -4599,7 +4624,7 @@ export const updateOneGender = async (req, res, next) => {
 
 <file path="src/controllers/location/createOneLocation.js">
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4657,7 +4682,7 @@ export const createOneLocation = async (req, res, next) => {
 
 <file path="src/controllers/location/deleteOneLocation.js">
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4710,7 +4735,7 @@ export const deleteOneLocation = async (req, res, next) => {
 
 <file path="src/controllers/location/listAllLocations.js">
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4761,7 +4786,7 @@ export const listAllLocations = async (req, res, next) => {
 
 <file path="src/controllers/location/listOneLocation.js">
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4816,7 +4841,7 @@ export const listOneLocation = async (req, res, next) => {
 
 <file path="src/controllers/location/updateOneLocation.js">
 // Import the LocationServices class from the locationServices module
-import { LocationServices } from '../../services/locationServices.js';
+import { LocationServices } from '../../services/locationService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -4935,11 +4960,15 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to delete a message.
  *
- * This function handles the request to delete an existing message by extracting
- * the message ID from the request body, invoking the appropriate service method, and
- * returning a response based on the operation's success or failure.
+ * This function handles the request to delete an existing message by
+ * extracting the message ID from the request body. The acting user's
+ * identity is taken from the verified JWT token (never the body), and the
+ * service layer enforces that only the message's sender or receiver may
+ * delete it.
  *
  * @param {Object} req - The request object containing the message ID.
+ * @param {Object} req.user - The authenticated user injected by authAppVerifyToken.
+ * @param {number} req.user.id - The ID of the authenticated user (must be sender or receiver).
  * @param {Object} res - The response object to send the outcome of the operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -4950,12 +4979,16 @@ export const deleteOneMessage = async (req, res, next) => {
   // Extract the message ID from the request body
   const { id } = req.body;
 
+  // Extract the authenticated user's ID from the JWT token — never trust the body for this
+  const requestingUserId = req.user.id;
+
   // Instantiate the MessageServices class to manage the message operations
   const messageManager = new MessageServices();
 
   try {
-    // Attempt to delete the message by the provided ID
-    const response = await messageManager.deleteOne(id);
+    // Attempt to delete the message — the service layer enforces that only
+    // the sender or the receiver of the message can delete it
+    const response = await messageManager.deleteOne(id, requestingUserId);
 
     // If the message is deleted successfully, send a success response
     if (response.status === 'DELETED SUCCESSFULLY') {
@@ -4968,7 +5001,13 @@ export const deleteOneMessage = async (req, res, next) => {
     }
 
   } catch (error) {
-    // Handle errors during message deletion by sending a Boom error response
+    // Preserve Boom errors (e.g. 404 when the message isn't theirs) instead
+    // of masking them behind a generic 503
+    if (Boom.isBoom(error)) {
+      return next(error);
+    }
+
+    // Handle unexpected errors during message deletion
     const boomError = Boom.serverUnavailable(
       'Unable to delete the message from the database',
       error
@@ -5038,10 +5077,15 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to list all messages in a conversation between two users.
  *
- * This function handles the request to retrieve the conversation between two users,
- * invoking the appropriate service method and returning a response with the list of records.
+ * This route is only reachable by 'cliente' and 'anunciante' roles (see
+ * messageRouter.js); 'administrador' uses listAllMessages instead. A user
+ * may only request a conversation they actually take part in — the
+ * authenticated user's id (from the JWT) must match either userAId or
+ * userBId, regardless of which one was sent in the body.
  *
  * @param {Object} req - The request object, expected to contain both user IDs in the body.
+ * @param {Object} req.user - The authenticated user injected by authAppVerifyToken.
+ * @param {number} req.user.id - The ID of the authenticated user.
  * @param {Object} res - The response object to send the conversation messages.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -5052,10 +5096,19 @@ export const listConversationMessages = async (req, res, next) => {
   // Extract conversation users IDs from the request body
   const { userAId, userBId } = req.body;
 
-  // Instantiate the MessageServices class to manage message operations
-  const messageManager = new MessageServices();
+  // Identity of the authenticated user, attached by authAppVerifyToken
+  const requestingUserId = Number(req.user.id);
 
   try {
+    // The authenticated user must be one of the two participants; otherwise
+    // they are trying to read a conversation that isn't theirs
+    if (requestingUserId !== Number(userAId) && requestingUserId !== Number(userBId)) {
+      throw Boom.forbidden('No tienes permiso para ver una conversación de la que no haces parte');
+    }
+
+    // Instantiate the MessageServices class to manage message operations
+    const messageManager = new MessageServices();
+
     // Attempt to retrieve the conversation messages from the database
     const records = await messageManager.listConversation(userAId, userBId);
 
@@ -5071,7 +5124,13 @@ export const listConversationMessages = async (req, res, next) => {
     }
 
   } catch (error) {
-    // Handle errors during conversation retrieval by sending a Boom error response
+    // Preserve Boom errors (e.g. the 403 above, or 400 from the service
+    // layer) instead of masking them behind a generic 503
+    if (Boom.isBoom(error)) {
+      return next(error);
+    }
+
+    // Handle unexpected errors during conversation retrieval
     const boomError = Boom.serverUnavailable(
       'Unable to retrieve conversation messages from the database',
       error
@@ -5145,12 +5204,15 @@ import Boom from '@hapi/boom';
 /**
  * Controller function to handle the update of a message.
  *
- * This function processes requests to update a message in the database. It accepts
- * the message ID and the new message data from the request body. If the update is
- * successful, it returns a success message. If there is an error, it handles the
- * error appropriately.
+ * This function processes requests to update a message in the database. It
+ * accepts the message ID and the new message data from the request body.
+ * The acting user's identity is taken from the verified JWT token (never
+ * the body), and the service layer enforces that only the message's sender
+ * or receiver may update it.
  *
  * @param {Object} req - The request object, expected to contain the message ID and new data in the body.
+ * @param {Object} req.user - The authenticated user injected by authAppVerifyToken.
+ * @param {number} req.user.id - The ID of the authenticated user (must be sender or receiver).
  * @param {Object} res - The response object to send the result of the update operation.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
@@ -5161,12 +5223,16 @@ export const updateOneMessage = async (req, res, next) => {
   // Extract message ID and new message data from the request body
   const { id, updateMessageData } = req.body;
 
+  // Extract the authenticated user's ID from the JWT token — never trust the body for this
+  const requestingUserId = req.user.id;
+
   // Instantiate the MessageServices class to manage message operations
   const messageManager = new MessageServices();
 
   try {
-    // Attempt to update the message details in the database
-    const response = await messageManager.updateOne(id, updateMessageData);
+    // Attempt to update the message — the service layer enforces that only
+    // the sender or the receiver of the message can update it
+    const response = await messageManager.updateOne(id, requestingUserId, updateMessageData);
 
     // If the update is successful, return a 201 response with a success message
     if (response.status === 'UPDATED SUCCESSFULLY') {
@@ -5179,7 +5245,13 @@ export const updateOneMessage = async (req, res, next) => {
     }
 
   } catch (error) {
-    // Handle errors during the update process by returning a 503 error
+    // Preserve Boom errors (e.g. 404 when the message isn't theirs) instead
+    // of masking them behind a generic 503
+    if (Boom.isBoom(error)) {
+      return next(error);
+    }
+
+    // Handle unexpected errors during the update process
     const boomError = Boom.serverUnavailable(
       'Unable to update the message in the database',
       error
@@ -5192,7 +5264,7 @@ export const updateOneMessage = async (req, res, next) => {
 
 <file path="src/controllers/messageStatus/createOneMessageStatus.js">
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5248,7 +5320,7 @@ export const createOneMessageStatus = async (req, res, next) => {
 
 <file path="src/controllers/messageStatus/deleteOneMessageStatus.js">
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5301,7 +5373,7 @@ export const deleteOneMessageStatus = async (req, res, next) => {
 
 <file path="src/controllers/messageStatus/listAllMessageStatuses.js">
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5352,7 +5424,7 @@ export const listAllMessageStatuses = async (req, res, next) => {
 
 <file path="src/controllers/messageStatus/listOneMessageStatus.js">
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5407,7 +5479,7 @@ export const listOneMessageStatus = async (req, res, next) => {
 
 <file path="src/controllers/messageStatus/updateOneMessageStatus.js">
 // Import the MessageStatusServices class from the messageStatusServices module
-import { MessageStatusServices } from '../../services/messageStatusServices.js';
+import { MessageStatusServices } from '../../services/messageStatusService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5460,7 +5532,7 @@ export const updateOneMessageStatus = async (req, res, next) => {
 
 <file path="src/controllers/phone/createOnePhone.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5515,7 +5587,7 @@ export const createOnePhone = async (req, res, next) => {
 
 <file path="src/controllers/phone/deleteOnePhone.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5568,7 +5640,7 @@ export const deleteOnePhone = async (req, res, next) => {
 
 <file path="src/controllers/phone/listAllPhones.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5619,7 +5691,7 @@ export const listAllPhones = async (req, res, next) => {
 
 <file path="src/controllers/phone/listAllPhonesByUser.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5680,7 +5752,7 @@ export const listAllPhonesByUser = async (req, res, next) => {
 
 <file path="src/controllers/phone/listOnePhone.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5735,7 +5807,7 @@ export const listOnePhone = async (req, res, next) => {
 
 <file path="src/controllers/phone/updateOnePhone.js">
 // Import the PhoneServices class from the phoneServices module
-import { PhoneServices } from '../../services/phoneServices.js';
+import { PhoneServices } from '../../services/phoneService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5788,7 +5860,7 @@ export const updateOnePhone = async (req, res, next) => {
 
 <file path="src/controllers/reservation/createOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — POST /reservations
@@ -5836,7 +5908,7 @@ export const createOneReservation = async (req, res, next) => {
 
 <file path="src/controllers/reservation/deleteOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — DELETE /reservations/:id
@@ -5881,7 +5953,7 @@ export const deleteOneReservation = async (req, res, next) => {
 
 <file path="src/controllers/reservation/listAllReservations.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -5929,7 +6001,7 @@ export const listAllReservations = async (req, res, next) => {
 
 <file path="src/controllers/reservation/listBusinessReservations.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — GET /reservations/business/:businessId
@@ -5974,7 +6046,7 @@ export const listReservationsByBusiness = async (req, res, next) => {
 
 <file path="src/controllers/reservation/listOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — GET /reservations/:id
@@ -6019,7 +6091,7 @@ export const listOneReservation = async (req, res, next) => {
 
 <file path="src/controllers/reservation/listServiceReservations.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — GET /reservations/service/:serviceId
@@ -6061,7 +6133,7 @@ export const listReservationsByService = async (req, res, next) => {
 
 <file path="src/controllers/reservation/listUserReservations.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6113,7 +6185,7 @@ export const listUserReservations = async (req, res, next) => {
 
 <file path="src/controllers/reservation/updateOneReservation.js">
 // Import the ReservationServices class from the reservationServices module
-import { ReservationServices } from '../../services/reservationServices.js';
+import { ReservationServices } from '../../services/reservationService.js';
 
 /**
  * Controller — PATCH /reservations/:id
@@ -6161,7 +6233,7 @@ export const updateOneReservation = async (req, res, next) => {
 
 <file path="src/controllers/reservationStatus/createOneReservationStatus.js">
 // Import the ReservationStatusServices class from the reservationStatusServices module
-import { ReservationStatusServices } from '../../services/reservationStatusServices.js';
+import { ReservationStatusServices } from '../../services/reservationStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6217,7 +6289,7 @@ export const createOneReservationStatus = async (req, res, next) => {
 
 <file path="src/controllers/reservationStatus/deleteOneReservationStatus.js">
 // Import the ReservationStatusServices class from the reservationStatusServices module
-import { ReservationStatusServices } from '../../services/reservationStatusServices.js';
+import { ReservationStatusServices } from '../../services/reservationStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6270,7 +6342,7 @@ export const deleteOneReservationStatus = async (req, res, next) => {
 
 <file path="src/controllers/reservationStatus/listAllReservationStatuses.js">
 // Import the ReservationStatusServices class from the reservationStatusServices module
-import { ReservationStatusServices } from '../../services/reservationStatusServices.js';
+import { ReservationStatusServices } from '../../services/reservationStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6321,7 +6393,7 @@ export const listAllReservationStatuses = async (req, res, next) => {
 
 <file path="src/controllers/reservationStatus/listOneReservationStatus.js">
 // Import the ReservationStatusServices class from the reservationStatusServices module
-import { ReservationStatusServices } from '../../services/reservationStatusServices.js';
+import { ReservationStatusServices } from '../../services/reservationStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6376,7 +6448,7 @@ export const listOneReservationStatus = async (req, res, next) => {
 
 <file path="src/controllers/reservationStatus/updateOneReservationStatus.js">
 // Import the ReservationStatusServices class from the reservationStatusServices module
-import { ReservationStatusServices } from '../../services/reservationStatusServices.js';
+import { ReservationStatusServices } from '../../services/reservationStatusService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6429,7 +6501,7 @@ export const updateOneReservationStatus = async (req, res, next) => {
 
 <file path="src/controllers/role/createOneRole.js">
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6485,7 +6557,7 @@ export const createOneRole = async (req, res, next) => {
 
 <file path="src/controllers/role/deleteOneRole.js">
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6538,7 +6610,7 @@ export const deleteOneRole = async (req, res, next) => {
 
 <file path="src/controllers/role/listAllRoles.js">
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6589,7 +6661,7 @@ export const listAllRoles = async (req, res, next) => {
 
 <file path="src/controllers/role/listOneRole.js">
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6644,7 +6716,7 @@ export const listOneRole = async (req, res, next) => {
 
 <file path="src/controllers/role/updateOneRole.js">
 // Import the RoleServices class from the roleServices module
-import { RoleServices } from '../../services/roleServices.js';
+import { RoleServices } from '../../services/roleService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6697,7 +6769,7 @@ export const updateOneRole = async (req, res, next) => {
 
 <file path="src/controllers/service/createOneService.js">
 // Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
+import { ServiceServices } from '../../services/serviceService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -6749,6 +6821,10 @@ export const createService = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/deleteOneService.js">
+// Import the ServiceServices class from the serviceServices module
+import { ServiceServices } from '../../services/serviceService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to delete an existing service.
  *
@@ -6820,6 +6896,10 @@ export const deleteService = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/listAllServices.js">
+// Import the ServiceServices class from the serviceServices module
+import { ServiceServices } from '../../services/serviceService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to list all services.
  *
@@ -6865,6 +6945,10 @@ export const listAllServices = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/listByBusinessId.js">
+// Import the ServiceServices class from the serviceServices module
+import { ServiceServices } from '../../services/serviceService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to list all services belonging to a specific business.
  *
@@ -6922,6 +7006,10 @@ export const listServicesByBusiness = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/service/listOneService.js">
+// Import the ServiceServices class from the serviceServices module
+import { ServiceServices } from '../../services/serviceService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to retrieve a single service by its ID.
  *
@@ -6979,7 +7067,7 @@ export const getServiceById = async (req, res, next) => {
 
 <file path="src/controllers/service/updateOneService.js">
 // Import the ServiceServices class from the serviceServices module
-import { ServiceServices } from '../../services/serviceServices.js';
+import { ServiceServices } from '../../services/serviceService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7032,7 +7120,7 @@ export const updateOneService = async (req, res, next) => {
 
 <file path="src/controllers/serviceImage/createOneServiceImage.js">
 // Import the ServiceImageServices class from the serviceImageServices module
-import { ServiceImageServices } from '../../services/serviceImageServices.js';
+import { ServiceImageServices } from '../../services/serviceImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7084,6 +7172,10 @@ export const createServiceImage = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/deleteOneServiceImage.js">
+// Import the ServiceImageServices class from the serviceImageServices module
+import { ServiceImageServices } from '../../services/serviceImageService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to delete an existing service image.
  *
@@ -7155,6 +7247,10 @@ export const deleteServiceImage = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/listAllServiceImages.js">
+// Import the ServiceImageServices class from the serviceImageServices module
+import { ServiceImageServices } from '../../services/serviceImageService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to list all service images.
  *
@@ -7200,6 +7296,10 @@ export const listAllServiceImages = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/listOneServiceImage.js">
+// Import the ServiceImageServices class from the serviceImageServices module
+import { ServiceImageServices } from '../../services/serviceImageService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to retrieve a single service image by its ID.
  *
@@ -7256,6 +7356,10 @@ export const getServiceImageById = async (req, res, next) => {
 </file>
 
 <file path="src/controllers/serviceImage/updateOneServiceImage.js">
+// Import the ServiceImageServices class from the serviceImageServices module
+import { ServiceImageServices } from '../../services/serviceImageService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
 /**
  * Controller function to update an existing service image.
  *
@@ -7329,7 +7433,7 @@ export const updateServiceImage = async (req, res, next) => {
 
 <file path="src/controllers/serviceReview/createOneServiceReview.js">
 // Import the ServiceReviewServices class from the serviceReviewServices module
-import { ServiceReviewServices } from '../../services/serviceReviewServices.js';
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7337,133 +7441,133 @@ import Boom from '@hapi/boom';
  * Controller function to create a new service review.
  *
  * This function handles the request to create a new service review in the database,
- * invoking the appropriate service method and returning a response with the creation status.
+ * taking the author's identity from the verified JWT token instead of the request body
+ * to prevent a user from creating reviews on behalf of another user.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review data in body.
- * @param {Object} req.body - The service review data to create.
- * @param {Object} res - The response object to send the creation status.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * @param {Object} req              - The request object containing the review data in body.
+ * @param {Object} req.body         - The request body with the review fields.
+ * @param {number} req.body.serviceId - The ID of the service being reviewed.
+ * @param {string} [req.body.content] - Optional textual content of the review.
+ * @param {number} [req.body.rating]  - Optional rating between 1 and 5.
+ * @param {Object} req.user         - The authenticated user injected by the JWT middleware.
+ * @param {number} req.user.id      - The ID of the authenticated user (review author).
+ * @param {Object} res              - The response object to send the creation status.
+ * @param {Function} next           - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the creation status.
  */
 export const createServiceReview = async (req, res, next) => {
 
-  // Extract the service review data from the request body
-  const serviceReviewData = req.body;
+  // Extract the review fields from the request body
+  const { serviceId, content, rating } = req.body;
+
+  // Extract the authenticated user's ID from the JWT token — never trust the body for this
+  const userId = req.user.id;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
     // Attempt to create a new service review record in the database
-    const creationResult = await serviceReviewManager.createOne(serviceReviewData);
+    const result = await serviceReviewManager.createOne({
+      serviceId,
+      userId,
+      content,
+      rating,
+    });
 
     // Send a success response with the creation status
     return res.status(201).json({
       success: true,
       message: 'Service review created successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
-      result: creationResult
+      result,
     });
 
   } catch (error) {
-    // Handle errors during service review creation by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to create service review in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (404 for missing service/user) or any unexpected error
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceReview/deleteOneServiceReview.js">
+// Import the ServiceReviewServices class from the serviceReviewServices module
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
 /**
  * Controller function to delete an existing service review.
  *
  * This function handles the request to delete a service review from the database,
- * ensuring that the service review belongs to the specified user.
+ * ensuring that only the owner of the review can remove it. The user identity is
+ * taken from the verified JWT token — the request body must NOT include userId,
+ * as accepting it from the client would allow a user to delete reviews they do not own.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review ID in params and user ID in body.
- * @param {Object} req.params - The route parameters.
- * @param {string} req.params.serviceReviewId - The ID of the service review to delete.
- * @param {Object} req.body - The request body containing the user ID.
- * @param {number} req.body.userId - The ID of the user who should own the review.
- * @param {Object} res - The response object to send the deletion status.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * @param {Object} req           - The request object containing the review ID in params.
+ * @param {Object} req.params    - The route parameters.
+ * @param {string} req.params.id - The ID of the service review to delete.
+ * @param {Object} req.user      - The authenticated user injected by the JWT middleware.
+ * @param {number} req.user.id   - The ID of the authenticated user (must be the review owner).
+ * @param {Object} res           - The response object to send the deletion status.
+ * @param {Function} next        - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the deletion status.
  */
 export const deleteServiceReview = async (req, res, next) => {
 
-  // Extract the serviceReviewId from the request parameters
-  const { serviceReviewId } = req.params;
-  
-  // Extract the userId from the request body
-  const { userId } = req.body;
+  // Extract the service review ID from the route parameters
+  const { id } = req.params;
+
+  // Extract the authenticated user's ID from the JWT token — never trust the body for this
+  const userId = req.user.id;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Validate that the serviceReviewId parameter is provided and is a valid number
-    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
-      // If serviceReviewId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
-      return next(boomError);
-    }
-
-    // Validate that the userId is provided and is a valid number
-    if (!userId || isNaN(parseInt(userId))) {
-      // If userId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing user ID provided');
-      return next(boomError);
-    }
-
-    // Attempt to delete the service review record from the database
-    const deleteResult = await serviceReviewManager.deleteOne(
-      parseInt(serviceReviewId), 
-      parseInt(userId)
-    );
+    // Attempt to delete the service review record — the service layer enforces ownership
+    const result = await serviceReviewManager.deleteOne(Number(id), userId);
 
     // Send a success response with the deletion status
     return res.status(200).json({
       success: true,
       message: 'Service review deleted successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
-      result: deleteResult
+      result,
     });
 
   } catch (error) {
-    // Handle errors during service review deletion by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to delete service review from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 bad request, 404 not found) or any unexpected error
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceReview/listAllServiceReviews.js">
+// Import the ServiceReviewServices class from the serviceReviewServices module
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
 /**
- * Controller function to list all service reviews.
+ * Controller function to list all service reviews in the system.
  *
- * This function handles the request to retrieve all service reviews from the database,
- * invoking the appropriate service method and returning a response with the list of records.
+ * This function handles the request to retrieve every service review from the database,
+ * invoking the appropriate service method and returning a response with the full list of records.
+ * This is an administrative endpoint — no ownership filter is applied.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object to send the list of service reviews.
+ * @param {Object}   req  - The request object.
+ * @param {Object}   res  - The response object to send the list of service reviews.
  * @param {Function} next - The next middleware function in the Express.js stack.
  *
- * @returns {Promise<void>} - Returns a JSON response with the list of service reviews.
+ * @returns {Promise<void>} - Returns a JSON response with the list of all service reviews.
  */
 export const listAllServiceReviews = async (req, res, next) => {
 
@@ -7478,93 +7582,89 @@ export const listAllServiceReviews = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: 'Service reviews retrieved successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
       serviceReviews: allRecords,
-      count: allRecords.length
+      count: allRecords.length,
     });
 
   } catch (error) {
-    // Handle errors during service review retrieval by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to retrieve service reviews from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward any unexpected error to the centralized error handler
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceReview/listOneServiceReview.js">
+// Import the ServiceReviewServices class from the serviceReviewServices module
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
 /**
  * Controller function to retrieve a single service review by its ID.
  *
  * This function handles the request to retrieve a specific service review from the database,
- * invoking the appropriate service method and returning a response with the service review data.
+ * invoking the appropriate service method and returning a response with the full review data,
+ * including its related service and user records.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review ID in params.
- * @param {Object} req.params - The route parameters.
- * @param {string} req.params.serviceReviewId - The ID of the service review to retrieve.
- * @param {Object} res - The response object to send the service review data.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * @param {Object} req           - The request object containing the review ID in params.
+ * @param {Object} req.params    - The route parameters.
+ * @param {string} req.params.id - The ID of the service review to retrieve.
+ * @param {Object} res           - The response object to send the service review data.
+ * @param {Function} next        - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the service review data.
  */
 export const getServiceReviewById = async (req, res, next) => {
 
-  // Extract the serviceReviewId from the request parameters
-  const { serviceReviewId } = req.params;
+  // Extract the service review ID from the route parameters
+  const { id } = req.params;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Validate that the serviceReviewId parameter is provided and is a valid number
-    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
-      // If serviceReviewId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
-      return next(boomError);
-    }
-
     // Attempt to retrieve the service review record from the database
-    const serviceReview = await serviceReviewManager.listOne(parseInt(serviceReviewId));
+    const serviceReview = await serviceReviewManager.listOne(Number(id));
 
-    // Send a success response with the service review data
+    // Send a success response with the retrieved service review data
     return res.status(200).json({
       success: true,
       message: 'Service review retrieved successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
-      serviceReview: serviceReview
+      serviceReview,
     });
 
   } catch (error) {
-    // Handle errors during service review retrieval by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to retrieve service review from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 bad request, 404 not found) or any unexpected error
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceReview/listServiceReviewsByUser.js">
+// Import the ServiceReviewServices class from the serviceReviewServices module
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
 /**
  * Controller function to list all service reviews that belong to a specific user.
  *
  * This function handles the request to retrieve all service reviews associated with a user,
  * invoking the appropriate service method and returning a response with the list of records.
+ * The userId is taken from the route parameters, allowing an administrator to query any user's
+ * reviews, or a cliente to query their own by passing their own ID.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the user ID in params.
- * @param {Object} req.params - The route parameters.
+ * @param {Object} req              - The request object containing the user ID in params.
+ * @param {Object} req.params       - The route parameters.
  * @param {string} req.params.userId - The ID of the user whose reviews to retrieve.
- * @param {Object} res - The response object to send the list of service reviews.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * @param {Object} res              - The response object to send the list of service reviews.
+ * @param {Function} next           - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the list of service reviews.
  */
@@ -7577,113 +7677,95 @@ export const listServiceReviewsByUser = async (req, res, next) => {
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Validate that the userId parameter is provided and is a valid number
-    if (!userId || isNaN(parseInt(userId))) {
-      // If userId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing user ID provided');
-      return next(boomError);
-    }
-
     // Attempt to retrieve all service reviews for the specified user
-    const userReviews = await serviceReviewManager.listByUserId(parseInt(userId));
+    const userReviews = await serviceReviewManager.listByUserId(Number(userId));
 
     // Send a success response with the retrieved service reviews data
     return res.status(200).json({
       success: true,
       message: 'User service reviews retrieved successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
       serviceReviews: userReviews,
-      count: userReviews.length
+      count: userReviews.length,
     });
 
   } catch (error) {
-    // Handle errors during service review retrieval by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to retrieve user service reviews from the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 bad request, 404 user not found) or any unexpected error
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceReview/updateOneServiceReview.js">
+// Import the ServiceReviewServices class from the serviceReviewServices module
+import { ServiceReviewServices } from '../../services/serviceReviewService.js';
+// Import Boom for handling HTTP-friendly error objects
+import Boom from '@hapi/boom';
+
 /**
  * Controller function to update an existing service review.
  *
  * This function handles the request to update a service review in the database,
- * ensuring that the service review belongs to the specified user.
+ * ensuring that only the owner of the review can modify it. The user identity is
+ * taken from the verified JWT token — the request body must NOT include userId,
+ * as accepting it from the client would allow impersonation attacks.
  * If an error occurs during the operation, it is handled gracefully using Boom.
  *
- * @param {Object} req - The request object containing the service review ID in params and update data in body.
- * @param {Object} req.params - The route parameters.
- * @param {string} req.params.serviceReviewId - The ID of the service review to update.
- * @param {Object} req.body - The service review update data.
- * @param {number} req.body.userId - The ID of the user who should own the review.
- * @param {Object} res - The response object to send the update status.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * @param {Object} req                   - The request object containing the review ID in params and update data in body.
+ * @param {Object} req.params            - The route parameters.
+ * @param {string} req.params.id         - The ID of the service review to update.
+ * @param {Object} req.body              - The request body with the fields to update.
+ * @param {string} [req.body.content]    - Optional new textual content of the review.
+ * @param {number} [req.body.rating]     - Optional new rating between 1 and 5.
+ * @param {Object} req.user              - The authenticated user injected by the JWT middleware.
+ * @param {number} req.user.id           - The ID of the authenticated user (must be the review owner).
+ * @param {Object} res                   - The response object to send the update status.
+ * @param {Function} next                - The next middleware function in the Express.js stack.
  *
  * @returns {Promise<void>} - Returns a JSON response with the update status.
  */
 export const updateServiceReview = async (req, res, next) => {
 
-  // Extract the serviceReviewId from the request parameters
-  const { serviceReviewId } = req.params;
-  
-  // Extract the update data and userId from the request body
-  const { userId, ...updateData } = req.body;
+  // Extract the service review ID from the route parameters
+  const { id } = req.params;
+
+  // Extract the authenticated user's ID from the JWT token — never trust the body for this
+  const userId = req.user.id;
+
+  // Extract only the allowed update fields — userId is intentionally excluded from the body
+  const { content, rating } = req.body;
 
   // Instantiate the ServiceReviewServices class to manage the service review operations
   const serviceReviewManager = new ServiceReviewServices();
 
   try {
-    // Validate that the serviceReviewId parameter is provided and is a valid number
-    if (!serviceReviewId || isNaN(parseInt(serviceReviewId))) {
-      // If serviceReviewId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing service review ID provided');
-      return next(boomError);
-    }
-
-    // Validate that the userId is provided and is a valid number
-    if (!userId || isNaN(parseInt(userId))) {
-      // If userId is missing or invalid, return a Boom bad request error
-      const boomError = Boom.badRequest('Invalid or missing user ID provided');
-      return next(boomError);
-    }
-
-    // Attempt to update the service review record in the database
-    const updateResult = await serviceReviewManager.updateOne(
-      parseInt(serviceReviewId), 
-      parseInt(userId), 
-      updateData
+    // Attempt to update the service review record — the service layer enforces ownership
+    const result = await serviceReviewManager.updateOne(
+      Number(id),
+      userId,
+      { content, rating }
     );
 
     // Send a success response with the update status
     return res.status(200).json({
       success: true,
       message: 'Service review updated successfully',
-      // Include the new token in the response
+      // Include the refreshed token in the response
       authentication: res.locals.newUserToken,
-      result: updateResult
+      result,
     });
 
   } catch (error) {
-    // Handle errors during service review update by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to update service review in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (400 bad request, 404 not found) or any unexpected error
+    next(error);
   }
 };
 </file>
 
 <file path="src/controllers/serviceStatus/createOneServiceStatus.js">
 // Import the ServiceStatusServices class from the serviceStatusServices module
-import { ServiceStatusServices } from '../../services/serviceStatusServices.js';
+import { ServiceStatusServices } from '../../services/serviceStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7739,7 +7821,7 @@ export const createOneServiceStatus = async (req, res, next) => {
 
 <file path="src/controllers/serviceStatus/deleteOneServiceStatus.js">
 // Import the ServiceStatusServices class from the serviceStatusServices module
-import { ServiceStatusServices } from '../../services/serviceStatusServices.js';
+import { ServiceStatusServices } from '../../services/serviceStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7792,7 +7874,7 @@ export const deleteOneServiceStatus = async (req, res, next) => {
 
 <file path="src/controllers/serviceStatus/listAllServiceStatuses.js">
 // Import the ServiceStatusServices class from the serviceStatusServices module
-import { ServiceStatusServices } from '../../services/serviceStatusServices.js';
+import { ServiceStatusServices } from '../../services/serviceStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7843,7 +7925,7 @@ export const listAllServiceStatuses = async (req, res, next) => {
 
 <file path="src/controllers/serviceStatus/listOneServiceStatus.js">
 // Import the ServiceStatusServices class from the serviceStatusServices module
-import { ServiceStatusServices } from '../../services/serviceStatusServices.js';
+import { ServiceStatusServices } from '../../services/serviceStatusService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7898,7 +7980,7 @@ export const listOneServiceStatus = async (req, res, next) => {
 
 <file path="src/controllers/serviceStatus/updateOneServiceStatus.js">
 // Import the ServiceStatusServices class from the serviceStatusServices module
-import { ServiceStatusServices } from '../../services/serviceStatusServices.js';
+import { ServiceStatusServices } from '../../services/serviceStatusService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -7951,7 +8033,7 @@ export const updateOneServiceStatus = async (req, res, next) => {
 
 <file path="src/controllers/user/createOneUser.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8015,7 +8097,7 @@ export const createOneUser = async (req, res, next) => {
 
 <file path="src/controllers/user/deleteOneUser.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8068,7 +8150,7 @@ export const deleteOneUser = async (req, res, next) => {
 
 <file path="src/controllers/user/deleteOwnAccount.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8127,7 +8209,7 @@ export const deleteOwnAccount = async (req, res, next) => {
 
 <file path="src/controllers/user/findUserByEmail.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8185,7 +8267,7 @@ export const findUserByEmail = async (req, res, next) => {
 
 <file path="src/controllers/user/listAllUsers.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8236,7 +8318,7 @@ export const listAllUsers = async (req, res, next) => {
 
 <file path="src/controllers/user/listOneUser.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8291,7 +8373,7 @@ export const listOneUser = async (req, res, next) => {
 
 <file path="src/controllers/user/loginUser.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8350,7 +8432,7 @@ export const loginUser = async (req, res, next) => {
 
 <file path="src/controllers/user/recoverUserPassword.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8402,7 +8484,7 @@ export const recoverUserPassword = async (req, res, next) => {
 
 <file path="src/controllers/user/updateOneUser.js">
 // Import the UserServices class from the userServices module
-import { UserServices } from '../../services/userServices.js';
+import { UserServices } from '../../services/userService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8459,7 +8541,7 @@ export const updateOneUser = async (req, res, next) => {
 
 <file path="src/controllers/userImage/createOneUserImage.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8517,7 +8599,7 @@ export const createOneUserImage = async (req, res, next) => {
 
 <file path="src/controllers/userImage/deleteOneUserImage.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8573,7 +8655,7 @@ export const deleteOneUserImage = async (req, res, next) => {
 
 <file path="src/controllers/userImage/deleteOneUserImageAdmin.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8626,7 +8708,7 @@ export const deleteOneUserImageAdmin = async (req, res, next) => {
 
 <file path="src/controllers/userImage/listAllUserImages.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8677,7 +8759,7 @@ export const listAllUserImages = async (req, res, next) => {
 
 <file path="src/controllers/userImage/listAllUserImagesByUser.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8731,7 +8813,7 @@ export const listAllUserImagesByUser = async (req, res, next) => {
 
 <file path="src/controllers/userImage/listOneUserImage.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom for handling HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8785,7 +8867,7 @@ export const listOneUserImage = async (req, res, next) => {
 
 <file path="src/controllers/userImage/updateOneUserImage.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -8844,7 +8926,7 @@ export const updateOneUserImage = async (req, res, next) => {
 
 <file path="src/controllers/userImage/updateOneUserImageAdmin.js">
 // Import the UserImageServices class from the userImageServices module
-import { UserImageServices } from '../../services/userImageServices.js';
+import { UserImageServices } from '../../services/userImageService.js';
 // Import Boom to create HTTP-friendly error objects
 import Boom from '@hapi/boom';
 
@@ -13874,6 +13956,11 @@ import jwt from 'jsonwebtoken';
  * Middleware to verify JWT tokens for the application.
  * Regenerates a new token if the old one is valid.
  *
+ * The decoded payload (id + role) is carried forward into the refreshed
+ * token and attached to req.user, so that downstream middlewares such as
+ * checkRole can authorize the request without needing a separate token
+ * or an extra database lookup.
+ *
  * @param {Request} req - The request object.
  * @param {Response} res - The response object.
  * @param {Function} next - The next middleware function.
@@ -13906,19 +13993,21 @@ export const authAppVerifyToken = (req, res, next) => {
       }
     }
 
-    // Extract user data from the decoded token
+    // Extract user data from the decoded token, including the role so it
+    // survives the token refresh below and is available to checkRole
     const userData = {
       id: decoded.id,
+      role: decoded.role,
     };
 
-    // Regenerate a new token for the user
+    // Regenerate a new token for the user, carrying the role forward
     const newUserToken = signUserToken(userData, config.authAppJwtKey, '1h');
 
     // Send the new token in a cookie to the client
     res.cookie('authentication', newUserToken, { httpOnly: true });
 
-    // Attach user data to the request object for later use
-    req.user = decoded;
+    // Attach user data (id + role) to the request object for later use
+    req.user = userData;
 
     // Proceed to the next middleware or controller
     next();
@@ -16040,9 +16129,9 @@ import { reservationSchema } from '../schemas/reservationSchema.js';
 import { createOneReservation }        from '../controllers/reservation/createOneReservation.js';
 import { deleteOneReservation }        from '../controllers/reservation/deleteOneReservation.js';
 import { listAllReservations }         from '../controllers/reservation/listAllReservations.js';
-import { listReservationsByBusiness }  from '../controllers/reservation/listReservationsByBusiness.js';
+import { listReservationsByBusiness }  from '../controllers/reservation/listBusinessReservations.js';
 import { listOneReservation }          from '../controllers/reservation/listOneReservation.js';
-import { listReservationsByService }   from '../controllers/reservation/listReservationsByService.js';
+import { listReservationsByService }   from '../controllers/reservation/listServiceReservations.js';
 import { listUserReservations }        from '../controllers/reservation/listUserReservations.js';
 import { updateOneReservation }        from '../controllers/reservation/updateOneReservation.js';
 
@@ -16478,19 +16567,19 @@ import { serviceImageSchema } from '../schemas/serviceImageSchema.js';
 
 // Controller to create a single service image
 import { createServiceImage } from
-  '../controllers/serviceImage/createServiceImage.js';
+  '../controllers/serviceImage/createOneServiceImage.js';
 // Controller to retrieve every service image
 import { listAllServiceImages } from
   '../controllers/serviceImage/listAllServiceImages.js';
 // Controller to retrieve a single service image by its ID
 import { getServiceImageById } from
-  '../controllers/serviceImage/getServiceImageById.js';
+  '../controllers/serviceImage/listOneServiceImage.js';
 // Controller to update a single service image by its ID
 import { updateServiceImage } from
-  '../controllers/serviceImage/updateServiceImage.js';
+  '../controllers/serviceImage/updateOneServiceImage.js';
 // Controller to delete a single service image by its ID
 import { deleteServiceImage } from
-  '../controllers/serviceImage/deleteServiceImage.js';
+  '../controllers/serviceImage/deleteOneServiceImage.js';
 
 // Create a new Router instance dedicated to the service image resource
 export const serviceImageRouter = Router();
@@ -16643,19 +16732,19 @@ import { serviceReviewSchema } from '../schemas/serviceReviewSchema.js';
 
 // Controller to create a single service review
 import { createServiceReview } from
-  '../controllers/serviceReview/createServiceReview.js';
+  '../controllers/serviceReview/createOneServiceReview.js';
 // Controller to retrieve every service review
 import { listAllServiceReviews } from
   '../controllers/serviceReview/listAllServiceReviews.js';
 // Controller to retrieve a single service review by its ID
 import { getServiceReviewById } from
-  '../controllers/serviceReview/getServiceReviewById.js';
+  '../controllers/serviceReview/listOneServiceReview.js';
 // Controller to update a single service review by its ID
 import { updateServiceReview } from
-  '../controllers/serviceReview/updateServiceReview.js';
+  '../controllers/serviceReview/updateOneServiceReview.js';
 // Controller to delete a single service review by its ID
 import { deleteServiceReview } from
-  '../controllers/serviceReview/deleteServiceReview.js';
+  '../controllers/serviceReview/deleteOneServiceReview.js';
 // Controller to list service reviews by user ID
 import { listServiceReviewsByUser } from
   '../controllers/serviceReview/listServiceReviewsByUser.js';
@@ -16826,22 +16915,22 @@ import { serviceSchema } from '../schemas/serviceSchema.js';
 
 // Controller to create a single service
 import { createService } from
-  '../controllers/service/createService.js';
+  '../controllers/service/createOneService.js';
 // Controller to retrieve every service
 import { listAllServices } from
   '../controllers/service/listAllServices.js';
 // Controller to retrieve a single service by its ID
 import { getServiceById } from
-  '../controllers/service/getServiceById.js';
+  '../controllers/service/listOneService.js';
 // Controller to update a single service by its ID
-import { updateService } from
-  '../controllers/service/updateService.js';
+import { updateOneService } from
+  '../controllers/service/updateOneService.js';
 // Controller to delete a single service by its ID
 import { deleteService } from
-  '../controllers/service/deleteService.js';
+  '../controllers/service/deleteOneService.js';
 // Controller to list services by business ID
 import { listServicesByBusiness } from
-  '../controllers/service/listServicesByBusiness.js';
+  '../controllers/service/listByBusinessId.js';
 
 // Create a new Router instance dedicated to the service resource
 export const serviceRouter = Router();
@@ -16907,7 +16996,7 @@ serviceRouter.patch(
   // Step 3: validate the update payload
   validatorHandler(serviceSchema.updateServiceData, 'body'),
   // Step 4: delegate to the controller
-  updateService
+  updateOneService
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -17191,7 +17280,7 @@ import { createOneUserImage } from '../controllers/userImage/createOneUserImage.
 // Controller to delete a user image (owned by user)
 import { deleteOneUserImage } from '../controllers/userImage/deleteOneUserImage.js';
 // Controller to delete a user image (admin only)
-import { deleteOneUserImageAdmin } from '../controllers/userImage/deleteOneUserImage.js';
+import { deleteOneUserImageAdmin } from '../controllers/userImage/deleteOneUserImageAdmin.js';
 // Controller to retrieve every user image
 import { listAllUserImages } from '../controllers/userImage/listAllUserImages.js';
 // Controller to retrieve every image belonging to a specific user
@@ -17201,7 +17290,7 @@ import { listOneUserImage } from '../controllers/userImage/listOneUserImage.js';
 // Controller to update a user image (owned by user)
 import { updateOneUserImage } from '../controllers/userImage/updateOneUserImage.js';
 // Controller to update a user image (admin only)
-import { updateOneUserImageAdmin } from '../controllers/userImage/updateOneUserImage.js';
+import { updateOneUserImageAdmin } from '../controllers/userImage/updateOneUserImageAdmin.js';
 
 // Create a new Router instance dedicated to the user image resource
 export const userImageRouter = Router();
@@ -18041,7 +18130,7 @@ import {
   countryId,
   name,
   description,
-} from '../utils/regEx/departamentRegEx.js';
+} from '../utils/regEx/departmentRegEx.js';
 
 // ── Primitive Joi types ───────────────────────────────────────────────────────
 
@@ -18411,27 +18500,41 @@ const joiId = Joi.number().integer().positive().messages({
   'number.integer':  'El ID debe ser un número entero.',
   'number.positive': 'El ID debe ser un número positivo.',
 });
-
+ 
 const joiSenderUserId = Joi.number().integer().positive().messages({
   'number.base':     'El senderUserId debe ser un número.',
   'number.integer':  'El senderUserId debe ser un número entero.',
   'number.positive': 'El senderUserId debe ser un número positivo.',
 });
-
+ 
 const joiReceiverUserId = Joi.number().integer().positive().messages({
   'number.base':     'El receiverUserId debe ser un número.',
   'number.integer':  'El receiverUserId debe ser un número entero.',
   'number.positive': 'El receiverUserId debe ser un número positivo.',
 });
-
+ 
 const joiStatusId = Joi.number().integer().positive().messages({
   'number.base':     'El statusId debe ser un número.',
   'number.integer':  'El statusId debe ser un número entero.',
   'number.positive': 'El statusId debe ser un número positivo.',
 });
-
+ 
 const joiContent = Joi.string().pattern(content).messages({
   'string.pattern.base': 'El contenido del mensaje debe tener entre 1 y 10,000 caracteres.',
+});
+
+// Reuses the same positive-integer rule as the other participant ids;
+// kept as separate constants so each field gets its own error label.
+const joiUserAId = Joi.number().integer().positive().messages({
+  'number.base':     'El userAId debe ser un número.',
+  'number.integer':  'El userAId debe ser un número entero.',
+  'number.positive': 'El userAId debe ser un número positivo.',
+});
+ 
+const joiUserBId = Joi.number().integer().positive().messages({
+  'number.base':     'El userBId debe ser un número.',
+  'number.integer':  'El userBId debe ser un número entero.',
+  'number.positive': 'El userBId debe ser un número positivo.',
 });
 
 // ── Schema export ─────────────────────────────────────────────────────────────
@@ -18460,6 +18563,12 @@ export const messageSchema = {
   // DELETE /messages/:id
   deleteMessage: Joi.object({
     id: joiId.required(),
+  }),
+
+  // GET /messages/list-conversation — the two participants of the conversation
+  getConversationMessages: Joi.object({
+    userAId: joiUserAId.required(),
+    userBId: joiUserBId.required(),
   }),
 
 };
@@ -18680,6 +18789,12 @@ const joiServiceId = Joi.number().integer().positive().messages({
   'number.positive': 'El serviceId debe ser un número positivo.',
 });
 
+const joiQuantity = Joi.number().integer().positive().messages({
+  'number.base': 'La cantidad debe ser un número.',
+  'number.integer': 'La cantidad debe ser un número entero.',
+  'number.positive': 'La cantidad debe ser un número positivo.',
+});
+
 // ── Schema export ─────────────────────────────────────────────────────────────
 
 export const reservationSchema = {
@@ -18701,7 +18816,7 @@ export const reservationSchema = {
 
   newReservationData: Joi.object({
     serviceId: joiServiceId.required(),
-    quantity: joiQuantity.required(),   // ← agregar esta línea
+    quantity: joiQuantity.required(),
   }),
 
 };
@@ -21537,6 +21652,8 @@ import { Message } from '../db/models/messageModel.js';
 // import related models to validate foreign key relations
 import { MessageStatus } from '../db/models/messageStatusModel.js';
 import { User } from '../db/models/userModel.js';
+// Op is needed to express the "sender OR receiver" ownership condition
+import { Op } from 'sequelize';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -21548,12 +21665,33 @@ import Boom from '@hapi/boom';
  * the receiver user ("receiverUserId"). All foreign keys are validated on every
  * write operation to preserve referential integrity.
  *
+ * Update and delete are participant-scoped: only the message's sender or its
+ * receiver may modify or remove it, enforced via the ownership filter below.
+ *
  * Association aliases (defined in setupAssociations):
  *   - status   -> Message.belongsTo(MessageStatus)
  *   - sender   -> Message.belongsTo(User)
  *   - receiver -> Message.belongsTo(User)
  */
 export class MessageServices {
+
+  /**
+   * Builds a Sequelize "where" filter that matches a message by id, but
+   * only when the given user is its sender or its receiver.
+   *
+   * @param {number} messageId - Identifier of the message.
+   * @param {number} requestingUserId - Identifier of the user attempting the action.
+   * @returns {Object} Sequelize where clause.
+   */
+  #ownedByParticipant(messageId, requestingUserId) {
+    return {
+      id: messageId,
+      [Op.or]: [
+        { senderUserId: requestingUserId },
+        { receiverUserId: requestingUserId },
+      ],
+    };
+  }
 
   /**
    * Creates a new message after validating all of its relations.
@@ -21616,12 +21754,25 @@ export class MessageServices {
    * Updates an existing message by its identifier. Typically used to change
    * the message status (e.g. delivered, read).
    *
+   * Only the message's sender or receiver may update it; the message must
+   * belong to the requesting user in one of those two roles, or the update
+   * is rejected as if the message did not exist.
+   *
    * @param {number} messageId - Identifier of the message to update.
+   * @param {number} requestingUserId - Identifier of the user performing the update (sender or receiver).
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(messageId, newData) {
+  async updateOne(messageId, requestingUserId, newData) {
+
+    if (!messageId) {
+      throw Boom.badRequest('No message ID provided');
+    }
+
+    if (!requestingUserId) {
+      throw Boom.badRequest('No requesting user ID provided');
+    }
 
     if (!newData) {
       // reject the request when there is no payload to apply
@@ -21629,6 +21780,16 @@ export class MessageServices {
     }
 
     try {
+      // First verify that the message exists and that the requesting user
+      // is either its sender or its receiver
+      const existingMessage = await Message.findOne({
+        where: this.#ownedByParticipant(messageId, requestingUserId),
+      });
+
+      if (!existingMessage) {
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
+      }
+
       // validate the status relation only when it is being changed
       if (newData.statusId) {
         const messageStatus = await MessageStatus.findByPk(newData.statusId);
@@ -21653,7 +21814,8 @@ export class MessageServices {
         }
       }
 
-      // update the record in the database
+      // update the record in the database, scoped again to the same
+      // ownership condition so the write itself cannot escape it
       const [updatedRows] = await Message.update(
         {
           content: newData.content,
@@ -21663,13 +21825,13 @@ export class MessageServices {
           receiverUserId: newData.receiverUserId,
         },
         {
-          where: { id: messageId }
+          where: this.#ownedByParticipant(messageId, requestingUserId),
         }
       );
 
-      // if no rows were affected, the message does not exist
+      // if no rows were affected, the message does not exist (or isn't theirs)
       if (!updatedRows) {
-        throw Boom.notFound('Message not found');
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
       }
 
       // return a success response
@@ -21684,26 +21846,43 @@ export class MessageServices {
   /**
    * Deletes a message by its identifier.
    *
+   * Only the message's sender or receiver may delete it; the message must
+   * belong to the requesting user in one of those two roles, or the
+   * deletion is rejected as if the message did not exist.
+   *
    * @param {number} messageId - Identifier of the message to delete.
+   * @param {number} requestingUserId - Identifier of the user performing the deletion (sender or receiver).
    * @returns {Promise<Object>} Status object confirming the deletion.
-   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
+   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist or isn't theirs.
    */
-  async deleteOne(messageId) {
+  async deleteOne(messageId, requestingUserId) {
 
     if (!messageId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No message ID provided');
     }
 
-    try {
-      // destroy the record in the database
-      const deletedRows = await Message.destroy({
-        where: { id: messageId }
-      });
+    if (!requestingUserId) {
+      throw Boom.badRequest('No requesting user ID provided');
+    }
 
-      // if no rows were deleted, the message does not exist
+    try {
+      const ownershipFilter = this.#ownedByParticipant(messageId, requestingUserId);
+
+      // First verify that the message exists and that the requesting user
+      // is either its sender or its receiver
+      const existingMessage = await Message.findOne({ where: ownershipFilter });
+
+      if (!existingMessage) {
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
+      }
+
+      // destroy the record in the database, scoped to the same condition
+      const deletedRows = await Message.destroy({ where: ownershipFilter });
+
+      // if no rows were deleted, the message does not exist (or isn't theirs)
       if (!deletedRows) {
-        throw Boom.notFound('Message not found');
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
       }
 
       // return a success response
@@ -24420,6 +24599,11 @@ export class UserImageServices {
     /**
      * Authenticates a user by username and password.
      *
+     * The issued JWT carries the user's role name (e.g. 'cliente',
+     * 'anunciante', 'administrador') alongside their id, so that downstream
+     * middlewares (checkRole) can authorize requests by role without an
+     * extra database lookup on every request.
+     *
      * @param {string} username - Username of the account.
      * @param {string} password - Plain-text password to verify.
      * @returns {Promise<Object>} Status object, including a JWT token on success.
@@ -24428,9 +24612,11 @@ export class UserImageServices {
     async login(username, password) {
 
       try {
-        // Find the user by their username in the database
+        // Find the user by their username in the database, including
+        // their role so it can be embedded in the JWT payload
         const userRecord = await User.findOne({
-          where: { username }
+          where: { username },
+          include: [{ model: Role, as: 'role' }],
         });
 
         // if not found a user in the database
@@ -24446,9 +24632,9 @@ export class UserImageServices {
           return { status: 'wrong password' };
         }
 
-        // Generate JWT token with user data
+        // Generate JWT token with user data, including the role name
         const userToken = signUserToken(
-          { id: userRecord.id },
+          { id: userRecord.id, role: userRecord.role.name },
           config.authAppJwtKey,
           '1h'
         );
