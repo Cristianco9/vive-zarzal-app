@@ -3,6 +3,8 @@ import { Message } from '../db/models/messageModel.js';
 // import related models to validate foreign key relations
 import { MessageStatus } from '../db/models/messageStatusModel.js';
 import { User } from '../db/models/userModel.js';
+// Op is needed to express the "sender OR receiver" ownership condition
+import { Op } from 'sequelize';
 // boom allows managing possible errors in a standardized way
 import Boom from '@hapi/boom';
 
@@ -14,12 +16,33 @@ import Boom from '@hapi/boom';
  * the receiver user ("receiverUserId"). All foreign keys are validated on every
  * write operation to preserve referential integrity.
  *
+ * Update and delete are participant-scoped: only the message's sender or its
+ * receiver may modify or remove it, enforced via the ownership filter below.
+ *
  * Association aliases (defined in setupAssociations):
  *   - status   -> Message.belongsTo(MessageStatus)
  *   - sender   -> Message.belongsTo(User)
  *   - receiver -> Message.belongsTo(User)
  */
 export class MessageServices {
+
+  /**
+   * Builds a Sequelize "where" filter that matches a message by id, but
+   * only when the given user is its sender or its receiver.
+   *
+   * @param {number} messageId - Identifier of the message.
+   * @param {number} requestingUserId - Identifier of the user attempting the action.
+   * @returns {Object} Sequelize where clause.
+   */
+  #ownedByParticipant(messageId, requestingUserId) {
+    return {
+      id: messageId,
+      [Op.or]: [
+        { senderUserId: requestingUserId },
+        { receiverUserId: requestingUserId },
+      ],
+    };
+  }
 
   /**
    * Creates a new message after validating all of its relations.
@@ -82,12 +105,25 @@ export class MessageServices {
    * Updates an existing message by its identifier. Typically used to change
    * the message status (e.g. delivered, read).
    *
+   * Only the message's sender or receiver may update it; the message must
+   * belong to the requesting user in one of those two roles, or the update
+   * is rejected as if the message did not exist.
+   *
    * @param {number} messageId - Identifier of the message to update.
+   * @param {number} requestingUserId - Identifier of the user performing the update (sender or receiver).
    * @param {Object} newData - New values to persist.
    * @returns {Promise<Object>} Status object confirming the update.
    * @throws {Boom} BadRequest, NotFound or internal error.
    */
-  async updateOne(messageId, newData) {
+  async updateOne(messageId, requestingUserId, newData) {
+
+    if (!messageId) {
+      throw Boom.badRequest('No message ID provided');
+    }
+
+    if (!requestingUserId) {
+      throw Boom.badRequest('No requesting user ID provided');
+    }
 
     if (!newData) {
       // reject the request when there is no payload to apply
@@ -95,6 +131,16 @@ export class MessageServices {
     }
 
     try {
+      // First verify that the message exists and that the requesting user
+      // is either its sender or its receiver
+      const existingMessage = await Message.findOne({
+        where: this.#ownedByParticipant(messageId, requestingUserId),
+      });
+
+      if (!existingMessage) {
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
+      }
+
       // validate the status relation only when it is being changed
       if (newData.statusId) {
         const messageStatus = await MessageStatus.findByPk(newData.statusId);
@@ -119,7 +165,8 @@ export class MessageServices {
         }
       }
 
-      // update the record in the database
+      // update the record in the database, scoped again to the same
+      // ownership condition so the write itself cannot escape it
       const [updatedRows] = await Message.update(
         {
           content: newData.content,
@@ -129,13 +176,13 @@ export class MessageServices {
           receiverUserId: newData.receiverUserId,
         },
         {
-          where: { id: messageId }
+          where: this.#ownedByParticipant(messageId, requestingUserId),
         }
       );
 
-      // if no rows were affected, the message does not exist
+      // if no rows were affected, the message does not exist (or isn't theirs)
       if (!updatedRows) {
-        throw Boom.notFound('Message not found');
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
       }
 
       // return a success response
@@ -150,26 +197,43 @@ export class MessageServices {
   /**
    * Deletes a message by its identifier.
    *
+   * Only the message's sender or receiver may delete it; the message must
+   * belong to the requesting user in one of those two roles, or the
+   * deletion is rejected as if the message did not exist.
+   *
    * @param {number} messageId - Identifier of the message to delete.
+   * @param {number} requestingUserId - Identifier of the user performing the deletion (sender or receiver).
    * @returns {Promise<Object>} Status object confirming the deletion.
-   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist.
+   * @throws {Boom} BadRequest if no id is provided, NotFound if it does not exist or isn't theirs.
    */
-  async deleteOne(messageId) {
+  async deleteOne(messageId, requestingUserId) {
 
     if (!messageId) {
       // an identifier is mandatory to perform a deletion
       throw Boom.badRequest('No message ID provided');
     }
 
-    try {
-      // destroy the record in the database
-      const deletedRows = await Message.destroy({
-        where: { id: messageId }
-      });
+    if (!requestingUserId) {
+      throw Boom.badRequest('No requesting user ID provided');
+    }
 
-      // if no rows were deleted, the message does not exist
+    try {
+      const ownershipFilter = this.#ownedByParticipant(messageId, requestingUserId);
+
+      // First verify that the message exists and that the requesting user
+      // is either its sender or its receiver
+      const existingMessage = await Message.findOne({ where: ownershipFilter });
+
+      if (!existingMessage) {
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
+      }
+
+      // destroy the record in the database, scoped to the same condition
+      const deletedRows = await Message.destroy({ where: ownershipFilter });
+
+      // if no rows were deleted, the message does not exist (or isn't theirs)
       if (!deletedRows) {
-        throw Boom.notFound('Message not found');
+        throw Boom.notFound('Message not found, or you are not its sender or receiver');
       }
 
       // return a success response
