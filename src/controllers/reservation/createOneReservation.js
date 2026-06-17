@@ -1,58 +1,45 @@
 // Import the ReservationServices class from the reservationServices module
 import { ReservationServices } from '../../services/reservationServices.js';
-// Import Boom for handling HTTP-friendly error objects
-import Boom from '@hapi/boom';
 
 /**
- * Controller function to create a new reservation.
+ * Controller — POST /reservations
  *
- * This function handles the request to create a new reservation by extracting
- * the necessary data from the request body, invoking the appropriate service
- * method, and returning a response based on the operation's success or failure.
+ * Creates a new reservation and its initial detail record (status: pendiente).
+ * The authenticated user's ID is taken from the JWT token and passed to the
+ * service layer to create the ReservationDetail ownership record.
  *
- * @param {Object} req - The request object containing the reservation's data.
- * @param {Object} res - The response object to send the outcome of the operation.
- * @param {Function} next - The next middleware function in the Express.js stack.
+ * Expected body: { serviceId, quantity }
  *
- * @returns {Promise<void>} - Returns a JSON response with the operation result.
+ * @param {Object}   req  - Express request.
+ * @param {Object}   res  - Express response.
+ * @param {Function} next - Next middleware (error handler).
+ * @returns {Promise<void>} 201 JSON with the new reservation and detail IDs.
  */
 export const createOneReservation = async (req, res, next) => {
 
-  // Extract the service ID from the request body
-  const { serviceId } = req.body;
-  
-  // Extract the user ID from the authenticated request
+  // Extract the required fields from the request body
+  const { serviceId, quantity } = req.body;
+
+  // Extract the authenticated user's ID from the JWT token
   const userId = req.user.id;
 
   try {
-    // Validate that serviceId is provided
-    if (!serviceId) {
-      // Throw a Boom bad request error if serviceId is missing
-      throw Boom.badRequest('serviceId is required');
-    }
-
-    // Instantiate the ReservationServices class to manage reservation operations
+    // Instantiate the service manager
     const reservationManager = new ReservationServices();
-    
-    // Attempt to create a new reservation using the provided data
-    const result = await reservationManager.createOne({ serviceId }, userId);
 
-    // If the reservation is created successfully, send a success response
+    // Delegate creation to the service layer — userId is required to build
+    // the ReservationDetail record that links the user to the reservation
+    const result = await reservationManager.createOne({ serviceId, quantity }, userId);
+
     return res.status(201).json({
       success: true,
       message: 'Reservation created successfully',
       data: result,
-      // Include the new token in the response if available
-      authentication: res.locals.newUserToken
+      authentication: res.locals.newUserToken,
     });
 
   } catch (error) {
-    // Handle errors during reservation creation by sending a Boom error response
-    const boomError = Boom.serverUnavailable(
-      'Unable to create the reservation in the database',
-      error
-    );
-    // Pass the Boom error to the next middleware in the stack
-    next(boomError);
+    // Forward the Boom error (404) or any unexpected error
+    next(error);
   }
 };
