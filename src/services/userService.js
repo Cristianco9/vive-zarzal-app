@@ -1,4 +1,4 @@
-  // import the user data model
+// import the user data model
   import { User } from '../db/models/userModel.js';
   // import related catalog models to validate foreign key relations
   import { Role } from '../db/models/roleModel.js';
@@ -55,6 +55,11 @@
     /**
      * Authenticates a user by username and password.
      *
+     * The issued JWT carries the user's role name (e.g. 'cliente',
+     * 'anunciante', 'administrador') alongside their id, so that downstream
+     * middlewares (checkRole) can authorize requests by role without an
+     * extra database lookup on every request.
+     *
      * @param {string} username - Username of the account.
      * @param {string} password - Plain-text password to verify.
      * @returns {Promise<Object>} Status object, including a JWT token on success.
@@ -63,9 +68,11 @@
     async login(username, password) {
 
       try {
-        // Find the user by their username in the database
+        // Find the user by their username in the database, including
+        // their role so it can be embedded in the JWT payload
         const userRecord = await User.findOne({
-          where: { username }
+          where: { username },
+          include: [{ model: Role, as: 'role' }],
         });
 
         // if not found a user in the database
@@ -81,9 +88,9 @@
           return { status: 'wrong password' };
         }
 
-        // Generate JWT token with user data
+        // Generate JWT token with user data, including the role name
         const userToken = signUserToken(
-          { id: userRecord.id },
+          { id: userRecord.id, role: userRecord.role.name },
           config.authAppJwtKey,
           '1h'
         );
