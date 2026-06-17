@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro — Seleccionar tipo de usuario | Vive Zarzal</title>
+
+  <!-- Design tokens and component styles (root.css debe cargarse antes) -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+  <link rel="stylesheet" href="/styles/login.css" />
+  <!-- Estilos específicos de esta vista -->
+  <link rel="stylesheet" href="/styles/selectRole.css" />
+</head>
+
+<body>
+
+  <!-- Header igual que en login (inline aquí, no partial) -->
+  <nav class="site-header" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+
+      <!-- center menu (kept minimal as in login) -->
+      <ul class="nav-menu" role="menubar" aria-label="Main menu">
+        <li role="none"><a role="menuitem" data-path="/app/v1/services" onclick="redirect(this)">Servicios</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/experiences" onclick="redirect(this)">Experiencias</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/advertiser" onclick="redirect(this)">Anunciantes</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- small placeholder user icon -->
+        <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
+          </svg>
+        </button>
+
+        <span class="user-label">Invitado</span>
+
+        <!-- "Regresar" button (blue) on the right as in the mock -->
+        <a data-path="/app/v1/auth/login" onclick="redirect(this)" class="btn-back" role="button">Regresar</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SELECT ROLE MAIN CONTENT -->
+  <main class="select-role-main" role="main">
+    <section class="select-card" aria-labelledby="select-role-title" role="region">
+      <h2 id="select-role-title" class="select-title">Registro de usuario</h2>
+
+      <div class="field" role="group" aria-labelledby="tipo-label">
+        <label id="tipo-label" class="helper" for="roleSelect">Tipo de usuario</label>
+        <select id="roleSelect" class="input" aria-describedby="roleHelp" aria-required="true">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <!-- Opciones pobladas por /js/selectRole.js -->
+        </select>
+        <div id="roleHelp" class="helper">Elige si te registras como Cliente o Anunciante</div>
+      </div>
+
+      <div class="actions" role="presentation">
+        <button id="nextBtn" class="btn-next" disabled type="button">Siguiente</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/js/redirectView.js" defer></script>
+  <script src="/js/selectRole.js" defer></script>
+</body>
+
+</html>

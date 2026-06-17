@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registro - Cliente | Vive Zarzal</title>
+
+  <!-- Tokens y estilos base -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+
+  <!-- Estilos compartidos tipo login (si ya existe) -->
+  <link rel="stylesheet" href="/styles/login.css" />
+
+  <!-- Estilos específicos de esta vista -->
+  <link rel="stylesheet" href="/styles/registerCustomerForm.css" />
+</head>
+<body class="page-register-client">
+
+  <!-- Reutiliza header partial (asegúrate que exista: src/views/partials/header.ejs) -->
+  <%- include('./partials/header') %>
+
+  <main class="register-main" role="main">
+    <div class="register-wrapper">
+      <div class="register-card" role="region" aria-labelledby="register-title">
+        <h2 id="register-title" class="register-title">Registro - Cliente</h2>
+
+        <form id="registerClientForm" class="register-form" action="/app/v1/auth/register/customer" method="post" novalidate>
+          <!-- Si usas CSRF, agrega aquí el token -->
+          <!-- <input type="hidden" name="_csrf" value="<​%= csrfToken %>"> -->
+
+          <label for="firstName" class="label">Nombre</label>
+          <input id="firstName" name="firstName" type="text" class="input" required />
+
+          <label for="lastName" class="label">Apellido</label>
+          <input id="lastName" name="lastName" type="text" class="input" required />
+
+          <label for="gender" class="label">Género</label>
+          <select id="gender" name="gender" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="female">Femenino</option>
+            <option value="male">Masculino</option>
+            <option value="other">Otro</option>
+            <option value="no_answer">Prefiero no decir</option>
+          </select>
+
+          <label for="dob" class="label">Fecha de nacimiento</label>
+          <input id="dob" name="dob" type="date" class="input" required />
+
+          <label for="docType" class="label">Tipo de documento</label>
+          <select id="docType" name="docType" class="input" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="cc">Cédula de ciudadanía</option>
+            <option value="ce">Cédula de extranjería</option>
+            <option value="passport">Pasaporte</option>
+            <option value="other">Otro</option>
+          </select>
+
+          <label for="docNumber" class="label">Número de documento</label>
+          <input id="docNumber" name="docNumber" type="text" class="input" required />
+
+          <label for="phone" class="label">Teléfono</label>
+          <input id="phone" name="phone" type="tel" class="input" />
+
+          <label for="email" class="label">Correo</label>
+          <input id="email" name="email" type="email" class="input" required />
+
+          <label for="username" class="label">Nombre de usuario</label>
+          <input id="username" name="username" type="text" class="input" required />
+
+          <label for="password" class="label">Contraseña</label>
+          <input id="password" name="password" type="password" class="input" required minlength="8" />
+
+          <label for="passwordConfirm" class="label">Repita Contraseña</label>
+          <input id="passwordConfirm" name="passwordConfirm" type="password" class="input" required minlength="8" />
+
+          <label for="address" class="label">Dirección</label>
+          <input id="address" name="address" type="text" class="input" />
+
+          <label for="nationality" class="label">Nacionalidad</label>
+          <input id="nationality" name="nationality" type="text" class="input" />
+
+          <div class="terms-row">
+            <label class="terms-label">
+              <input id="acceptTerms" name="acceptTerms" type="checkbox" />
+              <span>Acepto <a href="/terms" target="_blank" rel="noopener">términos y condiciones</a></span>
+            </label>
+          </div>
+
+          <div id="formError" class="form-error" role="alert" aria-live="polite" style="display:none;"></div>
+
+          <div class="form-actions">
+            <button id="submitBtn" type="submit" class="btn-register" disabled>Ingresar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Reutiliza footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts -->
+  <script src="/js/redirectView.js" defer></script>
+  <script src="/js/registerCustomerForm.js" defer></script>
+</body>
+</html>

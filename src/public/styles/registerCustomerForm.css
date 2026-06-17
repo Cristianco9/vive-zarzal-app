@@ -1,0 +1,130 @@
+.register-main {
+  background: var(--bg-body, #ffffff);
+  min-height: calc(100vh - var(--navbar-height, 64px) - var(--footer-height, 80px));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-12, 48px) 0;
+}
+
+.register-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-section, #efefef);
+  border-radius: 40px;
+  padding: var(--space-8, 32px);
+  box-shadow: var(--shadow-sm, 0 8px 30px rgba(16,24,40,0.06));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+  align-items: stretch;
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+.register-title {
+  color: var(--color-brand-blue, #0b5cff);
+  text-align: center;
+  font-size: var(--font-size-lg, 20px);
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0 0 var(--space-4, 16px);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+/* Reutiliza estilos .label y .input si existe login.css; si no, definimos básicos */
+.label {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 4px;
+  display: block;
+  font-size: var(--font-size-sm, 13px);
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d1d5db);
+  font-size: var(--font-size-md, 15px);
+  background: var(--color-white, #fff);
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-fast, 120ms), border-color var(--transition-fast, 120ms);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-accent, #17a2b8);
+  box-shadow: 0 4px 14px rgba(23,162,184,0.06);
+}
+
+/* Helper elements */
+.terms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-2, 8px);
+}
+
+.terms-label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--font-size-sm, 13px);
+  color: var(--text-secondary, #6b7280);
+}
+
+.terms-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Error message */
+.form-error {
+  color: #d9534f;
+  font-size: var(--font-size-sm, 13px);
+  margin-top: var(--space-2, 8px);
+  display: none;
+}
+
+/* Actions / submit */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4, 16px);
+}
+
+.btn-register {
+  background: var(--color-primary-light, #f3c24b);
+  color: var(--color-black, #111);
+  padding: 0.6rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: transform var(--transition-fast, 120ms), opacity var(--transition-fast, 120ms);
+}
+
+.btn-register:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .register-card {
+    padding: var(--space-6, 20px);
+    border-radius: 24px;
+    margin: 0 16px;
+  }
+  .register-title { font-size: var(--font-size-md, 18px); }
+}

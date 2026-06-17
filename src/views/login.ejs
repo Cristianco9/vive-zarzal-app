@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión | Vive Zarzal</title>
+
+  <!-- Design tokens and component styles -->
+  <link rel="stylesheet" href="/styles/root.css" />
+  <link rel="stylesheet" href="/styles/components/header.css" />
+  <link rel="stylesheet" href="/styles/components/footer.css" />
+  <link rel="stylesheet" href="/styles/login.css" />
+</head>
+
+<body>
+
+  <!-- Inline header (reused from header partial but placed here as requested) -->
+  <nav class="site-header" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+
+      <!-- keep center menu minimal (you may hide or show) -->
+      <ul class="nav-menu" role="menubar" aria-label="Main menu">
+        <li role="none"><a role="menuitem" data-path="/app/v1/services" onclick="redirect(this)">Servicios</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/experiences" onclick="redirect(this)">Experiencias</a></li>
+        <li role="none"><a role="menuitem" data-path="/app/v1/advertiser" onclick="redirect(this)">Anunciantes</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- small placeholder user icon -->
+        <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
+          </svg>
+        </button>
+
+        <span class="user-label">Invitado</span>
+
+        <!-- "Regresar" button (blue) on the right as in the mock -->
+        <a data-path="/app/v1/" onclick="redirect(this)" class="btn-back" role="button">Regresar</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- LOGIN MAIN CONTENT -->
+  <main class="login-main" role="main">
+    <div class="login-wrapper">
+      <div class="login-card" role="region" aria-labelledby="login-title">
+        <h2 id="login-title" class="login-title">Inicio de sesión</h2>
+
+        <form id="loginForm" class="login-form" action="/app/v1/users/login" method="post" novalidate>
+          <!-- If you use CSRF, insert it here: -->
+          <!-- <input type="hidden" name="_csrf" value="<​%= csrfToken %>"> -->
+
+          <label for="username" class="label">Usuario</label>
+          <input id="username" name="username" type="text" autocomplete="username" class="input" required />
+
+          <label for="password" class="label">Contraseña</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" class="input" required />
+
+          <div id="wrong-input" class="form-error" style="display:none;color:#d9534f;margin-bottom:var(--space-3);"></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-login">Ingresar</button>
+            <a data-path="/app/v1/auth/select-role" onclick="redirect(this)" class="btn-register">Registrarse</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Reuse footer partial -->
+  <%- include('./partials/footer') %>
+
+  <!-- Scripts: redirectView handles data-path navigation; loginView for form helper -->
+  <script src="/js/redirectView.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+
+</html>

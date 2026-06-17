@@ -42,11 +42,11 @@
       <span class="user-label"><%= userFullname %></span>
 
       <% if (isAuthenticated) { %>
-        <form class="logout-form" action="/app/v1/logout" method="post" style="display:inline;">
+        <form class="logout-form" action="/app/v1/auth/logout" method="post" style="display:inline;">
           <button type="submit" class="btn-logout">Cerrar sesión</button>
         </form>
       <% } else { %>
-        <a data-path="/app/v1/login" onclick="redirect(this)" class="btn-login" role="button">Ingresar</a>
+        <a data-path="/app/v1/auth/login" onclick="redirect(this)" class="btn-login" role="button">Ingresar</a>
       <% } %>
     </div>
   </div>
