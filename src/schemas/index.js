@@ -1,48 +1,51 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// SCHEMAS INDEX — Vive Zarzal API
-// Central export for all Joi validation schemas
-// ─────────────────────────────────────────────────────────────────────────────
+import Joi from 'joi';
 
-// ── Geographic catalog ────────────────────────────────────────────────────────
-export { countrySchema }            from './countrySchema.js';
-export { departmentSchema }         from './departmentSchema.js';
-export { citySchema }               from './citySchema.js';
-export { locationSchema }           from './locationSchema.js';
+export const registerSchema = Joi.object({
+  firstName: Joi.string().trim().min(2).max(80).required(),
+  lastName: Joi.string().trim().min(2).max(80).required(),
+  username: Joi.string().trim().alphanum().min(3).max(50).required(),
+  email: Joi.string().trim().email().max(150).required(),
+  password: Joi.string().min(8).max(72).required(),
+  confirmPassword: Joi.string().valid(Joi.ref('password')).required().messages({
+    'any.only': 'Las contraseñas no coinciden',
+  }),
+});
 
-// ── User catalog ─────────────────────────────────────────────────────────────
-export { roleSchema }               from './roleSchema.js';
-export { genderSchema }             from './genderSchema.js';
-export { documentTypeSchema }       from './documentTypeSchema.js';
+export const loginSchema = Joi.object({
+  identifier: Joi.string().trim().required(),
+  password: Joi.string().required(),
+});
 
-// ── User ─────────────────────────────────────────────────────────────────────
-export { userSchema }               from './userSchema.js';
-export { userImageSchema }          from './userImageSchema.js';
-export { phoneSchema }              from './phoneSchema.js';
-export { userPhoneSchema }          from './userPhoneSchema.js';
+export const profileSchema = Joi.object({
+  firstName: Joi.string().trim().min(2).max(80).required(),
+  lastName: Joi.string().trim().min(2).max(80).required(),
+  email: Joi.string().trim().email().max(150).required(),
+  bio: Joi.string().allow('').max(500).optional(),
+});
 
-// ── Business ─────────────────────────────────────────────────────────────────
-export { businessSchema }           from './businessSchema.js';
-export { businessPhoneSchema }      from './businessPhoneSchema.js';
+export const publicationSchema = Joi.object({
+  type: Joi.string().valid('dish', 'recipe').required(),
+  title: Joi.string().trim().min(3).max(150).required(),
+  description: Joi.string().trim().min(10).max(2000).required(),
+  categoryId: Joi.number().integer().positive().required(),
+  ingredients: Joi.when('type', {
+    is: 'recipe',
+    then: Joi.string().trim().min(3).max(3000).required(),
+    otherwise: Joi.string().allow('').max(3000).optional(),
+  }),
+  instructions: Joi.when('type', {
+    is: 'recipe',
+    then: Joi.string().trim().min(3).max(3000).required(),
+    otherwise: Joi.string().allow('').max(3000).optional(),
+  }),
+});
 
-// ── Service ──────────────────────────────────────────────────────────────────
-export { categorySchema }           from './categorySchema.js';
-export { ageRestrictionSchema }     from './ageRestrictionSchema.js';
-export { serviceStatusSchema }      from './serviceStatusSchema.js';
-export { serviceSchema }            from './serviceSchema.js';
-export { serviceImageSchema }       from './serviceImageSchema.js';
+export const commentSchema = Joi.object({
+  content: Joi.string().trim().min(1).max(1000).required(),
+});
 
-// ── Reservations ─────────────────────────────────────────────────────────────
-export { reservationStatusSchema }  from './reservationStatusSchema.js';
-export { reservationSchema }        from './reservationSchema.js';
-export { reservationDetailsSchema } from './reservationDetailsSchema.js';
+export const ratingSchema = Joi.object({
+  score: Joi.number().integer().min(1).max(5).required(),
+});
 
-// ── Messaging ────────────────────────────────────────────────────────────────
-export { messageStatusSchema }      from './messageStatusSchema.js';
-export { messageSchema }            from './messageSchema.js';
-
-// ── Reviews ──────────────────────────────────────────────────────────────────
-export { businessReviewSchema }     from './businessReviewSchema.js';
-export { serviceReviewSchema }      from './serviceReviewSchema.js';
-
-// ── Favorites ────────────────────────────────────────────────────────────────
-export { favoriteUserServiceSchema } from './favoriteUserServiceSchema.js';
+export const firstError = (error) => error.details[0].message;

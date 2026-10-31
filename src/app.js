@@ -1,102 +1,53 @@
-// Import necessary modules and dependencies
-// Express framework for creating the app
 import express from 'express';
-// function to manage files and directories since the node.js app
 import path from 'path';
-// function to have access to the directory or file path
-import { fileURLToPath } from 'url';
-// Middleware to handle body request
-import bodyParser from 'body-parser';
-// Middleware to handle cookies
+import { fileURLToPath, pathToFileURL } from 'url';
 import cookieParser from 'cookie-parser';
-// Middleware for logging HTTP requests
-import morgan from 'morgan';
-// Function to test database connection
+import { config } from './config/config.js';
 import { testConnection } from './libraries/DBConnection.js';
-// Import the IP address and port from the network configuration file
-import { theIPAddress, port } from './libraries/netConfig.js';
-// Main router for the API
-import routerApi from './router/index.js';
-// Custom error handling middlewares
-import {
-  logError,
-  errorHandler,
-  boomErrorHandler,
-  ORMErrorHandler
-} from './middlewares/errorHandler.js';
-import setCurrentPath from './middlewares/setCurrentPath.js';
-// Import the setup of the database entities associations
 import { setupAssociations } from './db/models/index.js';
+import { loadCurrentUser } from './middlewares/auth.js';
+import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
+import routes from './router/index.js';
 
-// Create the app with Express
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const app = express();
 
-// Use middlewares
-// HTTP request logger middleware
-app.use(morgan('dev'));
-// Middleware to parse URL-encoded data
-app.use(express.urlencoded({ extended: false }));
-// Middleware to parse JSON data
-app.use(express.json());
-// Middleware for parsing JSON bodies
-app.use(bodyParser.json());
-// Middleware for handle cookies
-app.use(cookieParser());
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// Static files path
-// Store in the constant the project dirname
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Define the path to static files a throw the src/public/ path
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Views engine
-// Define the access path to the HTML view templates
-app.set('views', path.join(__dirname, 'views'));
-// Define the HTML templates engine, and the templates file extension
-app.set('view engine', 'ejs');
+setupAssociations();
 
-// Immediately Invoked Function Expression (IIFE) to run the server
-// Everything runs inside the IIFE to guarantee the correct execution order:
-// associations → DB connection → auth strategies → routes → error handlers → server
-(async () => {
+app.use(loadCurrentUser);
+app.use(routes);
 
-  // Set up all Sequelize model associations before any database query is made
-  // This is a memory-only operation and does not require an active DB connection
-  setupAssociations();
+app.use(notFoundHandler);
+app.use(errorHandler);
 
-  // Test database connection
-  // Await the connection test to ensure the database is reachable before accepting requests
+export async function start() {
   await testConnection();
 
-  // Import passport authentication setup
-  // Await the dynamic import to ensure all auth strategies are loaded before routes are registered
-  await import('./utils/auth/index.js');
-
-  // Initialize the main router
-  // Set up API routes after associations and auth strategies are fully loaded
-  routerApi(app);
-
-  // Use custom error handling middlewares
-  // Error handlers must always be registered after all routes
-  // Middleware for logging errors
-  app.use(logError);
-  // Middleware for handling ORM errors
-  app.use(ORMErrorHandler);
-  // Middleware for handling Boom errors
-  app.use(boomErrorHandler);
-  // General to get the URL endpoint
-  app.use(setCurrentPath);
-  // General error handling middleware
-  app.use(errorHandler);
-
-  // Await the app to start listening on the specified IP address and port
-  // The server starts last to ensure everything is initialized before accepting connections
-  app.listen(port, theIPAddress, () => {
-    // Log the server start information to the console
-    console.log(`server on port http://${theIPAddress}:${port}`);
+  const server = app.listen(config.appPort, () => {
+    console.log(`Server running at http://localhost:${config.appPort}`);
   });
 
-})();
+  return server;
+}
 
-// Export the app for use in other files
+const isMainModule =
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isMainModule) {
+  start().catch((error) => {
+    console.error('Unable to start the application:', error);
+    process.exit(1);
+  });
+}
+
 export default app;

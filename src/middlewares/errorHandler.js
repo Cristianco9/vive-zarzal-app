@@ -1,80 +1,46 @@
-// Import the ValidationError from Sequelize to handle ORM-specific errors
-import { ValidationError } from 'sequelize';
-// Import Boom for HTTP-friendly error objects
-import Boom from '@hapi/boom';
-
-/**
- * Middleware to log errors.
- * This middleware simply passes the error to the next middleware.
- *
- * @param {Error} err - The error object.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-export const logError = (err, req, res, next) => {
-  // Pass the error to the next middleware
-  next(err);
-}
-
-/**
- * Middleware to handle generic errors.
- * This middleware sends a generic 500 Internal Server Error response.
- *
- * @param {Error} err - The error object.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-export const errorHandler = (err, req, res, next) => {
-  // Send a 500 Internal Server Error response with error details
-  res.status(500).json({
-    message: err.message,
-    stack: err.stack
+export const notFoundHandler = (req, res) => {
+  res.status(404).render('error', {
+    title: 'Página no encontrada',
+    status: 404,
+    message: 'La página que buscas no existe o fue eliminada.',
   });
-}
+};
 
-/**
- * Middleware to handle Boom errors.
- * This middleware checks if the error is a Boom error and sends
- * the appropriate response.
- *
- * @param {Error} err - The error object.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-export const boomErrorHandler = (err, req, res, next) => {
-  // Check if the error is a Boom error
-  if (Boom.isBoom(err)) {
-    // Send the Boom error response
-    res.status(err.output.statusCode).json(err.output.payload);
-  } else {
-    // Pass the error to the next middleware
-    next(err);
+export const errorHandler = (err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
   }
-}
 
-/**
- * Middleware to handle Sequelize ORM validation errors.
- * This middleware checks if the error is a Sequelize ValidationError
- * and sends a 409 Conflict response.
- *
- * @param {Error} err - The error object.
- * @param {Request} req - The request object.
- * @param {Response} res - The response object.
- * @param {Function} next - The next middleware function.
- */
-export const ORMErrorHandler = (err, req, res, next) => {
-  // Check if the error is a Sequelize ValidationError
-  if (err instanceof ValidationError) {
-    // Send a 409 Conflict response with error details
-    res.status(409).json({
-      statusCode: 409,
-      message: err.name,
-      errors: err.errors
+  console.error(err);
+
+  let status = err.status || 500;
+  let message = err.message || 'Ocurrió un error inesperado.';
+
+  if (err.name === 'MulterError') {
+    status = 400;
+    message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'La imagen supera el tamaño máximo permitido.'
+        : 'No fue posible subir la imagen.';
+  }
+
+  if (err.name === 'SequelizeValidationError') {
+    status = 400;
+    message = err.errors.map((item) => item.message).join(' ');
+  }
+
+  if (err.name === 'SequelizeUniqueConstraintError') {
+    status = 409;
+    message = 'Ya existe un registro con esos datos.';
+  }
+
+  if (req.accepts('html')) {
+    return res.status(status).render('error', {
+      title: 'Error',
+      status,
+      message,
     });
   }
-  // Pass the error to the next middleware
-  next(err);
-}
+
+  return res.status(status).json({ error: message });
+};
