@@ -130,6 +130,10 @@ web_modules/
 .env.production.local
 .env.local
 
+# User-uploaded images
+src/public/uploads/*
+!src/public/uploads/.gitkeep
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
