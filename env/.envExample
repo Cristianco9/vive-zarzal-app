@@ -12,11 +12,9 @@ NODE_ENV=development
 DB_DIALECT=postgres
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_NAME=vive_zarzal_app
-
-# Usuario de la aplicación
-DB_USER=vive_zarzal_user
-DB_PASSWORD=aa24d32b8b1cfe04a74f668fd58acddbccbe86a9a17a0eff52bb5830e3d1d652
+DB_NAME=food_forum
+DB_USER=food_forum_user
+DB_PASSWORD=local_dev_password
 
 # ==========================================
 # SEQUELIZE CONNECTION POOL
@@ -31,8 +29,12 @@ DB_POOL_IDLE=10000
 # SECURITY
 # ==========================================
 
-API_KEY=48fdd9794d35198c4867fb0180252908cc742b18835545d4342ae9544748aa0d
-
-AUTH_APP_JWT_SECRET_KEY=b863794517c66b712790c8e8f84038c5ea575c767d8c9444965ea4845ed1e1e5
-
+# Replace this value with a long random string in your local .env file.
+AUTH_APP_JWT_SECRET_KEY=replace_with_a_long_random_string
 AUTH_APP_JWT_EXPIRES_IN=24h
+
+# ==========================================
+# IMAGE UPLOADS
+# ==========================================
+
+UPLOAD_MAX_SIZE_MB=5

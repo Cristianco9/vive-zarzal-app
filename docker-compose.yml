@@ -1,45 +1,45 @@
 services:
 
-  vive-zarzal-db:
+  food-forum-db:
     image: postgres:17
-    container_name: vive-zarzal-db
+    container_name: food-forum-db
     restart: always
 
     environment:
-      POSTGRES_DB: vive_zarzal_app
-      POSTGRES_USER: vive_zarzal_user
-      POSTGRES_PASSWORD: aa24d32b8b1cfe04a74f668fd58acddbccbe86a9a17a0eff52bb5830e3d1d652
+      POSTGRES_DB: ${DB_NAME:-food_forum}
+      POSTGRES_USER: ${DB_USER:-food_forum_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-local_dev_password}
 
     ports:
       - "5432:5432"
 
     volumes:
-      - vive_zarzal_db_data:/var/lib/postgresql/data
+      - food_forum_db_data:/var/lib/postgresql/data
 
     networks:
-      - vive-zarzal-network
+      - food-forum-network
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: vive-zarzal-rdbms
+    container_name: food-forum-pgadmin
     restart: always
 
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@vivezarzal.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
 
     ports:
       - "8080:80"
 
     depends_on:
-      - vive-zarzal-db
+      - food-forum-db
 
     networks:
-      - vive-zarzal-network
+      - food-forum-network
 
 volumes:
-  vive_zarzal_db_data:
+  food_forum_db_data:
 
 networks:
-  vive-zarzal-network:
+  food-forum-network:
     driver: bridge
