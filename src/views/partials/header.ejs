@@ -1,55 +1,46 @@
-<% /* partials/header.ejs */ %>
-<nav class="site-header" role="navigation" aria-label="Main navigation">
-  <div class="nav-inner">
-    <a data-path="/app/v1/" onclick="redirect(this)" class="brand">Vive Zarzal</a>
+<%
+  const user = typeof currentUser !== 'undefined' ? currentUser : null;
+  const path = typeof currentPath !== 'undefined' ? currentPath : '';
+%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Sabor Comunitario</title>
+  <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">🍲</span>
+        <span>Sabor Comunitario</span>
+      </a>
 
-    <ul class="nav-menu" role="menubar" aria-label="Main menu">
-      <li role="none">
-        <a role="menuitem"
-           data-path="/app/v1/services"
-           onclick="redirect(this)"
-           class="<​%= (currentPath && currentPath.startsWith('/app/v1/services')) ? 'active' : '' %>">
-          Servicios
-        </a>
-      </li>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="/" class="<%= path === '/' ? 'active' : '' %>">Inicio</a>
+        <% if (user) { %>
+          <a href="/publications/new" class="<%= path === '/publications/new' ? 'active' : '' %>">Publicar</a>
+        <% } %>
+      </nav>
 
-      <li role="none">
-        <a role="menuitem"
-           data-path="/app/v1/experiences"
-           onclick="redirect(this)"
-           class="<​%= (currentPath && currentPath.startsWith('/app/v1/experiences')) ? 'active' : '' %>">
-          Experiencias
-        </a>
-      </li>
-
-      <li role="none">
-        <a role="menuitem"
-           data-path="/app/v1/advertiser"
-           onclick="redirect(this)"
-           class="<​%= (currentPath && currentPath.startsWith('/app/v1/advertiser')) ? 'active' : '' %>">
-          Anunciantes
-        </a>
-      </li>
-    </ul>
-
-    <div class="nav-actions">
-      <button data-path="/app/v1/profile" onclick="redirect(this)" class="user-btn" aria-label="Perfil" type="button">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.2c-3.3 0-9.9 1.7-9.9 5v1.7h19.8V19.2c0-3.3-6.6-5-9.9-5z"/>
-        </svg>
-      </button>
-
-      <span class="user-label"><%= userFullname %></span>
-
-      <% if (isAuthenticated) { %>
-        <form class="logout-form" action="/app/v1/auth/logout" method="post" style="display:inline;">
-          <button type="submit" class="btn-logout">Cerrar sesión</button>
-        </form>
-      <% } else { %>
-        <a data-path="/app/v1/auth/login" onclick="redirect(this)" class="btn-login" role="button">Ingresar</a>
-      <% } %>
+      <div class="header-actions">
+        <% if (user) { %>
+          <a class="user-link" href="/users/<%= user.id %>">
+            <span class="avatar avatar-small"><%= user.firstName.charAt(0) %></span>
+            <span><%= user.firstName %></span>
+          </a>
+          <a class="btn btn-ghost btn-small" href="/profile/edit">Editar perfil</a>
+          <form action="/logout" method="post" class="inline-form">
+            <button type="submit" class="btn btn-outline btn-small">Salir</button>
+          </form>
+        <% } else { %>
+          <a class="btn btn-ghost btn-small" href="/login">Iniciar sesión</a>
+          <a class="btn btn-primary btn-small" href="/register">Crear cuenta</a>
+        <% } %>
+      </div>
     </div>
-  </div>
-</nav>
+  </header>
 
-<script type="application/javascript" src="/js/redirectView.js"></script>
+  <%- include('messages') %>

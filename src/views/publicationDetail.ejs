@@ -1,0 +1,168 @@
+<%- include('partials/header') %>
+
+<%
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  const roundedRating = Math.round(publication.ratingAverage || 0);
+  const isOwner = currentUser && currentUser.id === publication.author.id;
+%>
+
+<main class="container section">
+  <nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <a href="/">Inicio</a>
+    <span>/</span>
+    <a href="/categories/<%= publication.category.slug %>"><%= publication.category.name %></a>
+  </nav>
+
+  <article class="detail">
+    <div class="detail-image">
+      <img src="<%= publication.imageUrl || '/images/placeholder.svg' %>" alt="<%= publication.title %>">
+    </div>
+
+    <div class="detail-content">
+      <div class="detail-badges">
+        <span class="badge badge-type"><%= publication.type === 'recipe' ? 'Receta' : 'Plato' %></span>
+        <a class="badge badge-category" href="/categories/<%= publication.category.slug %>"><%= publication.category.name %></a>
+      </div>
+
+      <h1><%= publication.title %></h1>
+
+      <div class="detail-author">
+        <a href="/users/<%= publication.author.id %>" class="author">
+          <span class="avatar"><%= publication.author.firstName.charAt(0) %></span>
+          <span>
+            <strong><%= publication.author.firstName %> <%= publication.author.lastName %></strong>
+            <small>@<%= publication.author.username %></small>
+          </span>
+        </a>
+        <time datetime="<%= publication.createdAt %>"><%= formatDate(publication.createdAt) %></time>
+      </div>
+
+      <p class="detail-description"><%= publication.description %></p>
+
+      <% if (isOwner) { %>
+        <div class="owner-actions">
+          <a class="btn btn-outline btn-small" href="/publications/<%= publication.id %>/edit">Editar</a>
+          <form
+            action="/publications/<%= publication.id %>/delete"
+            method="post"
+            class="inline-form"
+            onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');"
+          >
+            <button type="submit" class="btn btn-danger btn-small">Eliminar</button>
+          </form>
+        </div>
+      <% } %>
+
+      <div class="interaction-bar">
+        <% if (currentUser) { %>
+          <form action="/publications/<%= publication.id %>/like" method="post" class="inline-form">
+            <button type="submit" class="btn <%= publication.likedByCurrentUser ? 'btn-primary' : 'btn-outline' %>">
+              ♥ <%= publication.likedByCurrentUser ? 'Te gusta' : 'Me gusta' %>
+              <span>(<%= publication.likeCount %>)</span>
+            </button>
+          </form>
+        <% } else { %>
+          <a class="btn btn-outline" href="/login">♥ <%= publication.likeCount %> me gusta</a>
+        <% } %>
+
+        <div class="rating-summary">
+          <span class="stars" aria-hidden="true"><%= '★'.repeat(roundedRating) %><%= '☆'.repeat(5 - roundedRating) %></span>
+          <span>
+            <%= publication.ratingAverage || 'Sin notas' %>
+            <% if (publication.ratingCount) { %>
+              <small>(<%= publication.ratingCount %> calificaciones)</small>
+            <% } %>
+          </span>
+        </div>
+      </div>
+
+      <% if (currentUser) { %>
+        <form action="/publications/<%= publication.id %>/rating" method="post" class="rating-form">
+          <label for="score">Tu calificación</label>
+          <select id="score" name="score" required>
+            <% for (let score = 1; score <= 5; score += 1) { %>
+              <option value="<%= score %>" <%= publication.currentUserRating === score ? 'selected' : '' %>>
+                <%= score %> <%= score === 1 ? 'estrella' : 'estrellas' %>
+              </option>
+            <% } %>
+          </select>
+          <button type="submit" class="btn btn-small btn-primary">Guardar</button>
+        </form>
+      <% } %>
+    </div>
+  </article>
+
+  <% if (publication.type === 'recipe') { %>
+    <section class="recipe-section">
+      <div class="recipe-column">
+        <h2>Ingredientes</h2>
+        <p class="pre-line"><%= publication.ingredients %></p>
+      </div>
+      <div class="recipe-column">
+        <h2>Preparación</h2>
+        <p class="pre-line"><%= publication.instructions %></p>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="comments">
+    <h2>Comentarios (<%= publication.commentCount %>)</h2>
+
+    <% if (currentUser) { %>
+      <form action="/publications/<%= publication.id %>/comments" method="post" class="comment-form">
+        <textarea
+          name="content"
+          rows="3"
+          maxlength="1000"
+          required
+          placeholder="Escribe un comentario..."
+        ></textarea>
+        <button type="submit" class="btn btn-primary btn-small">Comentar</button>
+      </form>
+    <% } else { %>
+      <p class="muted"><a href="/login">Inicia sesión</a> para comentar.</p>
+    <% } %>
+
+    <% if (!publication.comments.length) { %>
+      <p class="muted">Todavía no hay comentarios. ¡Anímate a escribir el primero!</p>
+    <% } %>
+
+    <% publication.comments.forEach((comment) => { %>
+      <article class="comment">
+        <div class="comment-head">
+          <a href="/users/<%= comment.author.id %>" class="author">
+            <span class="avatar avatar-small"><%= comment.author.firstName.charAt(0) %></span>
+            <span><strong><%= comment.author.firstName %> <%= comment.author.lastName %></strong> <small>@<%= comment.author.username %></small></span>
+          </a>
+          <time datetime="<%= comment.createdAt %>"><%= formatDate(comment.createdAt) %></time>
+        </div>
+
+        <% if (currentUser && currentUser.id === comment.author.id) { %>
+          <form action="/comments/<%= comment.id %>/edit" method="post" class="comment-edit-form">
+            <textarea name="content" rows="2" maxlength="1000" required><%= comment.content %></textarea>
+            <div class="comment-actions">
+              <button type="submit" class="btn btn-small btn-primary">Guardar</button>
+            </div>
+          </form>
+          <form
+            action="/comments/<%= comment.id %>/delete"
+            method="post"
+            class="inline-form"
+            onsubmit="return confirm('¿Eliminar este comentario?');"
+          >
+            <button type="submit" class="btn btn-small btn-danger">Eliminar</button>
+          </form>
+        <% } else { %>
+          <p class="comment-content"><%= comment.content %></p>
+        <% } %>
+      </article>
+    <% }) %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

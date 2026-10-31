@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Ilustración de comida">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7e8d6"/>
+      <stop offset="1" stop-color="#e8c9a0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="400" cy="250" r="150" fill="#fff8ef" stroke="#c9774b" stroke-width="8"/>
+  <circle cx="400" cy="250" r="110" fill="#f3d3a8"/>
+  <circle cx="355" cy="215" r="24" fill="#7fa653"/>
+  <circle cx="430" cy="200" r="18" fill="#d95d39"/>
+  <circle cx="455" cy="275" r="22" fill="#7fa653"/>
+  <circle cx="370" cy="295" r="16" fill="#d95d39"/>
+  <path d="M250 120 L255 190" stroke="#c9774b" stroke-width="10" stroke-linecap="round"/>
+  <path d="M235 95 L235 155 Q235 180 255 180 Q275 180 275 155 L275 95" fill="none" stroke="#c9774b" stroke-width="10" stroke-linecap="round"/>
+  <text x="400" y="450" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#8a4b2d">Sabor Comunitario</text>
+</svg>

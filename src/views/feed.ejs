@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<main>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <p class="eyebrow">Comunidad gastronómica</p>
+        <h1>Cocina, comparte y descubre sabores</h1>
+        <p class="hero-text">
+          Publica tus platos favoritos, comparte recetas paso a paso y conoce
+          lo que otras personas están cocinando.
+        </p>
+        <div class="hero-actions">
+          <% if (currentUser) { %>
+            <a class="btn btn-primary" href="/publications/new">Publicar algo rico</a>
+          <% } else { %>
+            <a class="btn btn-primary" href="/register">Crear una cuenta</a>
+            <a class="btn btn-outline" href="/login">Iniciar sesión</a>
+          <% } %>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span>🥘</span>
+        <span>🍰</span>
+        <span>🥗</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section" id="categorias">
+    <div class="section-heading">
+      <h2>Explora por categoría</h2>
+    </div>
+    <div class="category-list">
+      <% categories.forEach((category) => { %>
+        <a class="category-chip" href="/categories/<%= category.slug %>">
+          <%= category.name %>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="section-heading">
+      <h2>Publicaciones recientes</h2>
+      <span class="muted"><%= publications.length %> publicaciones</span>
+    </div>
+
+    <% if (!publications.length) { %>
+      <div class="empty-state">
+        <p>Todavía no hay publicaciones.</p>
+        <% if (currentUser) { %>
+          <a class="btn btn-primary" href="/publications/new">Sé la primera persona en publicar</a>
+        <% } else { %>
+          <a class="btn btn-primary" href="/register">Únete y comparte tu primera receta</a>
+        <% } %>
+      </div>
+    <% } else { %>
+      <div class="card-grid">
+        <% publications.forEach((publication) => { %>
+          <%- include('partials/publicationCard', { publication }) %>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
