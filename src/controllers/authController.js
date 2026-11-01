@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { User } from '../db/models/index.js';
+import { Role, User } from '../db/models/index.js';
 import {
   hashPassword,
   signToken,
@@ -113,13 +113,19 @@ export const register = async (req, res) => {
     });
   }
 
-  await User.create({
+  const user = await User.create({
     firstName: value.firstName,
     lastName: value.lastName,
     username: value.username,
     email: value.email,
     password: await hashPassword(value.password),
   });
+
+  const memberRole = await Role.findOne({ where: { slug: 'member' } });
+
+  if (memberRole) {
+    await user.addRole(memberRole);
+  }
 
   return res.redirect(
     `/login?success=${encodeURIComponent('Cuenta creada. Ya puedes iniciar sesión.')}`

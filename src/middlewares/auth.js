@@ -1,5 +1,5 @@
 import { verifyToken } from '../utils/auth.js';
-import { User } from '../db/models/index.js';
+import { Role, User } from '../db/models/index.js';
 
 export const loadCurrentUser = async (req, res, next) => {
   res.locals.currentUser = null;
@@ -17,6 +17,14 @@ export const loadCurrentUser = async (req, res, next) => {
     const payload = verifyToken(token);
     const user = await User.findByPk(payload.id, {
       attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'bio'],
+      include: [
+        {
+          model: Role,
+          as: 'roles',
+          attributes: ['id', 'name', 'slug'],
+          through: { attributes: [] },
+        },
+      ],
     });
 
     if (user) {

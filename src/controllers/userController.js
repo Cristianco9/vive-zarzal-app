@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { Publication, User } from '../db/models/index.js';
+import { Publication, Role, User } from '../db/models/index.js';
 import {
   publicationSummaryInclude,
   toPublicationCard,
@@ -10,6 +10,14 @@ import { httpError } from '../utils/httpError.js';
 export const showProfile = async (req, res) => {
   const user = await User.findByPk(req.params.id, {
     attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'bio', 'createdAt'],
+    include: [
+      {
+        model: Role,
+        as: 'roles',
+        attributes: ['id', 'name', 'slug'],
+        through: { attributes: [] },
+      },
+    ],
   });
 
   if (!user) {

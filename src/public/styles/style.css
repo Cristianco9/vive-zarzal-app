@@ -833,6 +833,19 @@ p {
   margin-bottom: 0;
 }
 
+.role-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.badge-role {
+  background: var(--success-soft);
+  color: var(--green);
+  text-transform: uppercase;
+}
+
 /* Error */
 
 .error-page {

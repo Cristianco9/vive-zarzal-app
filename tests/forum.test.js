@@ -8,6 +8,7 @@ import {
   Like,
   Publication,
   Rating,
+  Role,
   User,
 } from '../src/db/models/index.js';
 import { deleteStoredImage } from '../src/middlewares/upload.js';
@@ -182,6 +183,11 @@ test('foro comunitario de comida: flujos esenciales', async (t) => {
     userB = await User.findOne({ where: { username: accountB.username } });
     assert.ok(userA);
     assert.ok(userB);
+
+    const memberRole = await Role.findOne({ where: { slug: 'member' } });
+    const userRoles = await userA.getRoles();
+    assert.ok(memberRole);
+    assert.ok(userRoles.some((role) => role.id === memberRole.id));
   });
 
   await t.test('inicio de sesión y rechazo de credenciales inválidas', async () => {
@@ -397,7 +403,9 @@ test('foro comunitario de comida: flujos esenciales', async (t) => {
   await t.test('perfil: publicaciones y edición de datos', async () => {
     const profile = await clientA.fetch(`/users/${userA.id}`);
     assert.equal(profile.status, 200);
-    assert.match(await profile.text(), /Arepa de prueba actualizada/);
+    const profileHtml = await profile.text();
+    assert.match(profileHtml, /Arepa de prueba actualizada/);
+    assert.match(profileHtml, /Miembro/);
 
     const update = await clientA.form('/profile/edit', {
       firstName: 'Ana',

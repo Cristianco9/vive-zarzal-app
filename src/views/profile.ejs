@@ -17,6 +17,13 @@
     <div class="profile-info">
       <h1><%= profileUser.firstName %> <%= profileUser.lastName %></h1>
       <p class="muted">@<%= profileUser.username %></p>
+      <% if (profileUser.roles && profileUser.roles.length) { %>
+        <div class="role-badges">
+          <% profileUser.roles.forEach((role) => { %>
+            <span class="badge badge-role"><%= role.name %></span>
+          <% }) %>
+        </div>
+      <% } %>
       <% if (profileUser.bio) { %>
         <p class="pre-line"><%= profileUser.bio %></p>
       <% } else { %>
