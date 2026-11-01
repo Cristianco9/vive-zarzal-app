@@ -14,5 +14,5 @@
   <circle cx="370" cy="295" r="16" fill="#d95d39"/>
   <path d="M250 120 L255 190" stroke="#c9774b" stroke-width="10" stroke-linecap="round"/>
   <path d="M235 95 L235 155 Q235 180 255 180 Q275 180 275 155 L275 95" fill="none" stroke="#c9774b" stroke-width="10" stroke-linecap="round"/>
-  <text x="400" y="450" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#8a4b2d">Sabor Comunitario</text>
+  <text x="400" y="450" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#8a4b2d">Vive Zarzal</text>
 </svg>
