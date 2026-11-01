@@ -1,8 +1,8 @@
-# Sabor Comunitario
+# Vive Zarzal
 
-Foro comunitario de comida para compartir **platos** y **recetas**. Cada persona puede publicar lo que cocina, explorar por categorías, dar me gusta, calificar de 1 a 5, comentar y gestionar su propio perfil.
-
-La aplicación conserva la base técnica del proyecto original (Node.js, Express, EJS, Sequelize y PostgreSQL) y reemplaza por completo el dominio de marketplace turístico por un foro gastronómico.
+Foro comunitario de comida para compartir **platos** y **recetas**. Cada persona 
+puede publicar lo que cocina, explorar por categorías, dar me gusta, calificar de
+ 1 a 5, comentar y gestionar su propio perfil.
 
 ## Tabla de contenidos
 
@@ -50,29 +50,6 @@ La aplicación conserva la base técnica del proyecto original (Node.js, Express
 * **Docker Compose** para levantar PostgreSQL y pgAdmin
 * **ESLint** y el runner de pruebas integrado de Node.js
 
-## Estructura del proyecto
-
-```text
-src/
-├── app.js                    # Configuración de Express y arranque
-├── config/config.js          # Lectura de variables de entorno
-├── controllers/              # Lógica de autenticación, usuarios, publicaciones e interacciones
-├── db/
-│   ├── config.cjs            # Configuración de sequelize-cli
-│   ├── migrations/           # Migraciones de las seis tablas del dominio
-│   ├── models/               # Modelos Sequelize y asociaciones
-│   └── seeders/              # Categorías iniciales
-├── libraries/DBConnection.js # Conexión a PostgreSQL
-├── middlewares/              # Autenticación, errores y subida de archivos
-├── public/                   # CSS, JavaScript del formulario e imágenes subidas
-├── router/                   # Rutas HTTP
-├── schemas/index.js          # Esquemas de validación con Joi
-├── utils/                    # JWT, bcrypt y errores HTTP
-└── views/                    # Vistas EJS
-tests/
-└── forum.test.js             # Pruebas de integración de los flujos principales
-```
-
 ## Requisitos
 
 * [Node.js](https://nodejs.org/) 18 o superior
@@ -99,8 +76,6 @@ tests/
    ```sh
    npm run env-var
    ```
-
-   Edita `.env` y define al menos `DB_NAME`, `DB_USER`, `DB_PASSWORD` y un `AUTH_APP_JWT_SECRET_KEY` seguro.
 
 4. Levanta PostgreSQL con Docker Compose:
 
@@ -193,11 +168,16 @@ El dominio final está compuesto por seis tablas:
 * **ratings**: puntuación de 1 a 5, única por usuario y publicación.
 * **comments**: contenido, autor y publicación.
 
-Las claves foráneas usan `ON DELETE CASCADE` para las interacciones y las publicaciones de un usuario, de modo que al eliminar una publicación o un usuario desaparecen sus likes, calificaciones y comentarios. Las categorías usan `ON DELETE RESTRICT` para no dejar publicaciones huérfanas.
+Las claves foráneas usan `ON DELETE CASCADE` para las interacciones y las 
+publicaciones de un usuario, de modo que al eliminar una publicación o un usuario
+desaparecen sus likes, calificaciones y comentarios. Las categorías usan 
+`ON DELETE RESTRICT` para no dejar publicaciones huérfanas.
 
 ## Pruebas
 
-Las pruebas de integración cubren registro, inicio de sesión, creación de platos y recetas, permisos de edición y eliminación, me gusta, calificaciones, comentarios, perfil, cierre de sesión y la ausencia de las rutas del marketplace anterior.
+Las pruebas de integración cubren registro, inicio de sesión, creación de platos y recetas, 
+permisos de edición y eliminación, me gusta, calificaciones, comentarios, perfil, 
+cierre de sesión y la ausencia de las rutas del marketplace anterior.
 
 Requisitos:
 
@@ -210,7 +190,8 @@ npm run seeds:run
 npm test
 ```
 
-Las pruebas usan usuarios con nombres únicos y eliminan los datos que crean. No ejecutes la suite contra una base de datos de producción.
+Las pruebas usan usuarios con nombres únicos y eliminan los datos que crean. 
+No ejecutes la suite contra una base de datos de producción.
 
 También puedes ejecutar el análisis estático:
 
