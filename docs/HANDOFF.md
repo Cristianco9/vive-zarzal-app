@@ -2,14 +2,6 @@
 
 Documento de continuidad para el equipo que retoma el desarrollo de **Vive Zarzal**, un foro comunitario de comida.
 
-## Estado actual
-
-* Rama de trabajo: `refactor/food-community-forum`.
-* Aplicación funcional con autenticación, publicaciones, interacciones, comentarios y perfiles.
-* Base de datos ampliada a **21 tablas de dominio** con migraciones y seeders.
-* Pruebas de integración y esquema aprobadas.
-* La aplicación arranca con `npm run dev` en `http://localhost:3377`.
-
 ## Qué está implementado
 
 ### Producto
@@ -77,8 +69,6 @@ Express 5 + EJS
 PostgreSQL
 ```
 
-No hay capa de servicios separada. Para el tamaño actual se mantienen controladores delgados y consultas directas con Sequelize. Si una funcionalidad crece en complejidad, se puede introducir un servicio puntual sin reestructurar todo el proyecto.
-
 ## Puntos de entrada
 
 | Archivo | Uso |
@@ -87,12 +77,9 @@ No hay capa de servicios separada. Para el tamaño actual se mantienen controlad
 | `src/router/index.js` | Punto de unión de todos los routers. |
 | `src/db/models/index.js` | Exportación de modelos y asociaciones. |
 | `src/db/migrations/` | Historial del esquema. |
-| `src/db/seeders/` | Catálogos iniciales. |
 | `src/middlewares/auth.js` | Usuario actual, roles y autenticación requerida. |
 | `src/controllers/` | Casos de uso existentes. |
 | `src/views/` | Vistas EJS. |
-| `tests/forum.test.js` | Flujos funcionales. |
-| `tests/schema.test.js` | Tablas, catálogos y asociaciones. |
 | `docs/DATABASE.md` | Catálogo detallado del esquema. |
 
 ## Cómo ejecutar
