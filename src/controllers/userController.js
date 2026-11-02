@@ -1,43 +1,7 @@
 import { Op } from 'sequelize';
-import { Publication, Role, User } from '../db/models/index.js';
-import {
-  publicationSummaryInclude,
-  toPublicationCard,
-} from './publicationController.js';
+import { User } from '../db/models/index.js';
 import { firstError, profileSchema } from '../schemas/index.js';
-import { httpError } from '../utils/httpError.js';
 
-export const showProfile = async (req, res) => {
-  const user = await User.findByPk(req.params.id, {
-    attributes: ['id', 'firstName', 'lastName', 'username', 'email', 'bio', 'createdAt'],
-    include: [
-      {
-        model: Role,
-        as: 'roles',
-        attributes: ['id', 'name', 'slug'],
-        through: { attributes: [] },
-      },
-    ],
-  });
-
-  if (!user) {
-    throw httpError(404, 'Usuario no encontrado.');
-  }
-
-  const publications = await Publication.findAll({
-    where: { userId: user.id },
-    include: publicationSummaryInclude,
-    order: [['createdAt', 'DESC']],
-  });
-
-  return res.render('profile', {
-    title: `${user.firstName} ${user.lastName}`,
-    profileUser: user,
-    publications: publications.map((publication) =>
-      toPublicationCard(publication, req.currentUser)
-    ),
-  });
-};
 
 export const showEditProfile = (req, res) => {
   return res.render('editProfile', {
