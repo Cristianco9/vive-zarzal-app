@@ -138,7 +138,7 @@ npm run lint
 
 ## Checklist para el equipo entrante
 
-- [ ] Leer `README.md`, `docs/DATABASE.md` y este documento.
+- [X] Leer `README.md`, `docs/DATABASE.md` y este documento.
 - [ ] Crear `.env` y levantar PostgreSQL.
 - [ ] Ejecutar migraciones y seeders.
 - [ ] Ejecutar `npm test` y `npm run lint`.
