@@ -1,0 +1,61 @@
+<%- include('partials/header') %>
+
+<%
+  const isOwnProfile = currentUser && currentUser.id === profileUser.id;
+  const joined = new Date(profileUser.createdAt).toLocaleDateString('es-CO', {
+    year: 'numeric',
+    month: 'long',
+  });
+%>
+
+<main class="container section">
+  <section class="profile-header">
+    <span class="avatar avatar-large">
+      <%= profileUser.firstName.charAt(0) %><%= profileUser.lastName.charAt(0) %>
+    </span>
+
+    <div class="profile-info">
+      <h1><%= profileUser.firstName %> <%= profileUser.lastName %></h1>
+      <p class="muted">@<%= profileUser.username %></p>
+      <% if (profileUser.roles && profileUser.roles.length) { %>
+        <div class="role-badges">
+          <% profileUser.roles.forEach((role) => { %>
+            <span class="badge badge-role"><%= role.name %></span>
+          <% }) %>
+        </div>
+      <% } %>
+      <% if (profileUser.bio) { %>
+        <p class="pre-line"><%= profileUser.bio %></p>
+      <% } else { %>
+        <p class="muted">Esta persona todavía no ha escrito una biografía.</p>
+      <% } %>
+      <p class="muted">Miembro desde <%= joined %></p>
+    </div>
+
+    <% if (isOwnProfile) { %>
+      <a class="btn btn-outline" href="/profile/edit">Editar perfil</a>
+    <% } %>
+  </section>
+
+  <div class="section-heading">
+    <h2>Publicaciones de <%= profileUser.firstName %></h2>
+    <span class="muted"><%= publications.length %> publicaciones</span>
+  </div>
+
+  <% if (!publications.length) { %>
+    <div class="empty-state">
+      <p><%= isOwnProfile ? 'Todavía no has publicado nada.' : 'Esta persona todavía no ha publicado nada.' %></p>
+      <% if (isOwnProfile) { %>
+        <a class="btn btn-primary" href="/publications/new">Crear mi primera publicación</a>
+      <% } %>
+    </div>
+  <% } else { %>
+    <div class="card-grid">
+      <% publications.forEach((publication) => { %>
+        <%- include('partials/publicationCard', { publication }) %>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

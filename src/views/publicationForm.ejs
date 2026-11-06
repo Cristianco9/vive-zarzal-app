@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+
+<main class="container form-page">
+  <div class="section-heading">
+    <h1><%= mode === 'create' ? 'Nueva publicación' : 'Editar publicación' %></h1>
+  </div>
+
+  <form
+    class="form card-form"
+    action="<%= mode === 'create' ? '/publications' : '/publications/' + values.id + '/edit' %>"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    <div class="form-group">
+      <label for="type">Tipo de publicación</label>
+      <select id="type" name="type" required>
+        <option value="dish" <%= values.type === 'dish' ? 'selected' : '' %>>Plato</option>
+        <option value="recipe" <%= values.type === 'recipe' ? 'selected' : '' %>>Receta</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="title">Título</label>
+      <input
+        id="title"
+        name="title"
+        type="text"
+        value="<%= values.title || '' %>"
+        required
+        minlength="3"
+        maxlength="150"
+        placeholder="Ej. Bandeja paisa de mi abuela"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <textarea
+        id="description"
+        name="description"
+        rows="5"
+        required
+        minlength="10"
+        maxlength="2000"
+        placeholder="Cuéntanos qué hace especial este plato o receta."
+      ><%= values.description || '' %></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="categoryId">Categoría</label>
+      <select id="categoryId" name="categoryId" required>
+        <option value="">Selecciona una categoría</option>
+        <% categories.forEach((category) => { %>
+          <option
+            value="<%= category.id %>"
+            <%= String(values.categoryId || '') === String(category.id) ? 'selected' : '' %>
+          >
+            <%= category.name %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="image">Imagen</label>
+      <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+      <small class="help">JPG, PNG, WEBP o GIF. Máximo 5 MB.</small>
+      <% if (values.imageUrl) { %>
+        <div class="current-image">
+          <img src="<%= values.imageUrl %>" alt="Imagen actual de la publicación">
+          <span>Imagen actual</span>
+        </div>
+      <% } %>
+    </div>
+
+    <div id="recipe-fields" class="recipe-fields" <%= values.type === 'recipe' ? '' : 'hidden' %>>
+      <div class="form-group">
+        <label for="ingredients">Ingredientes</label>
+        <textarea
+          id="ingredients"
+          name="ingredients"
+          rows="6"
+          placeholder="Un ingrediente por línea."
+        ><%= values.ingredients || '' %></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="instructions">Preparación</label>
+        <textarea
+          id="instructions"
+          name="instructions"
+          rows="8"
+          placeholder="Describe los pasos de la preparación."
+        ><%= values.instructions || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <%= mode === 'create' ? 'Publicar' : 'Guardar cambios' %>
+      </button>
+      <a class="btn btn-ghost" href="<%= mode === 'create' ? '/' : '/publications/' + values.id %>">Cancelar</a>
+    </div>
+  </form>
+</main>
+
+<%- include('partials/footer') %>
