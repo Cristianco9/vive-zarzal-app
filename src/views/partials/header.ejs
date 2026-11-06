@@ -1,0 +1,46 @@
+<%
+  const user = typeof currentUser !== 'undefined' ? currentUser : null;
+  const path = typeof currentPath !== 'undefined' ? currentPath : '';
+%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Vive Zarzal</title>
+  <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">🍲</span>
+        <span>Vive Zarzal</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="/" class="<%= path === '/' ? 'active' : '' %>">Inicio</a>
+        <% if (user) { %>
+          <a href="/publications/new" class="<%= path === '/publications/new' ? 'active' : '' %>">Publicar</a>
+        <% } %>
+      </nav>
+
+      <div class="header-actions">
+        <% if (user) { %>
+          <a class="user-link" href="/users/<%= user.id %>">
+            <span class="avatar avatar-small"><%= user.firstName.charAt(0) %></span>
+            <span><%= user.firstName %></span>
+          </a>
+          <a class="btn btn-ghost btn-small" href="/profile/edit">Editar perfil</a>
+          <form action="/logout" method="post" class="inline-form">
+            <button type="submit" class="btn btn-outline btn-small">Salir</button>
+          </form>
+        <% } else { %>
+          <a class="btn btn-ghost btn-small" href="/login">Iniciar sesión</a>
+          <a class="btn btn-primary btn-small" href="/register">Crear cuenta</a>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <%- include('messages') %>
