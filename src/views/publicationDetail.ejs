@@ -94,6 +94,12 @@
           <button type="submit" class="btn btn-small btn-primary">Guardar</button>
         </form>
       <% } %>
+      <% if (currentUser && !isOwner) { %>
+        <%- include('partials/reportForm', {
+          action: `/publications/${publication.id}/report`,
+          label: 'Reportar publicación'
+        }) %>
+      <% } %>
     </div>
   </article>
 
@@ -160,6 +166,14 @@
         <% } else { %>
           <p class="comment-content"><%= comment.content %></p>
         <% } %>
+        
+        <% if (currentUser && currentUser.id !== comment.author.id) { %>
+          <%- include('partials/reportForm', {
+            action: `/comments/${comment.id}/report`,
+            label: 'Reportar comentario'
+          }) %>
+        <% } %>
+
       </article>
     <% }) %>
   </section>
