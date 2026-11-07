@@ -70,6 +70,16 @@
           <a class="btn btn-outline" href="/login">♥ <%= publication.likeCount %> me gusta</a>
         <% } %>
 
+        <% if (currentUser) { %>
+          <form action="/publications/<%= publication.id %>/favorite" method="post" class="inline-form">
+            <button type="submit" class="btn <%= publication.favoritedByCurrentUser ? 'btn-primary' : 'btn-outline' %>">
+              🔖 <%= publication.favoritedByCurrentUser ? 'Guardada' : 'Guardar' %>
+            </button>
+          </form>
+        <% } else { %>
+          <a class="btn btn-outline" href="/login">🔖 Guardar</a>
+        <% } %>
+
         <div class="rating-summary">
           <span class="stars" aria-hidden="true"><%= '★'.repeat(roundedRating) %><%= '☆'.repeat(5 - roundedRating) %></span>
           <span>

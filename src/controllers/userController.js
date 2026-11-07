@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import { Publication, Role, User } from '../db/models/index.js';
 import {
   publicationSummaryInclude,
-  toPublicationCard,
+  toPublicationCards,
 } from './publicationController.js';
 import { firstError, profileSchema } from '../schemas/index.js';
 import { httpError } from '../utils/httpError.js';
@@ -33,9 +33,7 @@ export const showProfile = async (req, res) => {
   return res.render('profile', {
     title: `${user.firstName} ${user.lastName}`,
     profileUser: user,
-    publications: publications.map((publication) =>
-      toPublicationCard(publication, req.currentUser)
-    ),
+    publications: await toPublicationCards(publications, req.currentUser),
   });
 };
 

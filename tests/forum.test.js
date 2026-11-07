@@ -5,6 +5,7 @@ import { sequelize } from '../src/libraries/DBConnection.js';
 import {
   Category,
   Comment,
+  Favorite,
   Like,
   Publication,
   Rating,
@@ -345,6 +346,39 @@ test('foro comunitario de comida: flujos esenciales', async (t) => {
     );
   });
 
+  await t.test('favoritos: alternar, autenticación y publicación inexistente', async () => {
+    const save = await clientA.form(`/publications/${dishId}/favorite`, {});
+    assert.equal(save.status, 302);
+    assert.equal(location(save), `/publications/${dishId}`);
+    assert.equal(await Favorite.count({ where: { publicationId: dishId } }), 1);
+
+    const savedDetail = await clientA.fetch(`/publications/${dishId}`);
+    assert.match(await savedDetail.text(), /Guardada/);
+
+    await clientA.form(`/publications/${dishId}/favorite`, {});
+    assert.equal(await Favorite.count({ where: { publicationId: dishId } }), 0);
+
+    await clientA.form(`/publications/${dishId}/favorite`, {});
+    await clientB.form(`/publications/${dishId}/favorite`, {});
+    assert.equal(await Favorite.count({ where: { publicationId: dishId } }), 2);
+
+    await assert.rejects(
+      () => Favorite.create({ userId: userB.id, publicationId: dishId }),
+      (error) => error.name === 'SequelizeUniqueConstraintError'
+    );
+
+    const anonymous = createClient();
+    const unauthenticated = await anonymous.form(
+      `/publications/${dishId}/favorite`,
+      {}
+    );
+    assert.equal(unauthenticated.status, 302);
+    assert.match(location(unauthenticated), /\/login\?next=/);
+
+    const missing = await clientA.form('/publications/999999999/favorite', {});
+    assert.equal(missing.status, 404);
+  });
+
   await t.test('calificaciones: una por usuario y promedio', async () => {
     await clientA.form(`/publications/${dishId}/rating`, { score: '5' });
     await clientA.form(`/publications/${dishId}/rating`, { score: '4' });
@@ -429,6 +463,7 @@ test('foro comunitario de comida: flujos esenciales', async (t) => {
     assert.equal(await Like.count({ where: { publicationId: dishId } }), 0);
     assert.equal(await Rating.count({ where: { publicationId: dishId } }), 0);
     assert.equal(await Comment.count({ where: { publicationId: dishId } }), 0);
+    assert.equal(await Favorite.count({ where: { publicationId: dishId } }), 0);
   });
 
   await t.test('cerrar sesión limpia la cookie de autenticación', async () => {
