@@ -1,6 +1,7 @@
 import {
   Category,
   Comment,
+  Favorite,
   Like,
   Publication,
   Rating,
@@ -59,7 +60,11 @@ const publicationDetailInclude = [
   },
 ];
 
-export const toPublicationCard = (publication, currentUser) => {
+export const toPublicationCard = (
+  publication,
+  currentUser,
+  favoriteIds = new Set()
+) => {
   const data = publication.get ? publication.get({ plain: true }) : publication;
   const likes = data.likes || [];
   const ratings = data.ratings || [];
@@ -77,10 +82,31 @@ export const toPublicationCard = (publication, currentUser) => {
     likedByCurrentUser: currentUser
       ? likes.some((like) => like.userId === currentUser.id)
       : false,
+    favoritedByCurrentUser: currentUser ? favoriteIds.has(data.id) : false,
     currentUserRating: currentUser
       ? ratings.find((rating) => rating.userId === currentUser.id)?.score || null
       : null,
   };
+};
+
+export const toPublicationCards = async (publications, currentUser) => {
+  const favoriteIds = new Set();
+
+  if (currentUser && publications.length) {
+    const favorites = await Favorite.findAll({
+      where: {
+        userId: currentUser.id,
+        publicationId: publications.map((publication) => publication.id),
+      },
+      attributes: ['publicationId'],
+    });
+
+    favorites.forEach((favorite) => favoriteIds.add(favorite.publicationId));
+  }
+
+  return publications.map((publication) =>
+    toPublicationCard(publication, currentUser, favoriteIds)
+  );
 };
 
 const loadCategories = () =>
@@ -114,9 +140,7 @@ export const listFeed = async (req, res) => {
 
   return res.render('feed', {
     title: 'Inicio',
-    publications: publications.map((publication) =>
-      toPublicationCard(publication, req.currentUser)
-    ),
+    publications: await toPublicationCards(publications, req.currentUser),
     categories,
   });
 };
@@ -137,9 +161,7 @@ export const listByCategory = async (req, res) => {
   return res.render('categoryFeed', {
     title: category.name,
     category,
-    publications: publications.map((publication) =>
-      toPublicationCard(publication, req.currentUser)
-    ),
+    publications: await toPublicationCards(publications, req.currentUser),
   });
 };
 
@@ -204,7 +226,7 @@ export const showDetail = async (req, res) => {
     throw httpError(404, 'Publicación no encontrada.');
   }
 
-  const card = toPublicationCard(publication, req.currentUser);
+  const [card] = await toPublicationCards([publication], req.currentUser);
 
   return res.render('publicationDetail', {
     title: card.title,
@@ -289,3 +311,4 @@ export const remove = async (req, res) => {
   );
 };
 
+};

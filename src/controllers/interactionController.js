@@ -1,4 +1,10 @@
-import { Comment, Like, Publication, Rating } from '../db/models/index.js';
+import {
+  Comment,
+  Favorite,
+  Like,
+  Publication,
+  Rating,
+} from '../db/models/index.js';
 import {
   commentSchema,
   firstError,
@@ -30,6 +36,24 @@ const findOwnComment = async (id, user) => {
   return comment;
 };
 
+const redirectBack = (req, res, fallback) => {
+  const referer = req.get('referer');
+
+  if (referer) {
+    try {
+      const url = new URL(referer);
+
+      if (url.host === req.get('host')) {
+        return res.redirect(`${url.pathname}${url.search}`);
+      }
+    } catch {
+      // Referer inválido: se usa la ruta por defecto.
+    }
+  }
+
+  return res.redirect(fallback);
+};
+
 export const toggleLike = async (req, res) => {
   const publication = await findPublication(req.params.id);
 
@@ -50,6 +74,35 @@ export const toggleLike = async (req, res) => {
   }
 
   return res.redirect(`/publications/${publication.id}`);
+};
+
+export const toggleFavorite = async (req, res) => {
+  const publication = await findPublication(req.params.id);
+
+  const existingFavorite = await Favorite.findOne({
+    where: {
+      userId: req.currentUser.id,
+      publicationId: publication.id,
+    },
+  });
+
+  if (existingFavorite) {
+    await existingFavorite.destroy();
+  } else {
+    try {
+      await Favorite.create({
+        userId: req.currentUser.id,
+        publicationId: publication.id,
+      });
+    } catch (error) {
+      // Dos clics casi simultáneos: el favorito ya existe, no es un error.
+      if (error.name !== 'SequelizeUniqueConstraintError') {
+        throw error;
+      }
+    }
+  }
+
+  return redirectBack(req, res, `/publications/${publication.id}`);
 };
 
 export const rate = async (req, res) => {
