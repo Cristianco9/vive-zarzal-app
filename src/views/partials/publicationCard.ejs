@@ -27,5 +27,17 @@
         <span title="Comentarios">💬 <%= publication.commentCount %></span>
       </div>
     </div>
+
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+      <form action="/publications/<%= publication.id %>/favorite" method="post" class="inline-form">
+        <button
+          type="submit"
+          class="btn btn-small <%= publication.favoritedByCurrentUser ? 'btn-primary' : 'btn-outline' %>"
+          title="<%= publication.favoritedByCurrentUser ? 'Quitar de favoritos' : 'Guardar en favoritos' %>"
+        >
+          🔖 <%= publication.favoritedByCurrentUser ? 'Guardada' : 'Guardar' %>
+        </button>
+      </form>
+    <% } %>
   </div>
 </article>
