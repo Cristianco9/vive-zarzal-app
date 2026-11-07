@@ -7,6 +7,7 @@ import {
   User,
 } from '../db/models/index.js';
 import { firstError, publicationSchema, REPORT_REASONS, REPORT_REASON_LABELS } from '../schemas/index.js';
+import { firstError, publicationSchema } from '../schemas/index.js';
 import { httpError } from '../utils/httpError.js';
 import {
   deleteStoredImage,
