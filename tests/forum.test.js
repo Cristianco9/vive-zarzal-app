@@ -379,6 +379,33 @@ test('foro comunitario de comida: flujos esenciales', async (t) => {
     assert.equal(missing.status, 404);
   });
 
+  await t.test('favoritos: listado privado de cada usuario', async () => {
+    const anonymous = createClient();
+    const unauthenticated = await anonymous.fetch('/favorites');
+    assert.equal(unauthenticated.status, 302);
+    assert.match(location(unauthenticated), /\/login\?next=/);
+
+    const listA = await clientA.fetch('/favorites');
+    assert.equal(listA.status, 200);
+    const htmlA = await listA.text();
+    assert.match(htmlA, /Arepa de prueba actualizada/);
+    assert.doesNotMatch(htmlA, /Sopa de prueba/);
+
+    await clientA.form(`/publications/${recipeId}/favorite`, {});
+
+    const withRecipe = await (await clientA.fetch('/favorites')).text();
+    assert.match(withRecipe, /Sopa de prueba/);
+
+    const listB = await (await clientB.fetch('/favorites')).text();
+    assert.match(listB, /Arepa de prueba actualizada/);
+    assert.doesNotMatch(listB, /Sopa de prueba/);
+
+    await clientA.form(`/publications/${recipeId}/favorite`, {});
+
+    const withoutRecipe = await (await clientA.fetch('/favorites')).text();
+    assert.doesNotMatch(withoutRecipe, /Sopa de prueba/);
+  });
+
   await t.test('calificaciones: una por usuario y promedio', async () => {
     await clientA.form(`/publications/${dishId}/rating`, { score: '5' });
     await clientA.form(`/publications/${dishId}/rating`, { score: '4' });

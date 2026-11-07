@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   create,
   listByCategory,
+  listFavorites,
   listFeed,
   remove,
   showCreate,
@@ -16,6 +17,7 @@ export const publicationRouter = Router();
 
 publicationRouter.get('/', listFeed);
 publicationRouter.get('/categories/:slug', listByCategory);
+publicationRouter.get('/favorites', requireAuth, listFavorites);
 
 publicationRouter.get('/publications/new', requireAuth, showCreate);
 publicationRouter.post(
