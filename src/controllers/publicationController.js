@@ -7,6 +7,7 @@ import {
   Rating,
   User,
 } from '../db/models/index.js';
+import { firstError, publicationSchema, REPORT_REASONS, REPORT_REASON_LABELS } from '../schemas/index.js';
 import { firstError, publicationSchema } from '../schemas/index.js';
 import { httpError } from '../utils/httpError.js';
 import {
@@ -230,6 +231,8 @@ export const showDetail = async (req, res) => {
   return res.render('publicationDetail', {
     title: card.title,
     publication: card,
+    reportReasons: REPORT_REASONS,
+    reportReasonLabels: REPORT_REASON_LABELS,
   });
 };
 
@@ -306,4 +309,6 @@ export const remove = async (req, res) => {
   return res.redirect(
     `/?success=${encodeURIComponent('Publicación eliminada.')}`
   );
+};
+
 };

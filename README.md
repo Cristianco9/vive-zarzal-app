@@ -2,7 +2,7 @@
 
 Foro comunitario de comida para compartir **platos** y **recetas**. Cada persona puede publicar lo que cocina, explorar por categorías, dar me gusta, calificar de 1 a 5, comentar y gestionar su propio perfil.
 
-El proyecto queda preparado como punto de entrada para un equipo de desarrollo que continúe construyendo funcionalidades sobre una base estable: autenticación, CRUD de publicaciones, interacciones sociales y un esquema de base de datos ampliado con roles, permisos, documentos, ubicaciones, etiquetas, favoritos, notificaciones y reportes.
+El proyecto queda preparado como punto de entrada para un equipo de desarrollo que continúe construyendo funcionalidades sobre una base estable: autenticación, CRUD de publicaciones, interacciones sociales y un esquema de base de datos ampliado con roles, permisos, documentos, ubicaciones, etiquetas, favoritos, notificaciones y report
 
 ## Tabla de contenidos
 
@@ -204,6 +204,8 @@ Las imágenes subidas se guardan en `src/public/uploads/`. Ese contenido no se v
 | `POST` | `/publications/:id/comments` | Crear comentario | Autenticado |
 | `POST` | `/comments/:id/edit` | Editar comentario | Autor |
 | `POST` | `/comments/:id/delete` | Eliminar comentario | Autor |
+| `POST` | `/publications/:id/report` | Reportar una publicación | Autenticado |
+| `POST` | `/comments/:id/report` | Reportar un comentario | Autenticado |
 | `GET` | `/users/:id` | Perfil público | Público |
 | `GET` | `/profile/edit` | Formulario de perfil | Autenticado |
 | `POST` | `/profile/edit` | Actualizar perfil | Autenticado |

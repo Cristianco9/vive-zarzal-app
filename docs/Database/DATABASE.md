@@ -228,6 +228,7 @@ Reportes de contenido para moderación.
 * `reviewed_at`.
 * Restricción `reports_target_check`: el reporte debe apuntar a una publicación o a un comentario.
 * Índices por estado, publicación, comentario y reportero.
+* Índices únicos parciales `(reporter_id, publication_id)` y `(reporter_id, comment_id)`: un usuario solo puede reportar una vez cada publicación o comentario.
 
 ## Relaciones principales
 
