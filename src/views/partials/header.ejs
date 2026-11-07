@@ -22,6 +22,7 @@
         <a href="/" class="<%= path === '/' ? 'active' : '' %>">Inicio</a>
         <% if (user) { %>
           <a href="/publications/new" class="<%= path === '/publications/new' ? 'active' : '' %>">Publicar</a>
+          <a href="/favorites" class="<%= path === '/favorites' ? 'active' : '' %>">Favoritos</a>
         <% } %>
       </nav>
 

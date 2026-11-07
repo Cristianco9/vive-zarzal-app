@@ -7,7 +7,6 @@ import {
   Rating,
   User,
 } from '../db/models/index.js';
-import { firstError, publicationSchema, REPORT_REASONS, REPORT_REASON_LABELS } from '../schemas/index.js';
 import { firstError, publicationSchema } from '../schemas/index.js';
 import { httpError } from '../utils/httpError.js';
 import {
@@ -165,6 +164,40 @@ export const listByCategory = async (req, res) => {
   });
 };
 
+export const listFavorites = async (req, res) => {
+  const favorites = await Favorite.findAll({
+    where: { userId: req.currentUser.id },
+    attributes: ['publicationId'],
+    order: [['createdAt', 'DESC']],
+  });
+
+  const favoriteIds = new Set(
+    favorites.map((favorite) => favorite.publicationId)
+  );
+
+  const publications = favoriteIds.size
+    ? await Publication.findAll({
+        where: { id: [...favoriteIds] },
+        include: publicationSummaryInclude,
+      })
+    : [];
+
+  const publicationsById = new Map(
+    publications.map((publication) => [publication.id, publication])
+  );
+
+  const ordered = favorites
+    .map((favorite) => publicationsById.get(favorite.publicationId))
+    .filter(Boolean);
+
+  return res.render('favorites', {
+    title: 'Mis favoritos',
+    publications: ordered.map((publication) =>
+      toPublicationCard(publication, req.currentUser, favoriteIds)
+    ),
+  });
+};
+
 export const showCreate = async (req, res) => {
   const categories = await loadCategories();
 
@@ -231,8 +264,6 @@ export const showDetail = async (req, res) => {
   return res.render('publicationDetail', {
     title: card.title,
     publication: card,
-    reportReasons: REPORT_REASONS,
-    reportReasonLabels: REPORT_REASON_LABELS,
   });
 };
 
@@ -309,6 +340,4 @@ export const remove = async (req, res) => {
   return res.redirect(
     `/?success=${encodeURIComponent('Publicación eliminada.')}`
   );
-};
-
 };
