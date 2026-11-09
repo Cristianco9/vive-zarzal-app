@@ -3,7 +3,7 @@
 <main class="container section">
   <div class="error-page">
     <p class="error-code"><%= status %></p>
-    <h1><%= status === 404 ? 'No encontramos esta página' : 'Algo salió mal' %></h1>
+    <h1><%= status === 404 ? 'No encontramos esta página' : status === 403 ? 'No tienes acceso a esta página' : 'Algo salió mal' %></h1>
     <p class="muted"><%= message %></p>
     <a class="btn btn-primary" href="/">Volver al inicio</a>
   </div>
