@@ -43,7 +43,7 @@ Estas tablas y modelos existen para que el siguiente equipo construya las funcio
 
 | Funcionalidad | Base disponible | Trabajo pendiente |
 | --- | --- | --- |
-| Roles y permisos | `roles`, `permissions`, `role_permissions`, `user_roles` | Middleware de autorización, panel de administración, asignación de roles. |
+| Roles y permisos | `roles`, `permissions`, `role_permissions`, `user_roles`, middlewares `requireRole` y `requirePermission` (ver `docs/PERMISSIONS.md`) | Panel de administración, asignación de roles. |
 | Documentos | `document_types`, `user_documents` | Formulario de documentos, carga de soportes, verificación por administrador. |
 | Ubicaciones | `countries`, `departments`, `cities`, `user_addresses` | Selectores dependientes y gestión de direcciones. |
 | Etiquetas | `tags`, `publication_tags` | Selector de etiquetas al publicar, filtros y páginas por etiqueta. |
@@ -59,7 +59,7 @@ Navegador
   ▼
 Express 5 + EJS
   │
-  ├── middlewares/auth.js       Carga el usuario y sus roles desde el JWT
+  ├── middlewares/auth.js       Carga el usuario, sus roles y permisos desde el JWT
   ├── router/*                  Rutas HTTP
   ├── controllers/*             Lógica de aplicación
   ├── schemas/index.js          Validación con Joi
@@ -78,7 +78,7 @@ PostgreSQL
 | `src/router/index.js` | Punto de unión de todos los routers. |
 | `src/db/models/index.js` | Exportación de modelos y asociaciones. |
 | `src/db/migrations/` | Historial del esquema. |
-| `src/middlewares/auth.js` | Usuario actual, roles y autenticación requerida. |
+| `src/middlewares/auth.js` | Usuario actual, roles, permisos y autorización por rol/permiso. |
 | `src/controllers/` | Casos de uso existentes. |
 | `src/views/` | Vistas EJS. |
 | `docs/DATABASE.md` | Catálogo detallado del esquema. |
@@ -106,7 +106,7 @@ npm run lint
 
 ### Prioridad alta
 
-1. Middleware de autorización por rol/permiso y pruebas de acceso.
+1. ~~Middleware de autorización por rol/permiso y pruebas de acceso.~~ (hecho, ver `docs/PERMISSIONS.md`)
 2. Panel de administración para roles, categorías, etiquetas y reportes.
 3. Cola de revisión de reportes: listar pendientes, aprobar o descartar.
 4. Etiquetas en publicaciones y filtros por etiqueta.
