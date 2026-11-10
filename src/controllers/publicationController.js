@@ -5,6 +5,7 @@ import {
   Like,
   Publication,
   Rating,
+  Tag,
   User,
 } from '../db/models/index.js';
 import { firstError, publicationSchema } from '../schemas/index.js';
@@ -13,6 +14,7 @@ import {
   deleteStoredImage,
   deleteUploadedFile,
 } from '../middlewares/upload.js';
+import { sequelize } from '../libraries/DBConnection.js';
 
 export const publicationSummaryInclude = [
   {
@@ -234,20 +236,34 @@ export const create = async (req, res) => {
     return renderWithError('La categoría seleccionada no es válida.');
   }
 
-  const publication = await Publication.create({
-    userId: req.currentUser.id,
-    categoryId: value.categoryId,
-    type: value.type,
-    title: value.title,
-    description: value.description,
-    imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
-    ingredients: value.type === 'recipe' ? value.ingredients : null,
-    instructions: value.type === 'recipe' ? value.instructions : null,
-  });
+  const tagIds = value.tagIds ?? [];
+
+const transaction = await sequelize.transaction();
+try {
+  const publication = await Publication.create(
+    {
+      userId: req.currentUser.id,
+      categoryId: value.categoryId,
+      type: value.type,
+      title: value.title,
+      description: value.description,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
+      ingredients: value.type === 'recipe' ? value.ingredients : null,
+      instructions: value.type === 'recipe' ? value.instructions : null,
+    },
+    { transaction }
+  );
+
+  await publication.setTags(tagIds, { transaction });
+  await transaction.commit();
 
   return res.redirect(
     `/publications/${publication.id}?success=${encodeURIComponent('Publicación creada.')}`
   );
+} catch (err) {
+  await transaction.rollback();
+  throw err;
+}
 };
 
 export const showDetail = async (req, res) => {

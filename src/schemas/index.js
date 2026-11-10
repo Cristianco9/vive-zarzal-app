@@ -38,6 +38,17 @@ export const publicationSchema = Joi.object({
     then: Joi.string().trim().min(3).max(3000).required(),
     otherwise: Joi.string().allow('').max(3000).optional(),
   }),
+  tagIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .single()
+    .unique()
+    .max(5)
+    .default([])
+    .messages({
+      'array.max': 'Solo puedes elegir hasta 5 etiquetas.',
+      'array.unique': 'No repitas etiquetas.',
+      'number.base': 'Una etiqueta no es válida.',
+    }),
 });
 
 export const commentSchema = Joi.object({
