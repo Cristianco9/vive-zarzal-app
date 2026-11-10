@@ -38,6 +38,17 @@ export const publicationSchema = Joi.object({
     then: Joi.string().trim().min(3).max(3000).required(),
     otherwise: Joi.string().allow('').max(3000).optional(),
   }),
+  tagIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .single()
+    .unique()
+    .max(5)
+    .default([])
+    .messages({
+      'array.max': 'Solo puedes elegir hasta 5 etiquetas.',
+      'array.unique': 'No repitas etiquetas.',
+      'number.base': 'Una etiqueta no es válida.',
+    }),
 });
 
 export const commentSchema = Joi.object({
@@ -46,6 +57,38 @@ export const commentSchema = Joi.object({
 
 export const ratingSchema = Joi.object({
   score: Joi.number().integer().min(1).max(5).required(),
+});
+
+export const REPORT_REASONS = [
+  'spam',
+  'harassment',
+  'hate',
+  'violence',
+  'sexual',
+  'other',
+];
+
+export const REPORT_REASON_LABELS = {
+  spam: 'Spam o publicidad',
+  harassment: 'Acoso o insultos',
+  hate: 'Discurso de odio',
+  violence: 'Violencia',
+  sexual: 'Contenido sexual',
+  other: 'Otro motivo',
+};
+
+export const reportSchema = Joi.object({
+  reason: Joi.string()
+    .valid(...REPORT_REASONS)
+    .required()
+    .messages({
+      'any.only': 'Selecciona un motivo válido',
+      'any.required': 'Selecciona un motivo',
+      'string.empty': 'Selecciona un motivo',
+    }),
+  details: Joi.string().trim().allow('').max(500).optional().messages({
+    'string.max': 'Los detalles no pueden superar los 500 caracteres',
+  }),
 });
 
 export const firstError = (error) => error.details[0].message;

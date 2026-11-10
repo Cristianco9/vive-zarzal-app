@@ -1,0 +1,43 @@
+<article class="publication-card">
+  <a class="card-image" href="/publications/<%= publication.id %>">
+    <img src="<%= publication.imageUrl || '/images/placeholder.svg' %>" alt="<%= publication.title %>">
+    <span class="badge badge-type"><%= publication.type === 'recipe' ? 'Receta' : 'Plato' %></span>
+  </a>
+
+  <div class="card-body">
+    <a class="badge badge-category" href="/categories/<%= publication.category.slug %>">
+      <%= publication.category.name %>
+    </a>
+
+    <h3 class="card-title">
+      <a href="/publications/<%= publication.id %>"><%= publication.title %></a>
+    </h3>
+
+    <p class="card-description"><%= publication.description %></p>
+
+    <div class="card-meta">
+      <a href="/users/<%= publication.author.id %>" class="author">
+        <span class="avatar avatar-small"><%= publication.author.firstName.charAt(0) %></span>
+        <span><%= publication.author.firstName %> <%= publication.author.lastName %></span>
+      </a>
+
+      <div class="stats">
+        <span title="Me gusta">♥ <%= publication.likeCount %></span>
+        <span title="Calificación promedio">★ <%= publication.ratingAverage || 'Sin notas' %></span>
+        <span title="Comentarios">💬 <%= publication.commentCount %></span>
+      </div>
+    </div>
+
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+      <form action="/publications/<%= publication.id %>/favorite" method="post" class="inline-form">
+        <button
+          type="submit"
+          class="btn btn-small <%= publication.favoritedByCurrentUser ? 'btn-primary' : 'btn-outline' %>"
+          title="<%= publication.favoritedByCurrentUser ? 'Quitar de favoritos' : 'Guardar en favoritos' %>"
+        >
+          🔖 <%= publication.favoritedByCurrentUser ? 'Guardada' : 'Guardar' %>
+        </button>
+      </form>
+    <% } %>
+  </div>
+</article>

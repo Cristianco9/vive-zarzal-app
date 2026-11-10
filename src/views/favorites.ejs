@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<main class="container section">
+  <div class="section-heading">
+    <h2>Mis favoritos</h2>
+    <span class="muted">
+      <%= publications.length %>
+      <%= publications.length === 1 ? 'publicación guardada' : 'publicaciones guardadas' %>
+    </span>
+  </div>
+
+  <% if (!publications.length) { %>
+    <div class="empty-state">
+      <p>Todavía no has guardado ninguna publicación.</p>
+      <a class="btn btn-primary" href="/">Explorar publicaciones</a>
+    </div>
+  <% } else { %>
+    <div class="card-grid">
+      <% publications.forEach((publication) => { %>
+        <%- include('partials/publicationCard', { publication }) %>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

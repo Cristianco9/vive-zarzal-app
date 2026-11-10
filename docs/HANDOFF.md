@@ -19,6 +19,7 @@ Documento de continuidad para el equipo que retoma el desarrollo de **Vive Zarza
 * Perfil público con publicaciones y roles.
 * Edición de datos del perfil propio.
 * Validación con Joi y manejo centralizado de errores.
+* Reporte de publicaciones y comentarios por parte de usuarios autenticados, con motivo de una lista cerrada, detalles opcionales, estado inicial `pending` y bloqueo de reportes duplicados o sobre contenido propio.
 
 ### Base de datos
 
@@ -48,7 +49,7 @@ Estas tablas y modelos existen para que el siguiente equipo construya las funcio
 | Etiquetas | `tags`, `publication_tags` | Selector de etiquetas al publicar, filtros y páginas por etiqueta. |
 | Favoritos | `favorites` | Botón guardar/quitar y listado de favoritos. |
 | Notificaciones | `notifications` | Centro de notificaciones y creación al recibir interacciones. |
-| Moderación | `reports` | Formulario de reporte y flujo de revisión para moderadores. |
+| Moderación | `reports` | Cola de revisión para moderadores: listar pendientes, aprobar o descartar (la creación de reportes ya está implementada). |
 
 ## Arquitectura
 
@@ -107,7 +108,7 @@ npm run lint
 
 1. Middleware de autorización por rol/permiso y pruebas de acceso.
 2. Panel de administración para roles, categorías, etiquetas y reportes.
-3. Flujo de reportes: crear reporte, listar pendientes, aprobar o descartar.
+3. Cola de revisión de reportes: listar pendientes, aprobar o descartar.
 4. Etiquetas en publicaciones y filtros por etiqueta.
 5. Favoritos con listado en el perfil.
 
@@ -135,10 +136,11 @@ npm run lint
 * Los seeders no deben usarse en producción sin revisar los catálogos.
 * No hay CSRF, paginación, búsqueda ni recuperación de contraseña todavía.
 * La alerta de `npm audit` en producción proviene de `uuid` dentro de Sequelize 6; corregirla implica una actualización mayor del ORM.
+* Índices únicos parciales en `reports` para impedir que un usuario reporte dos veces el mismo contenido.
 
 ## Checklist para el equipo entrante
 
-- [ ] Leer `README.md`, `docs/DATABASE.md` y este documento.
+- [X] Leer `README.md`, `docs/DATABASE.md` y este documento.
 - [ ] Crear `.env` y levantar PostgreSQL.
 - [ ] Ejecutar migraciones y seeders.
 - [ ] Ejecutar `npm test` y `npm run lint`.

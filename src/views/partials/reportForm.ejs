@@ -1,0 +1,19 @@
+<details class="report-box">
+  <summary class="btn btn-outline btn-small"><%= label %></summary>
+  <form action="<%= action %>" method="post" class="report-form">
+    <label>
+      Motivo
+      <select name="reason" required>
+        <option value="" disabled selected>Selecciona un motivo</option>
+        <% reportReasons.forEach((reason) => { %>
+          <option value="<%= reason %>"><%= reportReasonLabels[reason] %></option>
+        <% }) %>
+      </select>
+    </label>
+    <label>
+      Detalles (opcional)
+      <textarea name="details" rows="2" maxlength="500"></textarea>
+    </label>
+    <button type="submit" class="btn btn-danger btn-small">Enviar reporte</button>
+  </form>
+</details>
