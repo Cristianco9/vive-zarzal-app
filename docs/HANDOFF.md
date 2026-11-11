@@ -141,10 +141,10 @@ npm run lint
 ## Checklist para el equipo entrante
 
 - [X] Leer `README.md`, `docs/DATABASE.md` y este documento.
-- [ ] Crear `.env` y levantar PostgreSQL.
-- [ ] Ejecutar migraciones y seeders.
-- [ ] Ejecutar `npm test` y `npm run lint`.
-- [ ] Revisar el backlog priorizado.
-- [ ] Definir la primera funcionalidad y crear una rama desde `refactor/food-community-forum`.
-- [ ] Agregar pruebas para cada funcionalidad nueva.
-- [ ] Actualizar `docs/DATABASE.md` si cambia el esquema.
+- [X] Crear `.env` y levantar PostgreSQL.
+- [X] Ejecutar migraciones y seeders.
+- [X] Ejecutar `npm test` y `npm run lint`.
+- [X] Revisar el backlog priorizado.
+- [X] Definir la primera funcionalidad y crear una rama desde `refactor/food-community-forum`.
+- [X] Agregar pruebas para cada funcionalidad nueva.
+- [X] Actualizar `docs/DATABASE.md` si cambia el esquema.
